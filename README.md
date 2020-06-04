@@ -1,7 +1,7 @@
 # gamerepo
 my god what hte fuck is version control anyways
-
 good fucking luck figuring this shit out nerds
+
 
 fun terms ive learned:
 
