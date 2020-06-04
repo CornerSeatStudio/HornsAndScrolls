@@ -16,3 +16,7 @@ Staging: What happens before a commit - choosing what specifically gets commited
 Push: From local to webserver
 
 Pull: from web to local
+
+I have actually used this before for mods and shit
+
+so basically put into projects what we have to do and what is done already.
