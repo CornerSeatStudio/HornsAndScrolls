@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour {
-    [SerializeField] private Rigidbody rb; //serializefield allows a private field to be seen in unity editor
+    [SerializeField] private Rigidbody playerrb; //serializefield allows a private field to be seen in unity editor
     private Vector3 inputVector; 
     public float velocity = 10f; 
 
@@ -13,7 +13,7 @@ public class PlayerMovement : MonoBehaviour {
     [SerializeField] private Animator animator;
 
     void Start() {
-        rb = this.GetComponent<Rigidbody>(); //a component is each thing in the unity inspector section, this just pulls it from there
+        playerrb = this.GetComponent<Rigidbody>(); //a component is each thing in the unity inspector section, this just pulls it from there
         animator = this.GetComponent<Animator>();
         //UnityEngine.Debug.Log("Hello World");
     }
@@ -37,8 +37,8 @@ public class PlayerMovement : MonoBehaviour {
         }
 
         //Player Movement 
-        inputVector = new Vector3(Input.GetAxisRaw("Horizontal") * velocity, rb.velocity.y, Input.GetAxisRaw("Vertical") * velocity);
-        rb.velocity = inputVector;
+        inputVector = new Vector3(Input.GetAxisRaw("Horizontal") * velocity, playerrb.velocity.y, Input.GetAxisRaw("Vertical") * velocity);
+        playerrb.velocity = inputVector;
 
         //given i want player movement to take precedent in terms of the direction the player faces, it gets updated last
         //if the player is using the mouse while moving, it will still face run direction?
