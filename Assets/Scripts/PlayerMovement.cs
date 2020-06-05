@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour {
     [SerializeField] private Rigidbody playerrb; //serializefield allows a private field to be seen in unity editor
     private Vector3 inputVector; 
-    public float velocity = 10f; 
+    public float movementSpeed = 10f; 
 
     //to declare mouse vs key presedence, compare via > operator
     public float mouseRotationSmoothness = 7f;
@@ -37,7 +37,7 @@ public class PlayerMovement : MonoBehaviour {
         }
 
         //Player Movement 
-        inputVector = new Vector3(Input.GetAxisRaw("Horizontal") * velocity, playerrb.velocity.y, Input.GetAxisRaw("Vertical") * velocity);
+        inputVector = new Vector3(Input.GetAxisRaw("Horizontal") * movementSpeed, 0f, Input.GetAxisRaw("Vertical") * movementSpeed);
         playerrb.velocity = inputVector;
 
         //given i want player movement to take precedent in terms of the direction the player faces, it gets updated last
@@ -45,9 +45,8 @@ public class PlayerMovement : MonoBehaviour {
         //todo: if a player is doign an action (i.e., attacking or interacting idk), prioritize mouse direction
         //make player face walk direction
 
-        Vector3 direction = new Vector3(inputVector[0], 0f, inputVector[2]);
-        if (direction != Vector3.zero){
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), keyRotationSmoothness * Time.deltaTime);
+        if (inputVector != Vector3.zero){
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(inputVector), keyRotationSmoothness * Time.deltaTime);
         }
         
         //anim stuff
