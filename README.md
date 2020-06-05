@@ -17,6 +17,11 @@ Push: From local to webserver
 
 Pull: from web to local
 
+Branch: an alternate "timeline" to work on featuers and not step on other's toes
+
+Pull Request: when a branch is ready to be merged with the master, submit this and someone (probably me) will deal with the merge conflicts
+
 I have actually used this before for mods and shit
 
 so basically put into projects what we have to do and what is done already.
+
