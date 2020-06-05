@@ -20,4 +20,5 @@
 - Next: for all upcoming features in testing - completed features can be merged into the master via pull request  
 - Testing: for testing random features we may wanna try or test away from everything else  
   
-All testing features (if applicable) should be merged into the next branch, and all completed next features should be merged into the master branch
+All testing features (if applicable) should be merged into the next branch, and all completed next features should be merged into the master branch.  
+Whenever you want to move features up, submit a PULL REQUEST plz
