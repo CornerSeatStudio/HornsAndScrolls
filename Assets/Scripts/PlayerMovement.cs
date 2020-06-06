@@ -16,6 +16,10 @@ public class PlayerMovement : MonoBehaviour {
         playerrb = this.GetComponent<Rigidbody>(); //a component is each thing in the unity inspector section, this just pulls it from there
         animator = this.GetComponent<Animator>();
         //UnityEngine.Debug.Log("Hello World");
+        //NEVER APPLY ROOT MOTION
+        animator.applyRootMotion = false;
+        //NEVER FLOP
+        playerrb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
     }
 
     void Update() {
@@ -36,9 +40,9 @@ public class PlayerMovement : MonoBehaviour {
 
         }
 
-        //Player Movement 
+        //Player Movement - assume gravity isnt a feature
         inputVector = new Vector3(Input.GetAxisRaw("Horizontal") * movementSpeed, 0f, Input.GetAxisRaw("Vertical") * movementSpeed);
-        playerrb.velocity = inputVector;
+        playerrb.velocity = inputVector; 
 
         //given i want player movement to take precedent in terms of the direction the player faces, it gets updated last
         //if the player is using the mouse while moving, it will still face run direction?
@@ -50,8 +54,7 @@ public class PlayerMovement : MonoBehaviour {
         }
         
         //anim stuff
-        animator.SetFloat("InputX", inputVector[0]);
-        animator.SetFloat("InputZ", inputVector[2]);
+        animator.SetBool("IsWalking", inputVector[0] != 0 || inputVector[2] != 0);
         
     }
 
