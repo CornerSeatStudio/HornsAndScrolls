@@ -463,8 +463,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fdbc4d0cc2a0db4c9af6a033b576284, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rb: {fileID: 774352494}
-  velocity: 10
+  playerrb: {fileID: 0}
+  movementSpeed: 10
   mouseRotationSmoothness: 7
   keyRotationSmoothness: 25
   animator: {fileID: 774352498}
@@ -610,7 +610,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 774352496}
   smoothSpeed: 0.37
-  offset: {x: 0, y: 7, z: -10}
+  offset: {x: 0, y: 20, z: -16}
+  scrollZoomMultiplier: 15
+  fovUpperBound: 120
+  fovLowerBound: 25
+  cam: {fileID: 0}
 --- !u!1001 &1379277261
 PrefabInstance:
   m_ObjectHideFlags: 0
