@@ -5,12 +5,12 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour {
     [SerializeField] private Rigidbody playerrb; //serializefield allows a private field to be seen in unity editor
     private Vector3 inputVector; 
-    public float movementSpeed = 10f; 
+    public float movementSpeed = 5f; //5 is current goldilocks 
     public float Fgravity = 9.81f;
     public float jumpHeight = 1f;
     //to declare mouse vs key presedence, compare via > operator
     public float mouseRotationSmoothness = 7f;
-    public float keyRotationSmoothness = 25f;
+    public float keyRotationSmoothness = 15f;
     [SerializeField] private Animator animator;
 
     void Start() {
@@ -18,7 +18,7 @@ public class PlayerMovement : MonoBehaviour {
         animator = this.GetComponent<Animator>();
         //UnityEngine.Debug.Log("Hello World");
         //NEVER APPLY ROOT MOTION
-        animator.applyRootMotion = false;
+        //animator.applyRootMotion = false;
         //NEVER FLOP
         playerrb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
     }
