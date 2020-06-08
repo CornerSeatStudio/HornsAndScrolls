@@ -192,6 +192,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -6057140222963153312, guid: 8747a2e38e59dc840a25f4e78f220eb7,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 6a0c17c9b60ac9a4594b7a046f1c90a2, type: 2}
+    - target: {fileID: -6057140222963153312, guid: 8747a2e38e59dc840a25f4e78f220eb7,
+        type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 8747a2e38e59dc840a25f4e78f220eb7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -318,7 +328,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerrb: {fileID: 0}
-  movementSpeed: 10
+  movementSpeed: 4.5
   Fgravity: 9.81
   jumpHeight: 1
   mouseRotationSmoothness: 7
@@ -358,7 +368,7 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 0.8396226, g: 0.635344, b: 0.20990565, a: 1}
+  m_Color: {r: 0.7830189, g: 0.72946304, b: 0.52078146, a: 1}
   m_Intensity: 2
   m_Range: 10
   m_SpotAngle: 30
@@ -368,9 +378,9 @@ Light:
     m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
-    m_Strength: 0.581
-    m_Bias: 0.1
-    m_NormalBias: 0.1
+    m_Strength: 0.276
+    m_Bias: 0.19
+    m_NormalBias: 0.23
     m_NearPlane: 1
     m_CullingMatrixOverride:
       e00: 1
@@ -398,7 +408,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 1
+  m_Lightmapping: 2
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
@@ -540,7 +550,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: 7ea945bf1c06d64488a4bb8a2df473fb,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5
+      value: -0.8
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 7ea945bf1c06d64488a4bb8a2df473fb,
         type: 3}
