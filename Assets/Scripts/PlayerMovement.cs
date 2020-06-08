@@ -6,7 +6,8 @@ public class PlayerMovement : MonoBehaviour {
     [SerializeField] private Rigidbody playerrb; //serializefield allows a private field to be seen in unity editor
     private Vector3 inputVector; 
     public float movementSpeed = 10f; 
-
+    public float Fgravity = 9.81f;
+    public float jumpHeight = 1f;
     //to declare mouse vs key presedence, compare via > operator
     public float mouseRotationSmoothness = 7f;
     public float keyRotationSmoothness = 25f;
@@ -23,38 +24,52 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     void Update() {
-        //mouse movement
-        Plane playerPlane = new Plane(Vector3.up, transform.position);
-        Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
-        float hitDistance = 0.0f;
+        //Player Movement - normalized makes diagonal movement same as normal movement
+        //https://answers.unity.com/questions/1370941/more-advanced-player-movement.html
+        inputVector = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical")).normalized;
+        inputVector*=movementSpeed;
 
-        if(playerPlane.Raycast(ray, out hitDistance)) {
-            Vector3 targetPoint = ray.GetPoint(hitDistance);
-            Quaternion targetRotation = Quaternion.LookRotation(targetPoint - transform.position);
+        //mouse movement - check later if this should be in fixed update instead
+        //test - only face player to mouse when aiming
+        if(Input.GetButton("Fire1")) {
+            Plane playerPlane = new Plane(Vector3.up, transform.position);
+            Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
+            float hitDistance = 0.0f;
 
-            //dont rotate x or z axis
-            targetRotation.x = 0;
-            targetRotation.z = 0;
+            if(playerPlane.Raycast(ray, out hitDistance)) {
+                Vector3 targetPoint = ray.GetPoint(hitDistance);
+                Quaternion targetRotation = Quaternion.LookRotation(targetPoint - transform.position);
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, mouseRotationSmoothness * Time.deltaTime);
+                //dont rotate x or z axis
+                targetRotation.x = 0;
+                targetRotation.z = 0;
 
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, mouseRotationSmoothness * Time.deltaTime);
+
+            }
+        } else {
+            if (inputVector != Vector3.zero){
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(inputVector), keyRotationSmoothness * Time.deltaTime);
+            }
         }
 
-        //Player Movement - assume gravity isnt a feature
-        inputVector = new Vector3(Input.GetAxisRaw("Horizontal") * movementSpeed, 0f, Input.GetAxisRaw("Vertical") * movementSpeed);
-        playerrb.velocity = inputVector; 
-
-        //given i want player movement to take precedent in terms of the direction the player faces, it gets updated last
-        //if the player is using the mouse while moving, it will still face run direction?
-        //todo: if a player is doign an action (i.e., attacking or interacting idk), prioritize mouse direction
-        //make player face walk direction
-
-        if (inputVector != Vector3.zero){
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(inputVector), keyRotationSmoothness * Time.deltaTime);
-        }
         
         //anim stuff
         animator.SetBool("IsWalking", inputVector[0] != 0 || inputVector[2] != 0);
+        
+    }
+
+    void FixedUpdate() {
+
+        playerrb.MovePosition(transform.position + inputVector * Time.deltaTime);
+
+        //el graviolo
+        playerrb.AddForce(-transform.up * Fgravity, ForceMode.Acceleration);
+        
+        //el jump-o - todo: fix so only jumps once rather than act like some dumbass jetpack
+        // if(Input.GetAxisRaw("Jump") != 0){
+        //     playerrb.AddForce(transform.up * Mathf.Sqrt(2*Fgravity*jumpHeight), ForceMode.VelocityChange);
+        // }
         
     }
 

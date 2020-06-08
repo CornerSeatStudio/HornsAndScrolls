@@ -332,7 +332,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: b3530911638831c45a783f23f6243da7,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -91.619
+      value: -84.01
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: b3530911638831c45a783f23f6243da7,
         type: 3}
@@ -342,7 +342,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: b3530911638831c45a783f23f6243da7,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -97.4
+      value: -105.68
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: b3530911638831c45a783f23f6243da7,
         type: 3}
@@ -465,6 +465,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerrb: {fileID: 0}
   movementSpeed: 10
+  Fgravity: 9.81
+  jumpHeight: 1
   mouseRotationSmoothness: 7
   keyRotationSmoothness: 25
   animator: {fileID: 774352498}
