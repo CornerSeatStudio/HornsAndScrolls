@@ -29,6 +29,14 @@ public class Bow : MonoBehaviour
     //todo: right click to not shoot arrow
     //tl:dr - hold fire, if run out of time or release, shoot
     void BowLogic(){
+        //UnityEngine.Debug.Log("bop");
+
+        //if rmb is pressed, put away arrow
+        if(Input.GetButton("Fire2")) {
+            drawtimeCounter = 0f;
+            shotOnce = true;
+        }
+
         if(Input.GetButton("Fire1")) {
             if(drawtimeCounter > 0.0f){
                 shotOnce = false;
