@@ -4,24 +4,23 @@ using UnityEngine;
 
  //copy paste from https://answers.unity.com/questions/462907/how-do-i-stop-a-projectile-cold-when-colliding-wit.html
 //todo: tag arrow so they cant stick to each other
+//todo: remove redundant code
 
 public class Arrow : MonoBehaviour {
     [SerializeField] public float arrowDisappearTime = 5f;
      private Quaternion q;
      private Vector3 v3;
      private bool hasHit = false;
-     Transform MyTransform;
-     Rigidbody MyRigidbody;
+     Rigidbody ArrowRigidbody;
 
      void Start () {            
-         MyTransform = this.transform;
-         MyRigidbody = this.GetComponent<Rigidbody>();
-         MyRigidbody.AddForce(MyTransform.forward, ForceMode.VelocityChange);            
+         ArrowRigidbody = this.GetComponent<Rigidbody>();
+         ArrowRigidbody.AddForce(this.transform.forward, ForceMode.VelocityChange);            
      }
  
      void OnCollisionEnter(Collision col)
      {        
-         MyRigidbody.isKinematic = true;    
+         ArrowRigidbody.isKinematic = true;    
          hasHit = true;
 
         //destroy after arrowDisappeartime
