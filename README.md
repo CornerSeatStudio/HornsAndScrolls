@@ -17,8 +17,5 @@
 
 ## **Rule of Law for branches**
 - Master: only for FINAL and INDEFINITE features (basic code and shit)  
-- Next: for all upcoming features in testing - completed features can be merged into the master via pull request  
-- Testing: for testing random features we may wanna try or test away from everything else  
-  
-All testing features (if applicable) should be merged into the next branch, and all completed next features should be merged into the master branch.  
-Whenever you want to move features up, submit a PULL REQUEST plz
+
+whenever you do something on your end, MAKE YOUR OWN BRANCH. Once you've finished commiting featuers to that branch and want it merged to the main game, PULL REQUEST
