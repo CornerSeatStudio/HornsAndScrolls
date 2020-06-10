@@ -15,7 +15,7 @@ public class Arrow : MonoBehaviour {
 
      void Start () {            
          ArrowRigidbody = this.GetComponent<Rigidbody>();
-         ArrowRigidbody.AddForce(this.transform.forward, ForceMode.VelocityChange);            
+         //ArrowRigidbody.AddForce(this.transform.forward, ForceMode.VelocityChange);            
      }
  
      void OnCollisionEnter(Collision col)

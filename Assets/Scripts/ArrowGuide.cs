@@ -6,7 +6,7 @@ public class ArrowGuide : MonoBehaviour
 {
 
      [SerializeField] private LineRenderer lr;
-     public float maxTrace = 20;
+     public float maxTrace = 40;
 
     // Start is called before the first frame update
     void Start()

@@ -85,7 +85,7 @@ public class Bow : MonoBehaviour
     //traces the line
     void Aim() {
         if(linePresent){
-            lineGuide.transform.SetPositionAndRotation(transform.position, transform.rotation);
+            lineGuide.transform.SetPositionAndRotation(firePoint.position, firePoint.rotation);
         }
     }
 

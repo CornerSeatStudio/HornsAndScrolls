@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour {
     //[SerializeField] private Rigidbody playerrb; //serializefield allows a private field to be seen in unity editor
-    [SerializeField] private CharacterController controller;
-    [SerializeField] private Animator animator;
+    private CharacterController controller;
+    private Animator animator;
 
     private Vector3 inputVector; //key inputs
     public float movementSpeed = 5f; //5 is current goldilocks 
-    public float fallspeed = 9.81f;
+    public float fallspeed = 10f;
 
     //to declare mouse vs key presedence, compare via > operator
     public float mouseRotationSmoothness = 7f;
