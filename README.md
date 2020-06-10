@@ -3,7 +3,10 @@
 #### good fucking luck figuring this shit out nerds
 #### now with formatting  
 
-
+## **Todo list for anyone honestly** 
+- protoype an UI
+- design a simple level
+- use current storyboard and transform it into said level/other level
 
 ## **fun terms ive learned:**  
 - Repository (Repo): All the history/changes to a project 
