@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FieldOfView : MonoBehaviour
+public class Detection : MonoBehaviour
 {
     [Range(0, 360)] public float viewAngle = 30;
-    public float viewRadius = 5;
+    public float viewRadius = 10;
+    public float interactionDistance = 3;
     public float coroutineDelay = .2f;
 
     //LayerMasks allow for raycasts to choose what to and not to register
@@ -14,6 +15,9 @@ public class FieldOfView : MonoBehaviour
 
     private List<Transform> visibleTargets = new List<Transform>();
     public List<Transform> getVisibleTargets() { return visibleTargets; }
+
+    private List<GameObject> interactableTargets = new List<GameObject>();
+    public List<GameObject> getInteractableTargets() { return interactableTargets; }
 
     void Start() {
         StartCoroutine("FindTargetsWithDelay", coroutineDelay);
@@ -30,6 +34,7 @@ public class FieldOfView : MonoBehaviour
     //for every target (via an array), lock on em
     private void findVisibleTargets(){
         visibleTargets.Clear(); //reset list every time so no dupes
+        interactableTargets.Clear();
         //cast a sphere over player, store everything inside col
         Collider[] targetsInView = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
         foreach(Collider col in targetsInView){
@@ -40,7 +45,11 @@ public class FieldOfView : MonoBehaviour
                 float distanceToTarget = Vector3.Distance(transform.position, target.position);
                 if(!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleMask)){ //if, from character at given angle and distance, it DOESNT collide with obstacleMask
                     visibleTargets.Add(target);
-                    //Debug.Log("hit a cunt");
+                    //Debug.Log("spot a cunt");
+                    if(distanceToTarget <= interactionDistance) { //additional check if in range of an interaction
+                        interactableTargets.Add(col.gameObject);
+                        //Debug.Log("interactable distance satisfied");
+                    }
                 }
             }
         }
