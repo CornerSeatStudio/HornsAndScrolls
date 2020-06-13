@@ -34,8 +34,8 @@ public class PlayerMovement : MonoBehaviour {
         inputVector = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical")).normalized;
         inputVector*=movementSpeed;
 
-        //assume no accelaration due to gravity, just a set speed instead
-        //can be fixed with math
+        //no accelaration due to gravity, just a set speed instead
+        //will be fixed with math
         inputVector.y-=fallspeed;
         if(controller.isGrounded){ 
             inputVector.y = 0;
