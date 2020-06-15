@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour {
-    //[SerializeField] private Rigidbody playerrb; //serializefield allows a private field to be seen in unity editor
     private CharacterController controller;
     private Animator animator;
 

@@ -31,8 +31,8 @@ public class HitDetection : Detection //cause i want fov shit
             Debug.Log(go.transform.position);
             attackTarget = go.GetComponent<CharacterHandler>();
             attackTarget.takeDamage(damage);
-
         }
+        
     }
 
 
