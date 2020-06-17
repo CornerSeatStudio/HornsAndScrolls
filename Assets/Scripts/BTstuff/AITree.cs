@@ -5,10 +5,15 @@ using UnityEngine;
 public class AITree : MonoBehaviour
 {
 
-    BTNode bt;
+    private BTNode bt;
+    private AITreeFunctions AI;
+    float asdf = 123;
 
     void Start()
     {        
+        
+
+
         buildTree();
         StartCoroutine("RunTree", 1f); //mono behavior + fov stuff
     }
@@ -18,6 +23,7 @@ public class AITree : MonoBehaviour
         //as of this point the attack animation should already have begon
         while(true){
             yield return new WaitForSeconds(delay);
+            //update data
             test();
         }
     }
@@ -26,9 +32,9 @@ public class AITree : MonoBehaviour
     public void buildTree(){
         BTSetup builder = new BTSetup();
         this.bt = builder
-                    .EmplaceSequencer("sequencer1")
-                    .EmplaceTask("task1", t => alwaysTrue())
-                    .EmplaceTask("task2", t => alwaysTrue())
+                .EmplaceSequencer("sequencer1")
+                    .EmplaceTask("task1", t => alwaysTrue(asdf))
+                    .EmplaceTask("task2", t => alwaysTrue(asdf))
                 .FinishNonTask()
                 .Build();
 
@@ -44,7 +50,8 @@ public class AITree : MonoBehaviour
     BTStatus alwaysFalse() {
         return BTStatus.FAILURE;
     }
-    BTStatus alwaysTrue() {
+    BTStatus alwaysTrue(float f) {
+        Debug.Log(f);
         return BTStatus.SUCCESS;
     }
 

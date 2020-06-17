@@ -4,7 +4,6 @@ using UnityEngine;
 
 [CreateAssetMenu(fileName = "test", menuName = "ScriptableObjects/CharacterData")]
 public class CharacterData : ScriptableObject {
-
     
     //make private later
     public string Charactername;

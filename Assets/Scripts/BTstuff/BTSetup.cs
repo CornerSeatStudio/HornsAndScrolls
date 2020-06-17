@@ -21,6 +21,10 @@ public class BTSetup {
         return this;
     }
 
+    public BTSetup EmplaceConditional(string name, Func<float, bool> fnc) {
+        return EmplaceTask(name, t => fnc(t) ? BTStatus.SUCCESS : BTStatus.FAILURE);
+    }
+
     public BTSetup EmplaceSequencer(string name) {
         Sequencer sequencer = new Sequencer(name);
         if(parentNodes.Count > 0) {
