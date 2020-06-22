@@ -13,7 +13,7 @@ public class BTSetup {
     public BTSetup EmplaceTask(string name, Func<float, BTStatus> fnc) {
         if (parentNodes.Count <= 0) {
             throw new System.Exception();
-            Debug.LogError("task node must be leaf");
+            //UnityEngine.Debug.LogError("task node must be leaf");
         }
 
         Task task = new Task(name, fnc);
@@ -53,7 +53,7 @@ public class BTSetup {
     public BTNode Build() {
         if(currParentNode == null) { 
             throw new System.Exception();
-            Debug.LogError("no nodes in current BT");
+            //Debug.LogError("no nodes in current BT");
         }
 
         return currParentNode;

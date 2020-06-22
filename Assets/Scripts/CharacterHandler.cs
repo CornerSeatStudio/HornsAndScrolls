@@ -1,21 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class CharacterHandler : MonoBehaviour
 {
-    public CharacterData data;
-    private float health;
-    public HitDetection hitDetection;
+    public CharacterData characterdata;
+    [SerializeField] private float health;
+    private float stamina;
+    protected HitDetection hitDetection;
 
-    void Start() {
+    [SerializeField] protected UnityEvent<CharacterHandler> onTakeDamage;
+
+    protected virtual void Start() {
         hitDetection = this.GetComponent<HitDetection>();
-        health = data.maxHealth;
+        health = characterdata.maxHealth;
     }
 
-    public void takeDamage(float damage){
+    public virtual void TakeDamage(float damage){ //probably make this virtual
         health -= damage;
     }
+
+    
     
 
 }

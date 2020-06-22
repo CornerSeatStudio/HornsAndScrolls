@@ -28,7 +28,7 @@ public class DetectionEditor : Editor
 
         //target identification debug
         Handles.color = Color.red;
-        foreach(Transform visibleTarget in fov.getVisibleTargets()){
+        foreach(Transform visibleTarget in fov.VisibleTargets){
             Handles.DrawLine(fov.transform.position, visibleTarget.position);
         }
     }

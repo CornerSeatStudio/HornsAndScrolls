@@ -7,8 +7,8 @@ public class HitDetection : Detection //cause i want fov shit
 {
 
     //these variables should be associated in a scriptable object weapon file
-    public IEnumerator currentInitAttackCoroutine;
     private CharacterHandler attackTarget;
+    public bool InMeleeRoutine {get; set;} = false;
 
     void Start()
     {        
@@ -17,20 +17,24 @@ public class HitDetection : Detection //cause i want fov shit
 
     //giving end 
     public IEnumerator InitAttack(float startupDelay, float endDelay, float damage){ //initiate any attack - todo: check what attacks are available here
+        Debug.Log("starting init attack coroutine");
+        InMeleeRoutine = true;
         //as of this point the attack animation should already have begon
         yield return new WaitForSeconds(startupDelay);
         MeleeHit(damage);
         //as of this point the attack animatino should have ended
         yield return new WaitForSeconds(endDelay);
-        currentInitAttackCoroutine = null; //allow for another attack
+        InMeleeRoutine = false;
+        Debug.Log("end of init attack coroutine - melee has been triggered");
+
     }
 
-    void MeleeHit(float damage) { //interact within given cast - if its an attack, target all in range (maybe make enum for more options)
+    void MeleeHit(float damage) { //interact within given cast - if its an attack, target all in range 
         //read attack
-        foreach(GameObject go in getInteractableTargets()) { //getInteractableTargets depends on assigned layers
-            Debug.Log(go.transform.position);
+        foreach(GameObject go in InteractableTargets) { //getInteractableTargets depends on assigned layers
+            //Debug.Log(go.transform.position);
             attackTarget = go.GetComponent<CharacterHandler>();
-            attackTarget.takeDamage(damage);
+            attackTarget.TakeDamage(damage);
         }
         
     }

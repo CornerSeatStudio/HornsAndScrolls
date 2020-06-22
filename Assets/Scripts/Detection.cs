@@ -13,15 +13,12 @@ public class Detection : MonoBehaviour
     public LayerMask targetMask;
     public LayerMask obstacleMask;
 
-    private List<Transform> visibleTargets = new List<Transform>();
-    public List<Transform> getVisibleTargets() { return visibleTargets; }
-
-    private List<GameObject> interactableTargets = new List<GameObject>();
-    public List<GameObject> getInteractableTargets() { return interactableTargets; }
+    public List<Transform> VisibleTargets {get; } = new List<Transform>();
+    public List<GameObject> InteractableTargets {get; } = new List<GameObject>();
 
     void Start() {
         StartCoroutine("FindTargetsWithDelay", coroutineDelay);
-    }
+    } 
 
     private IEnumerator FindTargetsWithDelay(float delay){
         while (true){
@@ -33,8 +30,8 @@ public class Detection : MonoBehaviour
 
     //for every target (via an array), lock on em
     private void findVisibleTargets(){
-        visibleTargets.Clear(); //reset list every time so no dupes
-        interactableTargets.Clear();
+        VisibleTargets.Clear(); //reset list every time so no dupes
+        InteractableTargets.Clear();
         //cast a sphere over player, store everything inside col
         Collider[] targetsInView = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
         foreach(Collider col in targetsInView){
@@ -44,10 +41,10 @@ public class Detection : MonoBehaviour
                 //do the ray 
                 float distanceToTarget = Vector3.Distance(transform.position, target.position);
                 if(!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleMask)){ //if, from character at given angle and distance, it DOESNT collide with obstacleMask
-                    visibleTargets.Add(target);
+                    VisibleTargets.Add(target);
                     //Debug.Log("spot a cunt");
                     if(distanceToTarget <= interactionDistance) { //additional check if in range of an interaction
-                        interactableTargets.Add(col.gameObject);
+                        InteractableTargets.Add(col.gameObject);
                         //Debug.Log("interactable distance satisfied");
                     }
                 }

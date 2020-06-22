@@ -10,7 +10,7 @@ public class Selector : BTParentNode {
         this.name = name;
     }
 
-    public BTStatus Evaluate(float timeDelta) {
+    public override BTStatus Evaluate(float timeDelta) {
         foreach(BTNode child in children) {
             BTStatus status = child.Evaluate(timeDelta);
             if (status != BTStatus.FAILURE) {
@@ -22,7 +22,7 @@ public class Selector : BTParentNode {
         return BTStatus.FAILURE;
     } 
 
-    public void AddChild(BTNode child) {
+    public override void AddChild(BTNode child) {
         children.Add(child);
     }
 

@@ -12,7 +12,7 @@ public class Task : BTNode {
         this.fnc = fnc;
     }
 
-    public BTStatus Evaluate(float timeDelta) {
+    public override BTStatus Evaluate(float timeDelta) {
         return fnc(timeDelta);
     } 
 
