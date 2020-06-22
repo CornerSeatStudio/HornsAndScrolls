@@ -16,6 +16,8 @@ public class Detection : MonoBehaviour
     public List<Transform> VisibleTargets {get; } = new List<Transform>();
     public List<GameObject> InteractableTargets {get; } = new List<GameObject>();
 
+    //ON DEATH -> STOP COROUTINE
+
     void Start() {
         StartCoroutine("FindTargetsWithDelay", coroutineDelay);
     } 

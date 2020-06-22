@@ -20,8 +20,7 @@ public class PlayerHandler : CharacterHandler
         if(Input.GetButtonDown("Fire1") == true) {
             if(!attackCooldown){
                 Debug.Log("Fire1'd");
-                IEnumerator currCoroutine = hitDetection.InitAttack(startupDelay, endDelay, damage);
-                StartCoroutine(currCoroutine);
+                StartCoroutine(hitDetection.InitAttack(startupDelay, endDelay, damage));
                 StartCoroutine(CooldownManager());
                 
             }

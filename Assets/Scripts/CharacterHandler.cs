@@ -6,21 +6,26 @@ using UnityEngine.Events;
 public class CharacterHandler : MonoBehaviour
 {
     public CharacterData characterdata;
-    [SerializeField] private float health;
+    [SerializeField] public float Health {get; set; }
     private float stamina;
     protected HitDetection hitDetection;
-
-    [SerializeField] protected UnityEvent<CharacterHandler> onTakeDamage;
-
     protected virtual void Start() {
         hitDetection = this.GetComponent<HitDetection>();
-        health = characterdata.maxHealth;
+        Health = characterdata.maxHealth;
     }
 
     public virtual void TakeDamage(float damage){ //probably make this virtual
-        health -= damage;
+        Health -= damage;
     }
 
+    public void onDeath() {
+        //stop detection coroutine
+        //play death animation
+
+        //AI specific:
+        //set combat status to dead, 
+
+    }
     
     
 

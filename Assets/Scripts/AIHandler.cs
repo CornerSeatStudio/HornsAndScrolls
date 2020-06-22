@@ -3,19 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Events;
 
 public enum WeaponType { MELEE, RANGED };
 public enum AIState { IDLE, PATROL, SLEEPING, COMBAT, DEAD }; 
 public enum CombatSlot {GUARANTEE, EVICTION, IN, OUT};
 
+[System.Serializable] public class AISpecificEvent : UnityEvent<AIHandler>{}
+
 public class AIHandler : CharacterHandler {    
 
     //core
     public CharacterHandler target; 
-    public WeaponData Weapon {get; }
-    [SerializeField] private AIState AiState {get; set; } = AIState.IDLE;
+    public WeaponData weapon;
+    [SerializeField] public AIState AIState {get; set; } = AIState.IDLE;
     private List<AIHandler> proximateAI;
     public float Priority { get; set; }
+    public AISpecificEvent onTakeDamage;
+
 
     //stealth stuff
     public float spotTimerThreshold;
@@ -24,7 +29,7 @@ public class AIHandler : CharacterHandler {
 
     //combat stuff
     public int combatPocket;
-    public CombatSlot CombatSlot {get; set;}
+    public CombatSlot CombatSlot {get; set;} = CombatSlot.OUT;
 
     //nav stuff
     private NavMeshAgent agent;
@@ -38,10 +43,13 @@ public class AIHandler : CharacterHandler {
     //core 
     public override void TakeDamage(float damage) {
         base.TakeDamage(damage);
-        //release an event indicating x has taken damage\
+        //release an event indicating x has taken damage
         onTakeDamage.Invoke(this);
     }
 
+    public void Update() {
+        Debug.Log(CombatSlot);
+    }
 
     //general behaviors
     //non combat tree
@@ -86,8 +94,7 @@ public class AIHandler : CharacterHandler {
             return BTStatus.RUNNING;
         } else if (localSwingWillyFlag) {
             agent.isStopped = true;
-            IEnumerator currCoroutine = hitDetection.InitAttack(Weapon.startup, Weapon.endlag, Weapon.damage);
-            StartCoroutine(currCoroutine);
+            StartCoroutine(hitDetection.InitAttack(weapon.startup, weapon.endlag, weapon.damage));
             localSwingWillyFlag = false;
             return BTStatus.RUNNING;
         } 
