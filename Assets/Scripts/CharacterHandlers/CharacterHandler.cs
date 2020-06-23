@@ -7,7 +7,7 @@ public class CharacterHandler : MonoBehaviour
 {
     public CharacterData characterdata;
     [SerializeField] public float Health {get; set; }
-    private float stamina;
+    //[SerializeField] public float Stamina;
     protected HitDetection hitDetection;
     protected virtual void Start() {
         hitDetection = this.GetComponent<HitDetection>();

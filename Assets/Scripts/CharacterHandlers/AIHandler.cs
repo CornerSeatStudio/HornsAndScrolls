@@ -16,6 +16,7 @@ public class AIHandler : CharacterHandler {
     //core
     public CharacterHandler target; 
     public WeaponData weapon;
+    public WeaponType weaponType;
     [SerializeField] public AIState AIState {get; set; } = AIState.IDLE;
     private List<AIHandler> proximateAI;
     public float Priority { get; set; }
@@ -32,7 +33,7 @@ public class AIHandler : CharacterHandler {
     public CombatSlot CombatSlot {get; set;} = CombatSlot.OUT;
 
     //nav stuff
-    private NavMeshAgent agent;
+    protected NavMeshAgent agent;
     private bool chaseInitializer = true;
 
     protected override void Start() {
@@ -45,10 +46,6 @@ public class AIHandler : CharacterHandler {
         base.TakeDamage(damage);
         //release an event indicating x has taken damage
         onTakeDamage.Invoke(this);
-    }
-
-    public void Update() {
-        Debug.Log(CombatSlot);
     }
 
     //general behaviors
@@ -87,26 +84,9 @@ public class AIHandler : CharacterHandler {
         return BTStatus.RUNNING;
      }
 
-    bool localSwingWillyFlag = true;
-    public BTStatus SwingWilly() {
-
-        if(hitDetection.InMeleeRoutine) { 
-            return BTStatus.RUNNING;
-        } else if (localSwingWillyFlag) {
-            agent.isStopped = true;
-            StartCoroutine(hitDetection.InitAttack(weapon.startup, weapon.endlag, weapon.damage));
-            localSwingWillyFlag = false;
-            return BTStatus.RUNNING;
-        } 
-        else {           
-            localSwingWillyFlag = true;
-            agent.isStopped = false;
-            return BTStatus.SUCCESS;
-        }
-    }
+    
 
     public BTStatus SpaceFromTarget() {return BTStatus.RUNNING;}
-    public BTStatus BopFoolWithArrow() {return BTStatus.RUNNING;}
  
     private IEnumerator ChaseCoroutine(){
         while (true){

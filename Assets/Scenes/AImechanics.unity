@@ -869,9 +869,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0c377f0dc7bc44418dd3a5cdff46072, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewAngle: 85
-  viewRadius: 24.21
-  interactionDistance: 14.5
+  viewAngle: 130
+  viewRadius: 32.31
+  interactionDistance: 20.8
   coroutineDelay: 0.2
   targetMask:
     serializedVersion: 2
@@ -897,9 +897,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c1010317c11e5848ae7bf145e4bce5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: {fileID: 11400000, guid: cee6ff0568bcfe049ba58fdcc9226f69, type: 2}
-  health: 0
-  hitDetection: {fileID: 0}
+  characterdata: {fileID: 11400000, guid: cee6ff0568bcfe049ba58fdcc9226f69, type: 2}
   weapons: []
   startupDelay: 0.2
   endDelay: 0.2
@@ -1838,15 +1836,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73516dbeaa139f54b8e12d13df4c2914, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: {fileID: 11400000, guid: cee6ff0568bcfe049ba58fdcc9226f69, type: 2}
-  health: 0
-  hitDetection: {fileID: 0}
+  characterdata: {fileID: 11400000, guid: cee6ff0568bcfe049ba58fdcc9226f69, type: 2}
   target: {fileID: 635217332}
   weapon: {fileID: 11400000, guid: 285c6c7d1590fdf4d883f8ac5983d741, type: 2}
+  onTakeDamage:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1720952878}
+        m_MethodName: markEnemyAsHitDriver
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   spotTimerThreshold: 0
   spotTimerDivisions: 0
   combatPocket: 0
-  aiState: 0
 --- !u!195 &1579773491
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1976,7 +1985,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06f3e517fcce8fd469638890012f346b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  combatSpotSize: 3
+  combatSlotSize: 3
+  guaranteeDuration: 3
 --- !u!114 &1720952879
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1986,7 +1996,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1720952873}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a5bf2bdc0bfc59b4ba7f32cb8da39c0a, type: 3}
+  m_Script: {fileID: 11500000, guid: 43ceb338ad8ca524e940290ed4038087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   thinkDelay: 0.2

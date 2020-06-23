@@ -16,7 +16,10 @@ public class ThinkCycle : MonoBehaviour
         slotter = this.GetComponent<SlotOrganizer>();
         foreach(AIHandler ai in slotter.AllEnemiesInScene) {
             //Debug.Log(ai.transform.position);
-            AItrees.Add(buildTree(ai));
+            if (ai.GetType() == typeof(GruntHandler)) {
+                AItrees.Add(buildTree((GruntHandler)ai));
+                break;
+            }
         }
 
         //nce all trees are in, start thinking process
@@ -36,12 +39,12 @@ public class ThinkCycle : MonoBehaviour
         }
     }
 
-    public BTNode buildTree(AIHandler ai) { 
+    public BTNode buildTree(GruntHandler ai) { 
         BTSetup builder = new BTSetup();
         return builder
                 .EmplaceSequencer("sequencer1")
                     .EmplaceTask("task1", t => ai.ChasePlayer())
-                    .EmplaceTask("task2", t => ai.SwingWilly())
+                    .EmplaceTask("task2", t => ai.SwingWilly()) //todo - fix for inheritence
                 .FinishNonTask()
                 .Build();
 
