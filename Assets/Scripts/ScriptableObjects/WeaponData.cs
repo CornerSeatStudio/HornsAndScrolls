@@ -10,6 +10,7 @@ public class WeaponData : ScriptableObject
     public float startup;
     public float endlag;
     public float damage;
+    public float range; //relate to detection script
 
 
 }

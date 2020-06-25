@@ -13,6 +13,7 @@ public class Detection : MonoBehaviour
     public LayerMask targetMask;
     public LayerMask obstacleMask;
 
+    //todo: should these be lists even
     public List<Transform> VisibleTargets {get; } = new List<Transform>();
     public List<GameObject> InteractableTargets {get; } = new List<GameObject>();
 

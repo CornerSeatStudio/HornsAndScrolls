@@ -5,6 +5,7 @@ using UnityEngine.Events;
 
 public class CharacterHandler : MonoBehaviour
 {
+    [Header("Core")]
     public CharacterData characterdata;
     [SerializeField] public float Health {get; set; }
     //[SerializeField] public float Stamina;

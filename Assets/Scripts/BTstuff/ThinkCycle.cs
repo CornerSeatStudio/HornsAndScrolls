@@ -43,8 +43,8 @@ public class ThinkCycle : MonoBehaviour
         BTSetup builder = new BTSetup();
         return builder
                 .EmplaceSequencer("sequencer1")
-                    .EmplaceTask("task1", t => ai.ChasePlayer())
-                    .EmplaceTask("task2", t => ai.SwingWilly()) //todo - fix for inheritence
+                    .EmplaceTask("task1", t => ai.ExecutePatrol())
+                    .EmplaceTask("task2", t => alwaysTrue()) //todo - fix for inheritence
                 .FinishNonTask()
                 .Build();
 
