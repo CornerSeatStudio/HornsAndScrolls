@@ -6,7 +6,7 @@ using UnityEngine.AI;
 using UnityEngine.Events;
 
 public enum WeaponType { MELEE, RANGED };
-public enum AIState { IDLE, PATROL, COMBAT, DEAD }; 
+public enum AIState { IDLE, PATROL, INVESTIGATING, COMBAT, DEAD }; 
 public enum CombatSlot {GUARANTEE, EVICTION, IN, OUT};
 
 [System.Serializable] public class AISpecificEvent : UnityEvent<AIHandler>{}
