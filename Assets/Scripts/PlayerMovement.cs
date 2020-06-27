@@ -6,6 +6,8 @@ public class PlayerMovement : MonoBehaviour {
     private CharacterController controller;
     private Animator animator;
 
+    private bool IsSprinting;
+
     private Vector3 inputVector; //key inputs
     public float movementSpeed = 5f; //5 is current goldilocks 
     public float fallspeed = 10f;
@@ -19,7 +21,7 @@ public class PlayerMovement : MonoBehaviour {
         controller = this.GetComponent<CharacterController>();
         //NEVER APPLY ROOT MOTION
         animator.applyRootMotion = false;
-
+        Debug.Log("Hello World");
         //temp character contorller settings
         controller.center = new Vector3(0, 2, 0);
         controller.radius = 3;
@@ -31,8 +33,7 @@ public class PlayerMovement : MonoBehaviour {
         //https://answers.unity.com/questions/1370941/more-advanced-player-movement.html
         
         inputVector = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical")).normalized;
-        inputVector*=movementSpeed;
-
+        
         //no accelaration due to gravity, just a set speed instead
         //will be fixed with math
         inputVector.y-=fallspeed;
@@ -40,9 +41,23 @@ public class PlayerMovement : MonoBehaviour {
             inputVector.y = 0;
         }
 
+
+        if(Input.GetKeyDown(KeyCode.LeftShift)){
+            IsSprinting=true;
+            inputVector=inputVector*movementSpeed*5f;
+        }else{
+            inputVector=inputVector*movementSpeed;
+        }
+        if(Input.GetKeyUp(KeyCode.LeftShift)){
+            inputVector=inputVector*movementSpeed;
+            IsSprinting=false;
+        }
+
+
+
         //mouse movement - check later if this should be in fixed update instead
         //test - only face player to mouse when aiming
-        if(Input.GetButton("Fire1")) {
+        if (Input.GetButton("Fire1")) {
             Plane playerPlane = new Plane(Vector3.up, transform.position);
             Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
             float hitDistance = 0.0f;
@@ -66,7 +81,6 @@ public class PlayerMovement : MonoBehaviour {
                 transform.rotation = Quaternion.Slerp(transform.rotation, faceDirection, keyRotationSmoothness * Time.deltaTime);
             } 
         }
-
     }
 
     void FixedUpdate() {
@@ -77,6 +91,8 @@ public class PlayerMovement : MonoBehaviour {
 
         //anim stuff
         animator.SetBool("IsWalking", inputVector.x != 0 || inputVector.z != 0);
+        animator.SetBool("IsSprinting", IsSprinting);
+        
     }
-
+    
 }
