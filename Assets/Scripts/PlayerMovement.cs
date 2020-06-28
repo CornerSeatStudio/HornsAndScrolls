@@ -7,7 +7,9 @@ public class PlayerMovement : MonoBehaviour {
     private Animator animator;
 
     private bool IsSprinting;
+    private bool IsSlowWalking;
 
+    private bool IsWalking;
     private Vector3 inputVector; //key inputs
     public float movementSpeed = 5f; //5 is current goldilocks 
     public float fallspeed = 10f;
@@ -44,15 +46,26 @@ public class PlayerMovement : MonoBehaviour {
 
         if(Input.GetKeyDown(KeyCode.LeftShift)){
             IsSprinting=true;
-            inputVector=inputVector*movementSpeed*5f;
-        }else{
-            inputVector=inputVector*movementSpeed;
+            inputVector= new Vector3(10f,0f,10f);
         }
-        if(Input.GetKeyUp(KeyCode.LeftShift)){
-            inputVector=inputVector*movementSpeed;
+        else if(Input.GetKeyUp(KeyCode.LeftShift)){
             IsSprinting=false;
+            inputVector=new Vector3(5f,0f,5f);
         }
 
+        if(Input.GetKeyDown(KeyCode.LeftAlt)){
+            IsSlowWalking=true;
+            inputVector= new Vector3(2.5f,0f,2.5f);
+        }
+        else if(Input.GetKeyUp(KeyCode.LeftAlt)){
+            IsSlowWalking=false;
+            inputVector=new Vector3(5f,0f,5f);
+        }
+        
+        if(inputVector.x != 0 || inputVector.z != 0){
+            IsWalking=true;
+            inputVector=new Vector3(Input.GetAxisRaw("Horizontal")*5f,0f,Input.GetAxisRaw("Vertical")*5f);
+        }
 
 
         //mouse movement - check later if this should be in fixed update instead
@@ -90,9 +103,9 @@ public class PlayerMovement : MonoBehaviour {
     void LateUpdate(){
 
         //anim stuff
-        animator.SetBool("IsWalking", inputVector.x != 0 || inputVector.z != 0);
+        animator.SetBool("IsWalking", IsWalking);
         animator.SetBool("IsSprinting", IsSprinting);
-        
+        animator.SetBool("IsSlowWalking", IsSlowWalking);
     }
     
 }
