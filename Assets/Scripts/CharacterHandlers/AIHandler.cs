@@ -35,15 +35,8 @@ public class AIHandler : CharacterHandler {
     public float spotTimerThreshold;
     public float spotTimerDivisions;
     private float spotTimer;
-    private bool finishedIdlingAtPatrolPoint = true;
-    private bool travellingToPatrolWaypoint;
-    private bool readyToStartPatrolWaypointCountdown = true;
     private int currPatrolIndex;
     private Vector3 nextWaypointLocation;
-    private bool patrolAlreadyHalted = false;
-    private bool patrolAlreadyResumed = true;
-    private bool isDecrement;
-    private bool inTimerCoroutine = false;
 
     //combat stuff
     [Header("Combat stuff")]
@@ -63,8 +56,52 @@ public class AIHandler : CharacterHandler {
     }
 
     //general behaviors
+
+    public void Update() {
+        
+    }
     //non combat tree
-    public bool ValidifyCombatState() {return true; }//if this succeeds, go to combat routine, otherwise, continue stealth routine 
+    public BTStatus StealthRoutine() {
+        switch (AIState) {
+            case(AIState.IDLE):
+                break;
+
+            case(AIState.PATROL):
+                break;
+            
+            case(AIState.INVESTIGATING):
+                break;
+
+            case(AIState.COMBAT):
+                break;
+        }
+    }
+
+    private BTStatus Patrol() {
+        //if interrupted, go to investigate
+
+        //once reached destination, start idle coroutine, set enum
+        if (!inPatrol) {
+            AIState = AIState.IDLE;
+            StartCoroutine("IdleAtPatrolPoint");
+        }
+
+        //otherwise, do patrol as normal
+    }
+
+    private BTStatus Idle() {
+        //if interrupted, go to investigate
+
+        //once timer runs up, start patrol coroutine
+        if (!inIdle) { 
+            AIState = AIState.PATROL;
+            StartCoroutine("PatrolCoroutine"); 
+        }
+
+        //otherwise, do the idle thing
+
+    }
+
     public BTStatus CheckAndMaintainLOS() {
         //if line of sight isn't achieved/is broken, return failure (removes need of PlayerInLOS)
         if(hitDetection.VisibleTargets.Count == 0) { return BTStatus.FAILURE; }
@@ -100,32 +137,7 @@ public class AIHandler : CharacterHandler {
 
         return BTStatus.RUNNING;
     }
-    public BTStatus ExecutePatrol() { //deal with stopping at each waypoint
-        //if there are no points, just do idle
-        if (!patrolWaypoints.Any() || patrolWaypoints == null) { return Idle(); }
 
-        //if idle time over, walk to next patrol waypoint, reset timer
-        if (finishedIdlingAtPatrolPoint) { 
-            //todo turn and face direction of waypoint
-            ResumePatrol();
-        }
-        //once arrived, halt, 
-        if (travellingToPatrolWaypoint && (transform.position - GetCurrPatrolDestination()).sqrMagnitude < 200f) {
-            HaltPatrol();
-        }
-        
-        //idle at patrol waypoint for idle timer duration
-        //if player is no longer travelling to waypoint and coroutine hasnt already started
-        if (!travellingToPatrolWaypoint && readyToStartPatrolWaypointCountdown) {
-            readyToStartPatrolWaypointCountdown = false;
-            nextWaypointLocation = SetNextPatrolDestination();
-            StartCoroutine("IdleAtPatrolWaypoint", idleTimeAtWaypoint);
-            //todo whatever cunt does idle at patrol point should happen here
-        }
-        
-        return BTStatus.RUNNING;
-
-    }
     private IEnumerator AdjustSpotTimer() { //note -> the += or -= must be by a number that can fold into an integer
         inTimerCoroutine = true;
         while (spotTimer > 0 && spotTimer < spotTimerThreshold && (isDecrement || spotTimer % spotTimerDivisions != 0)) {
@@ -134,15 +146,7 @@ public class AIHandler : CharacterHandler {
         }
         inTimerCoroutine = false;
     }
-    private void HaltPatrol() {
-        travellingToPatrolWaypoint = false;
-        StopCoroutine("PatrolCoroutine");
-    }
-    private void ResumePatrol() {
-        finishedIdlingAtPatrolPoint = false;
-        travellingToPatrolWaypoint = true;
-        StartCoroutine("PatrolCoroutine");
-    }
+
     private Vector3 GetCurrPatrolDestination() {
         return patrolWaypoints[currPatrolIndex].transform.position;
     }
@@ -150,20 +154,22 @@ public class AIHandler : CharacterHandler {
         currPatrolIndex = (currPatrolIndex + 1) % patrolWaypoints.Count;
         return patrolWaypoints[currPatrolIndex].transform.position;
     }
+    
+    private bool inPatrol = false;
     private IEnumerator PatrolCoroutine() { //deals with the walking to a waypoint
-        while (true) {
+        inPatrol = true;
+        while (!((transform.position - GetCurrPatrolDestination()).sqrMagnitude < 200f)) {
             agent.SetDestination(nextWaypointLocation);
             yield return null;
         }
+        inPatrol = false;
     }
+
+    private bool inIdle = false;
     private IEnumerator IdleAtPatrolWaypoint(float idleTimeAtWaypoint) { //idle behavior at given waypoint goes here
-        //Debug.Log("idling at patrol point");
+        inIdle = true;
         yield return new WaitForSeconds(idleTimeAtWaypoint);
-        readyToStartPatrolWaypointCountdown = true;
-        finishedIdlingAtPatrolPoint = true;
-    }
-    public BTStatus Idle() {
-        return BTStatus.RUNNING;
+        inIdle = false;
     }
 
 
