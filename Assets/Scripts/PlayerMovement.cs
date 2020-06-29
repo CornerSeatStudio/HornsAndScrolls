@@ -86,6 +86,8 @@ public class PlayerMovement : MonoBehaviour {
         if((inputVector.x != 0 || inputVector.z != 0)&&!IsCrouching&&!IsSprinting&&!IsSlowWalking){
             IsWalking=true;
             movementSpeed=15f;
+        } else{
+            IsWalking=false;
         }
 
 
