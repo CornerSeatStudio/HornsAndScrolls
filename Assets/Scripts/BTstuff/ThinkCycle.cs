@@ -33,7 +33,7 @@ public class ThinkCycle : MonoBehaviour
             //evaluate combat slots
 
             foreach(BTNode tree in AItrees) {
-                UnityEngine.Debug.Log(tree.Evaluate(delay));
+                tree.Evaluate(delay);
 
             }
         }
@@ -43,7 +43,7 @@ public class ThinkCycle : MonoBehaviour
         BTSetup builder = new BTSetup();
         return builder
                 .EmplaceSequencer("sequencer1")
-                    .EmplaceTask("task1", t => ai.ExecutePatrol())
+                    .EmplaceTask("task1", t => ai.StealthRoutine())
                     .EmplaceTask("task2", t => alwaysTrue()) //todo - fix for inheritence
                 .FinishNonTask()
                 .Build();
@@ -51,12 +51,10 @@ public class ThinkCycle : MonoBehaviour
     } 
 
     BTStatus alwaysFalse() {
-        Debug.Log("func1");
         return BTStatus.SUCCESS;
     }
 
     BTStatus alwaysTrue() {
-        Debug.Log("func2");
         return BTStatus.RUNNING;
     }
 
