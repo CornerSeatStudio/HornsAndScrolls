@@ -387,7 +387,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 122186310}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -20, y: -18.507973, z: 33}
+  m_LocalPosition: {x: -36.5, y: -18.507973, z: 29}
   m_LocalScale: {x: 37.245594, y: 9.242778, z: 31.87834}
   m_Children: []
   m_Father: {fileID: 1871275260}
@@ -730,7 +730,7 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 6205079483183685525}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 2075341989}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1c1010317c11e5848ae7bf145e4bce5b, type: 3}
@@ -824,7 +824,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 756176287}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 39.3, y: 6.8, z: -11.3}
+  m_LocalPosition: {x: 39.3, y: 6.8, z: -38}
   m_LocalScale: {x: 3.0498, y: 3.0498, z: 3.0498}
   m_Children: []
   m_Father: {fileID: 114488828}
@@ -1258,7 +1258,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1579773483}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -22.282797, y: 8.007973, z: -44.3}
+  m_LocalPosition: {x: 0, y: 8.6, z: 0}
   m_LocalScale: {x: 3.0498, y: 3.0498, z: 3.0498}
   m_Children: []
   m_Father: {fileID: 114488828}
@@ -1377,8 +1377,10 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  patrolWaypoints: []
-  idleTimeAtWaypoint: 0
+  patrolWaypoints:
+  - {fileID: 1109844331}
+  - {fileID: 1800377108}
+  idleTimeAtWaypoint: 5
   spotTimerThreshold: 0
   spotTimerDivisions: 0
   combatPocket: 0
@@ -1392,8 +1394,8 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
-  m_Acceleration: 8
+  m_Speed: 40
+  m_Acceleration: 50
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
@@ -1511,7 +1513,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06f3e517fcce8fd469638890012f346b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
+  target: {fileID: 2075341989}
   combatSlotSize: 3
   guaranteeDuration: 3
 --- !u!114 &1720952879
@@ -2115,6 +2117,12 @@ Transform:
   m_Father: {fileID: 797190282}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2075341989 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2683358126593845219, guid: 4fd65cdfd8716e948be972150389ad3e,
+    type: 3}
+  m_PrefabInstance: {fileID: 6205079483183685525}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5006512736212093541 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1397921450808989168, guid: 4fd65cdfd8716e948be972150389ad3e,
