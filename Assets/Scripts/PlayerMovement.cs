@@ -9,9 +9,14 @@ public class PlayerMovement : MonoBehaviour {
     private bool IsSprinting;
     private bool IsSlowWalking;
 
+    private bool IsCrouching;
     private bool IsWalking;
+
+
     private Vector3 inputVector; //key inputs
-    public float movementSpeed = 5f; //5 is current goldilocks 
+
+
+    public float movementSpeed = 15f; //5 is current goldilocks 
     public float fallspeed = 10f;
 
     //to declare mouse vs key presedence, compare via > operator
@@ -31,11 +36,12 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     void Update() {
+        
         //Player Movement - normalized makes diagonal movement same as normal movement
         //https://answers.unity.com/questions/1370941/more-advanced-player-movement.html
         
-        inputVector = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical")).normalized;
-        
+        inputVector = new Vector3(Input.GetAxisRaw("Horizontal")*movementSpeed, 0f, Input.GetAxisRaw("Vertical")*movementSpeed);
+
         //no accelaration due to gravity, just a set speed instead
         //will be fixed with math
         inputVector.y-=fallspeed;
@@ -43,28 +49,43 @@ public class PlayerMovement : MonoBehaviour {
             inputVector.y = 0;
         }
 
+        //my nomilization fuck the normal stuff
+        if(inputVector.x !=0 && inputVector.z!=0){
+            inputVector = new Vector3(Input.GetAxisRaw("Horizontal")*movementSpeed*0.7f, 0f, Input.GetAxisRaw("Vertical")*movementSpeed*0.7f);
+            Debug.Log(inputVector);
+        }
+
+
+        if(Input.GetKeyDown(KeyCode.C)&&!IsCrouching){
+            IsCrouching=true;
+            movementSpeed = 10f;
+        }else if(Input.GetKeyDown(KeyCode.C)&&IsCrouching){
+            IsCrouching=false;
+        }
+        
+
 
         if(Input.GetKeyDown(KeyCode.LeftShift)){
+            movementSpeed=25f;
             IsSprinting=true;
-            inputVector= new Vector3(10f,0f,10f);
         }
         else if(Input.GetKeyUp(KeyCode.LeftShift)){
             IsSprinting=false;
-            inputVector=new Vector3(5f,0f,5f);
         }
+
+
 
         if(Input.GetKeyDown(KeyCode.LeftAlt)){
             IsSlowWalking=true;
-            inputVector= new Vector3(2.5f,0f,2.5f);
+            movementSpeed=5f;
         }
         else if(Input.GetKeyUp(KeyCode.LeftAlt)){
             IsSlowWalking=false;
-            inputVector=new Vector3(5f,0f,5f);
         }
         
-        if(inputVector.x != 0 || inputVector.z != 0){
+        if((inputVector.x != 0 || inputVector.z != 0)&&!IsCrouching&&!IsSprinting&&!IsSlowWalking){
             IsWalking=true;
-            inputVector=new Vector3(Input.GetAxisRaw("Horizontal")*5f,0f,Input.GetAxisRaw("Vertical")*5f);
+            movementSpeed=15f;
         }
 
 
@@ -97,6 +118,7 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     void FixedUpdate() {
+        
         controller.Move(inputVector * Time.fixedDeltaTime); 
     }
 
@@ -106,6 +128,7 @@ public class PlayerMovement : MonoBehaviour {
         animator.SetBool("IsWalking", IsWalking);
         animator.SetBool("IsSprinting", IsSprinting);
         animator.SetBool("IsSlowWalking", IsSlowWalking);
+        animator.SetBool("IsCrouching", IsCrouching);
     }
     
 }
