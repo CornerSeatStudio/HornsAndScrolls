@@ -57,8 +57,7 @@ public class AIHandler : CharacterHandler {
         //release an event indicating x has taken damage
         onTakeDamage.Invoke(this);
     }
-
-    //general behaviors
+    
 
     //note: for all stealth coroutines, I use a single private ienumerator
     //i must mannually make it so that there is only ONE STEALTH COROUTINE at once
