@@ -55,6 +55,7 @@ public class ThinkCycle : MonoBehaviour
     }
 
     BTStatus alwaysTrue() {
+        Debug.Log("stealth has FAILED, breaking into combat");
         return BTStatus.RUNNING;
     }
 

@@ -34,10 +34,12 @@ public class AIHandler : CharacterHandler {
     public float idleTimeAtWaypoint;
     public float spotTimerThreshold;
     public float spotTimerDivisions;
-    private float spotTimer;
     private int currPatrolIndex;
     private Vector3 nextWaypointLocation;
     private IEnumerator currStealthCoroutine;
+    private float currInvestigationTimer = 0f;
+    private bool isDecrement = false;
+    private Vector3 lastSeenPlayerLocation;
 
     //combat stuff
     [Header("Combat stuff")]
@@ -58,105 +60,153 @@ public class AIHandler : CharacterHandler {
 
     //general behaviors
 
+    //note: for all stealth coroutines, I use a single private ienumerator
+    //i must mannually make it so that there is only ONE STEALTH COROUTINE at once
 
     //non combat tree
     public BTStatus StealthRoutine() {
-        
-        // Debug.Log(AIState);
-        // Debug.Log(currStealthCoroutine);
-        // Debug.Log(nextWaypointLocation);
+        Debug.Log(AIState);
+        //Debug.Log(currStealthCoroutine);
         switch (AIState) {
-            case(AIState.IDLE):
-                return Idle();
-
-            case(AIState.PATROL): 
-                return Patrol(); 
+            case(AIState.COMBAT):
+                return BTStatus.FAILURE; 
             
             case(AIState.INVESTIGATING):
                 return Investigating();
 
-            default:
-                return BTStatus.FAILURE;
+            case(AIState.DEAD) :
+                return BTStatus.SUCCESS; //todo
+
+            default: 
+                return PatrolAndIdle();
         }
    
     }
 
-    private BTStatus Patrol() {
+    private BTStatus PatrolAndIdle() {
         //if interrupted, go to investigate
         if(hitDetection.VisibleTargets.Count != 0) { 
-            StopCoroutine(currStealthCoroutine);
-            AIState = AIState.INVESTIGATING;
+            SwitchToInvestigation();
         }
 
         //once reached destination, start idle coroutine, set enum
-        if (currStealthCoroutine == null) {
-            AIState = AIState.IDLE;
-            currStealthCoroutine = IdleCoroutine();
-            StartCoroutine(currStealthCoroutine); 
+        else if (currStealthCoroutine == null && AIState == AIState.PATROL) {
+            SwitchToIdle();
+        }
+
+        //once timer runs up, start patrol coroutine
+        else if (currStealthCoroutine == null && AIState == AIState.IDLE) {
+            nextWaypointLocation = SetNextPatrolDestination(); //set the next destination
+            SwitchToPatrol();
         }
         
-        //otherwise, do patrol as normal
+        //otherwise, do patrol/idle as normal
         return BTStatus.RUNNING;
     }
-
-    private BTStatus Idle() {
-        //if interrupted, go to investigate
+    private BTStatus Investigating() { //note: currInvestigationTimer == spotTimerThreshold == spotted
+        //in in line of sight:
         if(hitDetection.VisibleTargets.Count != 0) { 
-            StopCoroutine(currStealthCoroutine);
-            AIState = AIState.INVESTIGATING;
-        }
-        //once timer runs up, start patrol coroutine
-        if (currStealthCoroutine == null) { 
-            AIState = AIState.PATROL;
-            currStealthCoroutine = PatrolCoroutine();
-            StartCoroutine(currStealthCoroutine); 
-        }
+            //ensure incrementation
+            isDecrement = false;
+            //stand still and face player
+            agent.isStopped = true;
+            //if timer is full, change to combat
+            if(currInvestigationTimer >= spotTimerThreshold) { 
+                AIState = AIState.COMBAT;
+                return BTStatus.FAILURE;
+            }
 
-        //otherwise, do the idle thing
+            //the moment the timer exceeds x threshold, start recording player position
+            if(spotTimerThreshold/2 < currInvestigationTimer) {
+                lastSeenPlayerLocation =  target.transform.position;
+            }
+
+        }
+        //if line of sight is broken
+        else {
+            //if timer hits 0, go back to patrol
+            if(currInvestigationTimer < 0) { 
+                agent.isStopped = false;
+                SwitchToPatrol(); //doesnt change last patrol waypoint
+                return BTStatus.SUCCESS;
+            } else { //otherwise, do chosen behavior
+                //reverse timer
+                isDecrement = true; 
+                //if under x threshold, do in place search
+                if(spotTimerThreshold/2 > currInvestigationTimer){ //todo: this should branch into two decision made ONCE per loss of sight
+                    agent.isStopped = true; //do a cheeky gander                
+                } else { //if over x threshold,  
+                    if (!chainedDiscoverStarted){
+                        StartCoroutine("chainedDiscovery"); //parent coroutine, independed of currStealthCoroutine
+                    }
+                }
+            }
+        }
+            
         return BTStatus.RUNNING;
+    } 
+    bool chainedDiscoverStarted = false;
+    private IEnumerator chainedDiscovery() {
+        chainedDiscoverStarted = true;
+        Debug.Log("tiem for chained discovery");
+        StopCoroutine(currStealthCoroutine); //pause timer
+        agent.isStopped = false; //unfreeze movement
+
+        yield return new WaitForSeconds(3f); //grace period before shit, put cheeky browse coroutine here
+
+        currStealthCoroutine = MoveToLocation(lastSeenPlayerLocation); 
+        yield return StartCoroutine(currStealthCoroutine); //go to saved position,
+
+        agent.isStopped = true; //re freeze movement, cheeky browse goes here
+
+        currStealthCoroutine = InvestigationTimer();
+        yield return StartCoroutine(currStealthCoroutine); //restart timer,
+        chainedDiscoverStarted = false;
     }
 
-    private BTStatus Investigating() {
-        //start timer:
 
-
-        return BTStatus.RUNNING;
+    private void SwitchToIdle() {
+        AIState = AIState.IDLE;
+        currStealthCoroutine = IdleCoroutine();
+        StartCoroutine(currStealthCoroutine); 
     }
-
-    // private IEnumerator AdjustSpotTimer() { //note -> the += or -= must be by a number that can fold into an integer
-    //     inTimerCoroutine = true;
-    //     while (spotTimer > 0 && spotTimer < spotTimerThreshold && (isDecrement || spotTimer % spotTimerDivisions != 0)) {
-    //         spotTimer = isDecrement ? spotTimer -.2f : spotTimer +.2f;
-    //         yield return new WaitForSeconds(.2f);
-    //     }
-    //     inTimerCoroutine = false;
-    // }
-
-    private Vector3 GetCurrPatrolDestination() {
-        return patrolWaypoints[currPatrolIndex].transform.position;
+    private void SwitchToPatrol() {
+        AIState = AIState.PATROL;
+        currStealthCoroutine = MoveToLocation(nextWaypointLocation);
+        StartCoroutine(currStealthCoroutine); 
     }
-    private Vector3 SetNextPatrolDestination() { 
-        currPatrolIndex = (currPatrolIndex + 1) % patrolWaypoints.Count;
-        return patrolWaypoints[currPatrolIndex].transform.position;
+    private void SwitchToInvestigation() {
+        StopCoroutine(currStealthCoroutine); //stop either the patrol or the idle timer
+        currInvestigationTimer = 0.1f; //reset investigation meter
+        AIState = AIState.INVESTIGATING;
+        currStealthCoroutine = InvestigationTimer();
+        StartCoroutine(currStealthCoroutine);
     }
-    
-    private IEnumerator PatrolCoroutine() { //deals with the walking to a waypoint
-        //Debug.Log("in patrol coroutine");
-        nextWaypointLocation = SetNextPatrolDestination(); //set the next destination
-        while (!((transform.position - GetCurrPatrolDestination()).sqrMagnitude < 200f)) { //keep going until within reasonable distance
-            agent.SetDestination(nextWaypointLocation);
-            yield return null;
+    private IEnumerator InvestigationTimer() {
+        while(currInvestigationTimer < spotTimerThreshold && currInvestigationTimer >= 0) {
+            yield return new WaitForSeconds(.1f); //space between each investigation timer tick - should be the same as think cycle
+            currInvestigationTimer = isDecrement? currInvestigationTimer -= .1f : currInvestigationTimer += .1f;
         }
-
         currStealthCoroutine = null;
     }
-
+    private IEnumerator MoveToLocation(Vector3 location){ //shouldnt be a coroutine lol, no reason for the while statemtn
+        while (!((transform.position - location).sqrMagnitude < 200f)) { //keep going until within reasonable distance
+            agent.SetDestination(location);
+            yield return new WaitForSeconds(.2f); //same as think cycle
+        }
+        // agent.SetDestination(location);
+        currStealthCoroutine = null;
+        // yield return null;
+    }
     private IEnumerator IdleCoroutine() { //idle behavior at given waypoint goes here
         //Debug.Log("in idle coroutine");
         yield return new WaitForSeconds(idleTimeAtWaypoint);
         currStealthCoroutine = null;
     }
-
+    private Vector3 SetNextPatrolDestination() { 
+        currPatrolIndex = (currPatrolIndex + 1) % patrolWaypoints.Count;
+        return patrolWaypoints[currPatrolIndex].transform.position;
+    }
 
     //combat tree stuff
     public BTStatus ChasePlayer() { 
