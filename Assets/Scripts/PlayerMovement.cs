@@ -56,19 +56,18 @@ public class PlayerMovement : MonoBehaviour {
         }
 
         //Crouching if statement
-        if(Input.GetKeyDown(KeyCode.C)&&!IsCrouching&&(inputVector.x == 0 || inputVector.z == 0)&&IsSprinting){
+        if(Input.GetKeyDown(KeyCode.C)&&!IsCrouching&&(inputVector.x == 0 || inputVector.z == 0)&&!IsSprinting){
             IsCrouching=true;
-            movementSpeed = 0f;
         }else if(Input.GetKeyDown(KeyCode.C)&&IsCrouching){
             IsCrouching=false;
         }
 
         //Crouch walking if statement
-        if((inputVector.x != 0 || inputVector.z != 0)&&!IsSprinting){
+        if((inputVector.x != 0 || inputVector.z != 0)&&!IsSprinting&&IsCrouching){
             IsCrouchingWalking = true;
             movementSpeed = 10f;
 
-        }else{
+        }else if(inputVector.x ==0 && inputVector.z == 0){
             IsCrouchingWalking=false;
         }
 
@@ -96,7 +95,7 @@ public class PlayerMovement : MonoBehaviour {
         if((inputVector.x != 0 || inputVector.z != 0)&&!IsCrouching&&!IsSprinting&&!IsSlowWalking&&!IsCrouchingWalking){
             IsWalking=true;
             movementSpeed=15f;
-        } else{
+        } else {
             IsWalking=false;
         }
 
