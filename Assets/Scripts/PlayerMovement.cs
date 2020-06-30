@@ -52,7 +52,7 @@ public class PlayerMovement : MonoBehaviour {
         //my nomilization fuck the normal stuff
         if(inputVector.x !=0 && inputVector.z!=0){
             inputVector = new Vector3(Input.GetAxisRaw("Horizontal")*movementSpeed*0.7f, 0f, Input.GetAxisRaw("Vertical")*movementSpeed*0.7f);
-            Debug.Log(inputVector);
+            //Debug.Log(inputVector);
         }
 
 
