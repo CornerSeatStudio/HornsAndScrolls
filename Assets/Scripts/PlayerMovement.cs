@@ -9,9 +9,9 @@ public class PlayerMovement : MonoBehaviour {
     private bool IsSprinting;
     private bool IsSlowWalking;
 
-    private bool IsCrouching;
+    private bool IsCrouching=false;
     private bool IsWalking;
-
+    private bool IsCrouchingWalking;
 
     private Vector3 inputVector; //key inputs
 
@@ -52,20 +52,27 @@ public class PlayerMovement : MonoBehaviour {
         //my nomilization fuck the normal stuff
         if(inputVector.x !=0 && inputVector.z!=0){
             inputVector = new Vector3(Input.GetAxisRaw("Horizontal")*movementSpeed*0.7f, 0f, Input.GetAxisRaw("Vertical")*movementSpeed*0.7f);
-            Debug.Log(inputVector);
         }
 
-
-        if(Input.GetKeyDown(KeyCode.C)&&!IsCrouching){
+        //Crouching if statement
+        if(Input.GetKeyDown(KeyCode.C)&&!IsCrouching&&(inputVector.x == 0 || inputVector.z == 0)&&IsSprinting){
             IsCrouching=true;
-            movementSpeed = 10f;
+            movementSpeed = 0f;
         }else if(Input.GetKeyDown(KeyCode.C)&&IsCrouching){
             IsCrouching=false;
         }
-        
 
+        //Crouch walking if statement
+        if((inputVector.x != 0 || inputVector.z != 0)&&!IsSprinting){
+            IsCrouchingWalking = true;
+            movementSpeed = 10f;
 
-        if(Input.GetKeyDown(KeyCode.LeftShift)){
+        }else{
+            IsCrouchingWalking=false;
+        }
+
+        //sprinting if statements
+        if(Input.GetKeyDown(KeyCode.LeftShift)&&!IsCrouching&&!IsCrouchingWalking){
             movementSpeed=25f;
             IsSprinting=true;
         }
@@ -74,7 +81,7 @@ public class PlayerMovement : MonoBehaviour {
         }
 
 
-
+        //slow walking if statements
         if(Input.GetKeyDown(KeyCode.LeftAlt)){
             IsSlowWalking=true;
             movementSpeed=5f;
@@ -83,9 +90,13 @@ public class PlayerMovement : MonoBehaviour {
             IsSlowWalking=false;
         }
         
-        if((inputVector.x != 0 || inputVector.z != 0)&&!IsCrouching&&!IsSprinting&&!IsSlowWalking){
+
+        //normal walking if statements
+        if((inputVector.x != 0 || inputVector.z != 0)&&!IsCrouching&&!IsSprinting&&!IsSlowWalking&&!IsCrouchingWalking){
             IsWalking=true;
             movementSpeed=15f;
+        } else{
+            IsWalking=false;
         }
 
 
@@ -129,6 +140,7 @@ public class PlayerMovement : MonoBehaviour {
         animator.SetBool("IsSprinting", IsSprinting);
         animator.SetBool("IsSlowWalking", IsSlowWalking);
         animator.SetBool("IsCrouching", IsCrouching);
+        animator.SetBool("IsCrouchingWalking", IsCrouchingWalking);
     }
     
 }
