@@ -122,6 +122,22 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
+    - boneName: Foots.L
+      humanName: LeftFoot
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Foots.R
+      humanName: RightFoot
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
     - boneName: Spine
       humanName: Spine
       limit:
@@ -148,6 +164,22 @@ ModelImporter:
         modified: 0
     - boneName: Head
       humanName: Head
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Shoulders.L
+      humanName: LeftShoulder
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Shoulders.R
+      humanName: RightShoulder
       limit:
         min: {x: 0, y: 0, z: 0}
         max: {x: 0, y: 0, z: 0}
@@ -196,54 +228,6 @@ ModelImporter:
         modified: 0
     - boneName: Hand.R
       humanName: RightHand
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: Foots.R
-      humanName: RightFoot
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: Shoulders.L
-      humanName: LeftShoulder
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: Shoulders.R
-      humanName: RightShoulder
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: Foots.L
-      humanName: LeftFoot
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: Foots.L_end
-      humanName: LeftToes
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: Foots.R_end
-      humanName: RightToes
       limit:
         min: {x: 0, y: 0, z: 0}
         max: {x: 0, y: 0, z: 0}
@@ -314,7 +298,7 @@ ModelImporter:
     - name: Lower_Arm.L
       parentName: Upper_Arm.L
       position: {x: -9.388895e-10, y: 0.021080196, z: 0.0000000014016405}
-      rotation: {x: 0.06728278, y: -0.0005313156, z: -0.022433385, w: 0.99748164}
+      rotation: {x: 0.17085485, y: -0.002744861, z: -0.02405184, w: 0.9849988}
       scale: {x: 1, y: 0.99999994, z: 0.9999998}
     - name: Hand.L
       parentName: Lower_Arm.L
@@ -339,7 +323,7 @@ ModelImporter:
     - name: Lower_Arm.R
       parentName: Upper_Arm.R
       position: {x: 0.0000000016944249, y: 0.020982437, z: -0.0000000012246891}
-      rotation: {x: 0.067007616, y: 0.00055314694, z: 0.022520179, w: 0.99749815}
+      rotation: {x: 0.17089355, y: 0.0027853646, z: 0.024101619, w: 0.9849907}
       scale: {x: 1.0000001, y: 1, z: 1.0000001}
     - name: Hand.R
       parentName: Lower_Arm.R
@@ -393,7 +377,7 @@ ModelImporter:
       scale: {x: 1, y: 1, z: 1}
     - name: vest
       parentName: soldier-model(Clone)
-      position: {x: 0.07404725, y: 5.104149, z: 0}
+      position: {x: 0.07404725, y: 5.069949, z: 0}
       rotation: {x: -0.71288925, y: 0, z: 0, w: 0.70127666}
       scale: {x: 102.33184, y: 104.90001, z: 102.33255}
     armTwist: 0.5
