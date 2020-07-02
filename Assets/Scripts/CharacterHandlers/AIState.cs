@@ -1,26 +1,26 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
-public abstract class AnimationState
+public abstract class AIState
 {
-    protected readonly CharacterHandler character;
+    protected readonly AIHandler character;
     protected Animator animator;
+    protected NavMeshAgent agent;
 
-    public AnimationState(CharacterHandler character, Animator animator) {
+    public AIState(AIHandler character, Animator animator, NavMeshAgent agent) {
         this.character = character;
         this.animator = animator;
+        this.agent = agent;
     }
 
     public virtual IEnumerator OnStateEnter() {
         yield break;
     }
 
-    public virtual IEnumerator OnStateUpdate() {
-        yield break;
-    }
-
     public virtual IEnumerator OnStateExit() {
         yield break;
     }
+    
 }

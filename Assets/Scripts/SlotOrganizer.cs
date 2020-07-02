@@ -27,14 +27,14 @@ public class SlotOrganizer : MonoBehaviour
     private IEnumerator markEnemyAsHit(AIHandler markedEnemy) { //markEnemyPocketAsHit -> make all pocketed enemies aggro also
         markedEnemy.CombatSlot = CombatSlot.GUARANTEE;
 
-        if (markedEnemy.AIState != AIState.COMBAT) {
+        if (markedEnemy.GlobalState != AIGlobalState.AGGRO) {
             //for all other ai in the same combat pocket, put them a combat state too
             //just go through array for now lol cause im lazy
             //if the ai is already in combat, this loop 
-            markedEnemy.AIState = AIState.COMBAT;
+            markedEnemy.GlobalState = AIGlobalState.AGGRO;
             foreach (AIHandler enemy in AllEnemiesInScene) {
                 if (enemy != markedEnemy && enemy.combatPocket == markedEnemy.combatPocket) {
-                    markedEnemy.AIState = AIState.COMBAT;
+                    markedEnemy.GlobalState = AIGlobalState.AGGRO;
                 }
 
             }
@@ -54,7 +54,7 @@ public class SlotOrganizer : MonoBehaviour
 
             //check if combat state & isn't already guaranteed a spot, 
             
-            if (enemy.AIState != AIState.COMBAT ) { enemy.Priority = -1; }
+            if (enemy.GlobalState != AIGlobalState.AGGRO ) { enemy.Priority = -1; }
             
             else if(enemy.CombatSlot != CombatSlot.GUARANTEE) {
                 inCombat = true;
