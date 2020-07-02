@@ -28,7 +28,7 @@ public class PlayerMovement : MonoBehaviour {
         controller = this.GetComponent<CharacterController>();
         //NEVER APPLY ROOT MOTION
         animator.applyRootMotion = false;
-        Debug.Log("Hello World");
+//        Debug.Log("Hello World");
         //temp character contorller settings
         controller.center = new Vector3(0, 2, 0);
         controller.radius = 3;

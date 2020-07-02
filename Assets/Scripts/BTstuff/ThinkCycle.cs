@@ -43,7 +43,7 @@ public class ThinkCycle : MonoBehaviour
         BTSetup builder = new BTSetup();
         return builder
                 .EmplaceSequencer("sequencer1")
-                    .EmplaceTask("task1", t => ai.StealthRoutine())
+                    .EmplaceTask("task1", t => ai.VerifyStealth())
                     .EmplaceTask("task2", t => alwaysTrue()) //todo - fix for inheritence
                 .FinishNonTask()
                 .Build();

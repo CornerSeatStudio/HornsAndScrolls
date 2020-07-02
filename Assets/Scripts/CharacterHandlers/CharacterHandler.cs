@@ -3,44 +3,38 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public enum CharacterLocalState {STANDING, JUMPING, CROUCHING, RUNNING, WALKING}
 public class CharacterHandler : MonoBehaviour
 {
     [Header("Core")]
     public CharacterData characterdata;
-    [SerializeField] public float Health {get; set; }
+    public float Health {get; set; }
     //[SerializeField] public float Stamina;
-    protected HitDetection hitDetection;
-    private CharacterLocalState localState;
-    protected virtual void Start() {
-        hitDetection = this.GetComponent<HitDetection>();
-        Health = characterdata.maxHealth;
-    }
+    public HitDetection HitDetection {get; private set; }
+    protected AIState localState;
+    protected Animator animator;
+    //private CharacterController controller;
 
-    public void LateUpdate() {
-        switch (localState) {
-            case CharacterLocalState.WALKING :
-                break;
-            case CharacterLocalState.CROUCHING :
-                break;
-            case CharacterLocalState.RUNNING :
-                break;
-            default:
-                break;
-        }
+    //core, callbacks
+    protected virtual void Start() {
+        HitDetection = this.GetComponent<HitDetection>();
+        animator = this.GetComponent<Animator>();
+        //controller = this.GetComponent<CharacterController>();
+        Health = characterdata.maxHealth;
     }
 
     public virtual void TakeDamage(float damage){ //probably make this virtual
         Health -= damage;
     }
 
-    public void onDeath() {
-        //stop detection coroutine
-        //play death animation
+    //everytime the state is changed, do an exit routine (if applicable), switch the state, then trigger start routine (if applicable)
+    public void SetStateDriver(AIState state) { 
+        StartCoroutine(SetState(state));
+    }
 
-        //AI specific:
-        //set combat status to dead, 
-
+    private IEnumerator SetState(AIState state) {
+        if(localState != null) yield return StartCoroutine(localState.OnStateExit());
+        localState = state;
+        yield return StartCoroutine(localState.OnStateEnter());
     }
     
     
