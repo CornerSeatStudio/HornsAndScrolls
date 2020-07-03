@@ -1,14 +1,11 @@
 fileFormatVersion: 2
-guid: ca0aae4eceb73c544b764a851b9b2a17
+guid: 6cb5c571edddae547914da086cbb9b03
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable:
   - first:
-      74: 2986386761548156804
-    second: Armature|CylinderAction.001
-  - first:
-      74: 896188942311107492
-    second: Armature|Polearm_walk_agro
+      74: -1422011007694221501
+    second: Armature|ArmatureAction.001
   externalObjects: {}
   materials:
     materialImportMode: 1
@@ -24,7 +21,7 @@ ModelImporter:
     rigImportErrors: 
     rigImportWarnings: 
     animationImportErrors: 
-    animationImportWarnings: "\nClip 'Armature|Polearm_walk_agro' has import animation
+    animationImportWarnings: "\nClip 'Armature|ArmatureAction.001' has import animation
       warnings that might lower retargeting quality:\nNote: Activate translation
       DOF on avatar to improve retargeting quality.\n\t'Shoulders.L' has translation
       animation that will be discarded.\n\t'Shoulders.R' has translation animation
@@ -42,11 +39,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Armature|Polearm_walk_agro
-      takeName: Armature|Polearm_walk_agro
+      name: Armature|ArmatureAction.001
+      takeName: Armature|ArmatureAction.001
       internalID: 0
-      firstFrame: 10
-      lastFrame: 90
+      firstFrame: 4
+      lastFrame: 40
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

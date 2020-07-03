@@ -9,14 +9,13 @@ public class IdleState : AIState {
     public IdleState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
     
     public override IEnumerator OnStateEnter() { //Debug.Log("enteredIdle, timer: " + character.idleTimeAtWaypoint);
-        animator.SetBool("IsIdle", true);
         idleCoroutine = IdleTimer(character.idleTimeAtWaypoint);
         yield return character.StartCoroutine(idleCoroutine);
         //yield return null;
     }
 
     private IEnumerator LOSOnPlayerCheck() { //once spotted, go to investigate
-        Debug.Log("checking for player");
+        //Debug.Log("checking for player");
         yield return new WaitUntil(() => character.LOSOnPlayer());
         character.SetStateDriver(new InvestigationState(character, animator, agent));
     }
@@ -32,7 +31,6 @@ public class IdleState : AIState {
     public override IEnumerator OnStateExit() { //Debug.Log("exitedIdle");
         if(idleCoroutine != null) character.StopCoroutine(idleCoroutine); //stop coroutine
         if(LOSCoroutine != null) character.StopCoroutine(LOSCoroutine);
-        animator.SetBool("IsIdle", false);
         character.SetNextPatrolDestination();//only change next patrol destination AFTER idling at current one
         yield return null;
     }
@@ -44,7 +42,7 @@ public class PatrolState : AIState {
     public PatrolState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
 
     public override IEnumerator OnStateEnter() { //Debug.Log("enteredPatrol");
-        animator.SetBool("IsPatrol", true);
+        animator.SetBool(character.AnimationHashes["IsPatrol"], true);
         moveToLocationCoroutine = MoveToLocation(character.NextWaypointLocation);
         yield return character.StartCoroutine(moveToLocationCoroutine);
     }    
@@ -58,14 +56,14 @@ public class PatrolState : AIState {
     }
 
     private IEnumerator LOSOnPlayerCheck() { //once spotted, go to investigate
-        Debug.Log("checking for player");
+        //Debug.Log("checking for player");
         yield return new WaitUntil(() => character.LOSOnPlayer());
         character.SetStateDriver(new InvestigationState(character, animator, agent));
     }
 
     public override IEnumerator OnStateExit() { //Debug.Log("exitedPatrol");
         if(LOSCoroutine != null) character.StopCoroutine(LOSCoroutine);        
-        animator.SetBool("IsPatrol", false);
+        animator.SetBool(character.AnimationHashes["IsPatrol"], false);
         if(moveToLocationCoroutine != null) character.StopCoroutine(moveToLocationCoroutine); //stop coroutine
         yield return null;
     }
@@ -81,8 +79,7 @@ public class InvestigationState : AIState {
     public InvestigationState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
 
     public override IEnumerator OnStateEnter() {
-        Debug.Log("entered investigation state");
-        animator.SetBool("IsIdle", true);
+        //Debug.Log("entered investigation state");
 
         timerCoroutine = null; //reset timer as appropriate
         CurrInvestigationTimer = 0.1f; 
@@ -95,7 +92,8 @@ public class InvestigationState : AIState {
 
     //stare at player, stationary while IN LOS
     private IEnumerator StareAndFacePlayer() {
-        Debug.Log("staring and facing player");
+        //todo: a stare animation?
+
         agent.isStopped = true; //halt movement
         isDecreasingDetection = false; //start by increasing detection
         
@@ -106,8 +104,12 @@ public class InvestigationState : AIState {
 
 
         //stare and face player here
+        //todo animator.SetBool("IsStaring", true);
 
         yield return new WaitUntil(() => !character.LOSOnPlayer() || CurrInvestigationTimer >= character.spotTimerThreshold); //keep incrementing until LOS is broken || caught
+
+        //if condition break, stop staring animation (todo)
+        //todo animator.SetBool("IsStaring", false);
 
         //3 possibilities, 
         if(!character.LOSOnPlayer()) {
@@ -123,13 +125,14 @@ public class InvestigationState : AIState {
                 yield break;
             }
         } else { //caught, change global state, let mono behavior handle the rest
+            animator.SetBool(character.AnimationHashes["IsAggroWalk"], true); //todo: to be put in separate class
             character.GlobalState = AIGlobalState.AGGRO;
         }
 
     }
 
     private IEnumerator InPlaceSearch() {
-        Debug.Log("in place search");
+        animator.SetBool(character.AnimationHashes["IsSearching"], true);
         agent.isStopped = true; //halt movement
         isDecreasingDetection = true; //start by DECREASING detection
         
@@ -141,6 +144,8 @@ public class InvestigationState : AIState {
         //in place search here
 
         yield return new WaitUntil(() => character.LOSOnPlayer() || CurrInvestigationTimer <= 0); //keep decrementing until LOS is regained || lost
+
+        animator.SetBool(character.AnimationHashes["IsSearching"], false);
 
         //two situations
         if(character.LOSOnPlayer()) { //if sight regained, back to staring
@@ -157,17 +162,17 @@ public class InvestigationState : AIState {
     }
 
     public IEnumerator MoveToLocation(Vector3 location){ //Debug.Log("enteredMove");//shouldnt be a coroutine lol, no reason for the while statemtn
-        Debug.Log("moving to last seen player location");
+        
+        animator.SetBool(character.AnimationHashes["IsAggroWalk"], true);
+        
         agent.SetDestination(location);
         //character.debug(agent.stoppingDistance + " " + agent.remainingDistance);
         yield return new WaitUntil(() => !agent.pathPending && agent.stoppingDistance > agent.remainingDistance);
         //Debug.Log(agent.pathPending + " " + (agent.stoppingDistance < agent.remainingDistance));
-        character.SetStateDriver(new IdleState(character, animator, agent));
-        yield break;
+        animator.SetBool(character.AnimationHashes["IsAggroWalk"], false);
     }
 
     private IEnumerator InvestigationTimer() {
-        Debug.Log("timer timing: ");
         float wfsIncrement = .1f;
         while(CurrInvestigationTimer < character.spotTimerThreshold && CurrInvestigationTimer >= 0) {
             yield return new WaitForSeconds(wfsIncrement); //space between each investigation timer tick - should be the same as think cycle
@@ -180,11 +185,16 @@ public class InvestigationState : AIState {
     }
 
     private IEnumerator ChainedDiscovery() { //move to last seen location AND investigate
-        Debug.Log("chain discovering");
+        //Debug.Log("chain discovering");
         character.StopCoroutine(timerCoroutine); //stop the timer
         timerCoroutine = null;
-        //"in place search" but as grace period
+        animator.SetBool(character.AnimationHashes["IsSearching"], true);
+
+        //"in place search" variation - as grace period
         yield return new WaitForSeconds(3f);
+
+        animator.SetBool(character.AnimationHashes["IsSearching"], false);
+
         agent.isStopped = false; //allow character to move after grace period
         //move to last seen location
         investigationCoroutine = MoveToLocation(lastSeenPlayerLocation);
@@ -198,7 +208,9 @@ public class InvestigationState : AIState {
 
     public override IEnumerator OnStateExit() { Debug.Log("exiting investigation");
         agent.isStopped = false; //ensure movement can continue
-        animator.SetBool("isIdle", false);
+        //disable to exit possibilites (being to aggro and to patrol)
+        //todo animator.SetBool("isStaring", false);
+        animator.SetBool(character.AnimationHashes["IsSearching"], false);
         if(timerCoroutine != null) character.StopCoroutine(timerCoroutine); //stop coroutine
         yield return null;
     }

@@ -18,10 +18,12 @@ public class AIHandler : CharacterHandler {
     public CharacterHandler target; 
     public WeaponData weapon;
     public WeaponType weaponType;
-    public AIGlobalState GlobalState {get; set; } = AIGlobalState.UNAGGRO;
-    private List<AIHandler> proximateAI;
-    public float Priority { get; set; }
     public AISpecificEvent onTakeDamage;
+    public AIGlobalState GlobalState {get; set; } = AIGlobalState.UNAGGRO;
+    public float Priority { get; set; }
+    public Dictionary<string, int> AnimationHashes { get; private set; }
+    private List<AIHandler> proximateAI;
+
 
     //nav stuff
     [Header("Nav Core")]
@@ -44,7 +46,15 @@ public class AIHandler : CharacterHandler {
     protected override void Start() {
         base.Start();
         agent = this.GetComponent<NavMeshAgent>();
-        agent.stoppingDistance = 5f;
+
+        //initialize animation stuff as hash (more efficient)
+        //uses a dict for organization - O(1) access (probably a hash table)
+        AnimationHashes.Add("IsPatrol", Animator.StringToHash("IsPatrol"));
+        AnimationHashes.Add("IsAggroWalk", Animator.StringToHash("IsAggroWalk"));
+        AnimationHashes.Add("IsSearching", Animator.StringToHash("IsSearching"));
+        AnimationHashes.Add("IsStaring", Animator.StringToHash("IsStaring"));
+
+
         NextWaypointLocation = patrolWaypoints[0].transform.position; //set first patrol waypoint
         SetStateDriver(new PatrolState(this, animator, agent));
 

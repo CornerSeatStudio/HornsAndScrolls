@@ -1,11 +1,8 @@
 fileFormatVersion: 2
-guid: 33daf86954d8d0645b4ecfa5bf277e19
+guid: e4cd018ee8c72ec4089e77118a711b61
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable:
-  - first:
-      74: 2986386761548156804
-    second: Armature|CylinderAction.001
   - first:
       74: 5975651412602298226
     second: Armature|WalkForward.002
@@ -24,10 +21,7 @@ ModelImporter:
     rigImportErrors: 
     rigImportWarnings: 
     animationImportErrors: 
-    animationImportWarnings: "\nClip 'Armature|CylinderAction.001' has import animation
-      warnings that might lower retargeting quality:\nNote: Activate translation
-      DOF on avatar to improve retargeting quality.\n\t'Hand.L' has scale animation
-      that will be discarded.\n\nClip 'Armature|WalkForward.002' has import animation
+    animationImportWarnings: "\nClip 'Armature|WalkForward.002' has import animation
       warnings that might lower retargeting quality:\nNote: Activate translation
       DOF on avatar to improve retargeting quality.\n\t'Shoulders.L' has translation
       animation that will be discarded.\n\t'Shoulders.R' has translation animation
@@ -48,7 +42,7 @@ ModelImporter:
       name: Armature|WalkForward.002
       takeName: Armature|WalkForward.002
       internalID: 0
-      firstFrame: 5
+      firstFrame: 4
       lastFrame: 130
       wrapMode: 0
       orientationOffsetY: 0
@@ -56,7 +50,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0

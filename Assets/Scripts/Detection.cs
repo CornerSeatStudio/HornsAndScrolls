@@ -13,15 +13,29 @@ public class Detection : MonoBehaviour
     public LayerMask targetMask;
     public LayerMask obstacleMask;
 
-    //todo: should these be lists even
     public List<Transform> VisibleTargets {get; } = new List<Transform>();
     public List<GameObject> InteractableTargets {get; } = new List<GameObject>();
 
+    public float meshResolution; //# of triangle divisions of FOV, larger == more circular
+    public MeshFilter viewMeshFilter; 
+    Mesh viewMesh; 
+
     //ON DEATH -> STOP COROUTINE
 
+    void Awake() {
+        viewMesh = new Mesh();
+    }
+ 
     void Start() {
+        viewMesh.name = "View Mesh";
+        viewMeshFilter.mesh = viewMesh;
         StartCoroutine("FindTargetsWithDelay", coroutineDelay);
     } 
+
+    //should be called AFTER dealing with movement
+    void LateUpdate() {
+        DrawFOV();
+    }
 
     private IEnumerator FindTargetsWithDelay(float delay){
         while (true){
@@ -31,7 +45,7 @@ public class Detection : MonoBehaviour
     }
 
 
-    //for every target (via an array), lock on em
+    //for every target (via an array), lock on em, the core logic
     private void findVisibleTargets(){
         VisibleTargets.Clear(); //reset list every time so no dupes
         InteractableTargets.Clear();
@@ -53,17 +67,85 @@ public class Detection : MonoBehaviour
                 }
             }
         }
-
     }
 
+    //for the actual visualization
+    private void DrawFOV() {
+        //# rays, where if meshResolution == 1, then there would be one ray per degree
+        int rayCount = Mathf.RoundToInt(viewAngle * meshResolution); 
+        //angle between each ray
+        float rayAngleSize = viewAngle / rayCount; 
+        List<Vector3> viewPoints = new List<Vector3>(); //viewpoints change every update loop
+
+        //for every ray
+        for (int i = 0; i <= rayCount; ++i) {
+            //get the current rotation of the player, starting from the furthest left of the viewAngle
+            float angle = transform.eulerAngles.y - (viewAngle/2) + rayAngleSize * i;
+            ViewCastInfo viewCast = ConstructViewCast(angle); //for eacy ray, do a struct
+            viewPoints.Add(viewCast.endpoint); //and pull endpoint info from said struct (aka triangle vertexes -origin)
+        }
+
+        //once info is gathered regarding viewPoints
+
+        int vertexCount = viewPoints.Count + 1; //all triangle verteces
+        Vector3[] vertices = new Vector3[vertexCount]; //list of actual verteces
+        int[] triangles = new int[(vertexCount - 2) * 3]; //one triangle is 3 verteces
+    
+        //using a mesh renderer as a CHILD of each character, account for local position
+        vertices[0] = Vector3.zero;
+        //for every vertex, store them in both arrays as appropriate
+        for(int i = 0; i < vertexCount -1; ++i) { 
+            vertices[i+1] = transform.InverseTransformPoint(viewPoints[i]); //viewPoints need to become local
+
+            //for every one step in vertices, 3 steps should be taken in triangles
+            //also prevent out of bounds stuff
+            if(i < vertexCount - 2){
+                triangles[i*3] = 0;
+                triangles[i*3 + 1] = i+1;
+                triangles[i*3 + 2] = i+2;
+            }
+        }
+
+        viewMesh.Clear(); //reset mesh every loop
+        //to build meshes in code, there is need for vertices and triangles
+        viewMesh.vertices = vertices;
+        viewMesh.triangles = triangles;
+        viewMesh.RecalculateNormals(); //good habit i guess
+    }
+
+    private ViewCastInfo ConstructViewCast(float globalAngle) {
+        Vector3 dirGivenAngle = DirectionGivenAngle(globalAngle, true);
+        RaycastHit hit; 
+
+        if(Physics.Raycast(transform.position, dirGivenAngle, out hit, viewRadius, obstacleMask)){
+            return new ViewCastInfo(true, hit.point, hit.distance, globalAngle);
+        } else {
+            return new ViewCastInfo(false, transform.position + dirGivenAngle * viewRadius, viewRadius, globalAngle);
+        }
+    }
     
     //return direction vector given a specific angle
-    public Vector3 directionGivenAngle(float angle, bool isGlobal){
+    public Vector3 DirectionGivenAngle(float angle, bool isGlobal){
         if(!isGlobal){
             angle+=transform.eulerAngles.y;
         }
 
         return new Vector3(Mathf.Sin(angle * Mathf.Deg2Rad), 0, Mathf.Cos(angle*Mathf.Deg2Rad));
+    }
+
+    //information regarding a single ray cast
+    public struct ViewCastInfo {
+        public bool hit; //if the ray hits something
+        public Vector3 endpoint; //endpoint of the ray
+        public float rayLength; //distance/length of the ray
+        public float angle; //angle that ray was fired at
+
+        public ViewCastInfo(bool hit, Vector3 endpoint, float rayLength, float angle) {
+            this.hit = hit;
+            this.endpoint = endpoint;
+            this.rayLength = rayLength;
+            this.angle = angle;
+        }
     }
 
 }

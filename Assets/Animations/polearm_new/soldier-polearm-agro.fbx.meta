@@ -1,14 +1,11 @@
 fileFormatVersion: 2
-guid: 2ea3df728a57b8548ac529084aad666e
+guid: 4791b53669bb08f40a9aa79829e0c406
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable:
   - first:
-      74: 2986386761548156804
-    second: Armature|CylinderAction.001
-  - first:
-      74: 5975651412602298226
-    second: Armature|WalkForward.002
+      74: 896188942311107492
+    second: Armature|Polearm_walk_agro
   externalObjects: {}
   materials:
     materialImportMode: 1
@@ -24,10 +21,11 @@ ModelImporter:
     rigImportErrors: 
     rigImportWarnings: 
     animationImportErrors: 
-    animationImportWarnings: "\nClip 'Armature|CylinderAction.001' has import animation
+    animationImportWarnings: "\nClip 'Armature|Polearm_walk_agro' has import animation
       warnings that might lower retargeting quality:\nNote: Activate translation
-      DOF on avatar to improve retargeting quality.\n\t'Hand.L' has scale animation
-      that will be discarded.\n\t'Hand.R' has scale animation that will be discarded.\n"
+      DOF on avatar to improve retargeting quality.\n\t'Shoulders.L' has translation
+      animation that will be discarded.\n\t'Shoulders.R' has translation animation
+      that will be discarded.\n"
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
@@ -41,18 +39,18 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Armature|WalkForward.002
-      takeName: Armature|WalkForward.002
+      name: Armature|Polearm_walk_agro
+      takeName: Armature|Polearm_walk_agro
       internalID: 0
-      firstFrame: 0
-      lastFrame: 90
+      firstFrame: 5
+      lastFrame: 130
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
