@@ -16,25 +16,40 @@ public class Detection : MonoBehaviour
     public List<Transform> VisibleTargets {get; } = new List<Transform>();
     public List<GameObject> InteractableTargets {get; } = new List<GameObject>();
 
-    public float meshResolution; //# of triangle divisions of FOV, larger == more circular
+    [Range(0, 0.25f)] public float meshResolution; //# of triangle divisions of FOV, larger == more circular
     public MeshFilter viewMeshFilter; 
     Mesh viewMesh; 
 
     //ON DEATH -> STOP COROUTINE
 
     void Awake() {
-        viewMesh = new Mesh();
+        viewMesh = new Mesh(); //has to be called before start
     }
  
     void Start() {
-        viewMesh.name = "View Mesh";
-        viewMeshFilter.mesh = viewMesh;
+        viewMesh.name = "View Visualization";
         StartCoroutine("FindTargetsWithDelay", coroutineDelay);
+        viewMeshFilter.mesh = viewMesh;
+     
     } 
 
     //should be called AFTER dealing with movement
+    /**
     void LateUpdate() {
-        DrawFOV();
+        Debug.Log(viewMeshFilter.mesh + " vs " + viewMesh);
+        if (initiatedMesh == null) {
+            initiatedMesh = InitiateMesh();
+            StartCoroutine(initiatedMesh); 
+        }
+        DrawFOV(); viewMeshFilter.mesh = viewMesh;
+    }
+    **/
+
+    //idk why the fuck shit aint workin so
+    private IEnumerator initiatedMesh = null;
+    private IEnumerator InitiateMesh() {
+        yield return new WaitForSeconds(1f);
+        viewMeshFilter.mesh = viewMesh;
     }
 
     private IEnumerator FindTargetsWithDelay(float delay){
