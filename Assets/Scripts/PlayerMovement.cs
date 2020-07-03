@@ -11,14 +11,16 @@ public class PlayerMovement : MonoBehaviour {
 
     private bool IsCrouching=false;
     private bool IsWalking;
+
+    Vector3 angleOfPlayer;
+    private bool IsWalkingBack;
     private bool IsCrouchingWalking;
 
     private Vector3 inputVector; //key inputs
 
-
+    private bool IsWeaponout;
     public float movementSpeed = 15f; //5 is current goldilocks 
     public float fallspeed = 10f;
-
     //to declare mouse vs key presedence, compare via > operator
     public float mouseRotationSmoothness = 7f;
     public float keyRotationSmoothness = 15f;
@@ -28,7 +30,6 @@ public class PlayerMovement : MonoBehaviour {
         controller = this.GetComponent<CharacterController>();
         //NEVER APPLY ROOT MOTION
         animator.applyRootMotion = false;
-        Debug.Log("Hello World");
         //temp character contorller settings
         controller.center = new Vector3(0, 2, 0);
         controller.radius = 3;
@@ -75,8 +76,9 @@ public class PlayerMovement : MonoBehaviour {
         if(Input.GetKeyDown(KeyCode.LeftShift)&&!IsCrouching&&!IsCrouchingWalking){
             movementSpeed=25f;
             IsSprinting=true;
+            
         }
-        else if(Input.GetKeyUp(KeyCode.LeftShift)){
+        else if(Input.GetKeyDown(KeyCode.LeftShift)){
             IsSprinting=false;
         }
 
@@ -90,6 +92,32 @@ public class PlayerMovement : MonoBehaviour {
             IsSlowWalking=false;
         }
         
+        //sheathe weapon
+        if(Input.GetKeyDown(KeyCode.X)&&!IsWeaponout){
+            IsWeaponout=true;
+                
+        }else if(Input.GetKeyDown(KeyCode.X)&&IsWeaponout){
+            IsWeaponout=false;
+             //independent of y
+        }
+
+
+
+
+
+
+        
+        Debug.Log(transform.eulerAngles);
+        angleOfPlayer=transform.eulerAngles;
+        if((((210>angleOfPlayer.y&&angleOfPlayer.y>130)&&inputVector.z>0))||((330<angleOfPlayer.y||angleOfPlayer.y<30)&&inputVector.z<0)||(60<angleOfPlayer.y&&angleOfPlayer.y<120&&inputVector.x<0)||(240<angleOfPlayer.y&&angleOfPlayer.y<300&&inputVector.x>0)){
+             IsWalkingBack=true;
+         }
+         else {
+             IsWalkingBack=false;
+        }
+
+
+
 
         //normal walking if statements
         if((inputVector.x != 0 || inputVector.z != 0)&&!IsCrouching&&!IsSprinting&&!IsSlowWalking&&!IsCrouchingWalking){
@@ -98,35 +126,34 @@ public class PlayerMovement : MonoBehaviour {
         } else {
             IsWalking=false;
         }
-
-
+        
         //mouse movement - check later if this should be in fixed update instead
         //test - only face player to mouse when aiming
-        if (Input.GetButton("Fire1")) {
-            Plane playerPlane = new Plane(Vector3.up, transform.position);
-            Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
-            float hitDistance = 0.0f;
+         if (IsWeaponout) {
+             Plane playerPlane = new Plane(Vector3.up, transform.position);
+             Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
+             float hitDistance = 0.0f;
 
-            if(playerPlane.Raycast(ray, out hitDistance)) {
-                Vector3 targetPoint = ray.GetPoint(hitDistance);
-                Quaternion targetRotation = Quaternion.LookRotation(targetPoint - transform.position);
+             if(playerPlane.Raycast(ray, out hitDistance)) {
+                 Vector3 targetPoint = ray.GetPoint(hitDistance);
+                 Quaternion targetRotation = Quaternion.LookRotation(targetPoint - transform.position);
 
-                //dont rotate x or z axis
-                targetRotation.x = 0;
-                targetRotation.z = 0;
+                 //dont rotate x or z axis
+                 targetRotation.x = 0;
+                 targetRotation.z = 0;
 
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, mouseRotationSmoothness * Time.deltaTime);
+                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, mouseRotationSmoothness * Time.deltaTime);
 
-            }
-        } else {
-            if (inputVector.x != 0 || inputVector.z != 0){ //independent of y
-                Quaternion faceDirection = Quaternion.LookRotation(inputVector);
-                faceDirection.x = 0;
-                faceDirection.z = 0;
-                transform.rotation = Quaternion.Slerp(transform.rotation, faceDirection, keyRotationSmoothness * Time.deltaTime);
-            } 
-        }
-    }
+             }
+         } else {
+             if (inputVector.x != 0 || inputVector.z != 0){ //independent of y
+                 Quaternion faceDirection = Quaternion.LookRotation(inputVector);
+                 faceDirection.x = 0;
+                 faceDirection.z = 0;
+                 transform.rotation = Quaternion.Slerp(transform.rotation, faceDirection, keyRotationSmoothness * Time.deltaTime);
+             } 
+         }
+     }
 
     void FixedUpdate() {
         
@@ -141,6 +168,8 @@ public class PlayerMovement : MonoBehaviour {
         animator.SetBool("IsSlowWalking", IsSlowWalking);
         animator.SetBool("IsCrouching", IsCrouching);
         animator.SetBool("IsCrouchingWalking", IsCrouchingWalking);
+        animator.SetBool("IsWalkingBack", IsWalkingBack);
+        animator.SetBool("IsWeaponout", IsWeaponout);
     }
     
 }
