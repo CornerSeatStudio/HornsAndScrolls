@@ -196,7 +196,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: Shoulders.L
+    - boneName: Shoulder.L
       humanName: LeftShoulder
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -204,7 +204,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: Shoulders.R
+    - boneName: Shoulder.R
       humanName: RightShoulder
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -268,7 +268,7 @@ ModelImporter:
       scale: {x: 1, y: 1, z: 1}
     - name: Armature
       parentName: player_model(Clone)
-      position: {x: -0.0040647537, y: 7.1611533, z: -1.60886}
+      position: {x: -0.0040647537, y: 7.522836, z: -1.60886}
       rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
       scale: {x: 100, y: 100, z: 100}
     - name: Bone.001
@@ -311,13 +311,13 @@ ModelImporter:
       position: {x: -0, y: 0.017566418, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
-    - name: Shoulders.L
+    - name: Shoulder.L
       parentName: Chest
       position: {x: -0.0066998503, y: 0.012815007, z: 0.0015743827}
       rotation: {x: 0.012060991, y: -0.02686, z: 0.5842295, w: 0.81105417}
       scale: {x: 0.9999999, y: 1, z: 1}
     - name: Upper_Arm.L
-      parentName: Shoulders.L
+      parentName: Shoulder.L
       position: {x: 0.0000000015972181, y: 0.008246898, z: -7.45058e-10}
       rotation: {x: 0.010791646, y: -0.012658618, z: 0.19604859, w: 0.98045313}
       scale: {x: 1, y: 1, z: 0.9999999}
@@ -336,13 +336,13 @@ ModelImporter:
       position: {x: -0, y: 0.011895251, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
-    - name: Shoulders.R
+    - name: Shoulder.R
       parentName: Chest
       position: {x: 0.0066998526, y: 0.012815007, z: 0.0015743806}
       rotation: {x: 0.012060855, y: 0.026860256, z: -0.58422947, w: 0.8110543}
       scale: {x: 0.99999994, y: 0.99999994, z: 0.99999994}
     - name: Upper_Arm.R
-      parentName: Shoulders.R
+      parentName: Shoulder.R
       position: {x: -0.0000000010337681, y: 0.0082469, z: -0.0000000024586915}
       rotation: {x: 0.010864813, y: 0.012613716, z: -0.19605851, w: 0.9804509}
       scale: {x: 1, y: 1.0000001, z: 1.0000001}
@@ -403,7 +403,7 @@ ModelImporter:
       scale: {x: 1, y: 1, z: 1}
     - name: player
       parentName: player_model(Clone)
-      position: {x: -0.017561032, y: 12.244461, z: -0.19742906}
+      position: {x: -0.017561032, y: 12.606144, z: -0.19742906}
       rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
       scale: {x: 110.009254, y: 112.32853, z: 131.94101}
     armTwist: 0.5
