@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
 
-public enum WeaponType { MELEE, RANGED };
 public enum AIGlobalState { UNAGGRO, AGGRO, DEAD };
 public enum CombatSlot {GUARANTEE, EVICTION, IN, OUT};
 
@@ -17,13 +16,11 @@ public class AIHandler : CharacterHandler {
     [Header("AICore")]
     public CharacterHandler target; 
     public WeaponData weapon;
-    public WeaponType weaponType;
     public AISpecificEvent onTakeDamage;
     public AIGlobalState GlobalState {get; set; } = AIGlobalState.UNAGGRO;
     public float Priority { get; set; }
     public Dictionary<string, int> AnimationHashes { get; private set; }
     private List<AIHandler> proximateAI;
-
 
     //nav stuff
     [Header("Nav Core")]
@@ -47,6 +44,7 @@ public class AIHandler : CharacterHandler {
         base.Start();
         agent = this.GetComponent<NavMeshAgent>();
 
+        AnimationHashes = new Dictionary<string, int>();
         //initialize animation stuff as hash (more efficient)
         //uses a dict for organization - O(1) access (probably a hash table)
         AnimationHashes.Add("IsPatrol", Animator.StringToHash("IsPatrol"));

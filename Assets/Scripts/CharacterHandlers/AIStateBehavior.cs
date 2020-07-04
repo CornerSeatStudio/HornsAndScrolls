@@ -137,7 +137,7 @@ public class InvestigationState : AIState {
         isDecreasingDetection = true; //start by DECREASING detection
         
         if(timerCoroutine == null) { //start timer each first time only
-            timerCoroutine = InvestigationTimer(); 
+            timerCoroutine = InvestigationTimer();
             character.StartCoroutine(timerCoroutine); 
         }
 
