@@ -6,7 +6,6 @@ public class PlayerHandler : CharacterHandler
 {
 
     public WeaponData weapon; //Todo: list to choose between
-
     
     public enum PlayerState { HIDDEN, COMBAT, DEAD };
 
@@ -17,9 +16,12 @@ public class PlayerHandler : CharacterHandler
             if(!attackHandler.InAttackCoroutine){
                 StartCoroutine(attackHandler.FindTargetAndDealDamage(weapon.MeleeAttackMoves[0]));
             }
+            IsAttacking=true;
+        }else{
+            IsAttacking=false;
         }
         
     }
-    
+
 
 }
