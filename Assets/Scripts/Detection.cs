@@ -16,20 +16,20 @@ public class Detection : MonoBehaviour
     public List<Transform> VisibleTargets {get; } = new List<Transform>();
     public List<GameObject> InteractableTargets {get; } = new List<GameObject>();
 
-    [Range(0, 0.25f)] public float meshResolution; //# of triangle divisions of FOV, larger == more circular
-    public MeshFilter viewMeshFilter; 
-    Mesh viewMesh; 
+    //[Range(0, 0.25f)] public float meshResolution; //# of triangle divisions of FOV, larger == more circular
+    //public MeshFilter viewMeshFilter; 
+    //Mesh viewMesh; 
 
     //ON DEATH -> STOP COROUTINE
-
+ 
     void Awake() {
-        viewMesh = new Mesh(); //has to be called before start
+        //viewMesh = new Mesh(); //has to be called before start
     }
  
     void Start() {
-        viewMesh.name = "View Visualization";
+        //viewMesh.name = "View Visualization";
         StartCoroutine("FindTargetsWithDelay", coroutineDelay);
-        viewMeshFilter.mesh = viewMesh;
+        //viewMeshFilter.mesh = viewMesh;
      
     } 
 
@@ -46,10 +46,10 @@ public class Detection : MonoBehaviour
     **/
 
     //idk why the fuck shit aint workin so
-    private IEnumerator initiatedMesh = null;
+    //private IEnumerator initiatedMesh = null;
     private IEnumerator InitiateMesh() {
         yield return new WaitForSeconds(1f);
-        viewMeshFilter.mesh = viewMesh;
+        //viewMeshFilter.mesh = viewMesh;
     }
 
     private IEnumerator FindTargetsWithDelay(float delay){
@@ -85,6 +85,8 @@ public class Detection : MonoBehaviour
     }
 
     //for the actual visualization
+
+    /*
     private void DrawFOV() {
         //# rays, where if meshResolution == 1, then there would be one ray per degree
         int rayCount = Mathf.RoundToInt(viewAngle * meshResolution); 
@@ -128,6 +130,7 @@ public class Detection : MonoBehaviour
         viewMesh.RecalculateNormals(); //good habit i guess
     }
 
+*/
     private ViewCastInfo ConstructViewCast(float globalAngle) {
         Vector3 dirGivenAngle = DirectionGivenAngle(globalAngle, true);
         RaycastHit hit; 

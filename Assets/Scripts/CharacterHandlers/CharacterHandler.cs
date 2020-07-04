@@ -8,24 +8,24 @@ public class CharacterHandler : MonoBehaviour
     [Header("Core")]
     public CharacterData characterdata;
     public float Health {get; set; }
-    //[SerializeField] public float Stamina;
-    public HitDetection HitDetection {get; private set; }
     protected AIState localState;
     protected Animator animator;
-    //private CharacterController controller;
+    protected RaycastAttackHandler attackHandler;
 
-    //core, callbacks
+    #region Callbacks
     protected virtual void Start() {
-        HitDetection = this.GetComponent<HitDetection>();
         animator = this.GetComponent<Animator>();
-        //controller = this.GetComponent<CharacterController>();
+        attackHandler = this.GetComponent<RaycastAttackHandler>();
         Health = characterdata.maxHealth;
     }
+    #endregion
 
-    public virtual void TakeDamage(float damage){ //probably make this virtual
+    public virtual void TakeDamage(float damage){ 
         Health -= damage;
     }
 
+
+    #region FSM
     //everytime the state is changed, do an exit routine (if applicable), switch the state, then trigger start routine (if applicable)
     public void SetStateDriver(AIState state) { 
         StartCoroutine(SetState(state));
@@ -37,6 +37,6 @@ public class CharacterHandler : MonoBehaviour
         yield return StartCoroutine(localState.OnStateEnter());
     }
     
-    
+    #endregion
 
 }

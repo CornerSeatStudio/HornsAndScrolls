@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GruntHandler : AIHandler
-{
+{   /*
     private bool localSwingWillyFlag = true;
     public BTStatus SwingWilly() {
 
@@ -11,7 +11,7 @@ public class GruntHandler : AIHandler
             return BTStatus.RUNNING;
         } else if (localSwingWillyFlag) {
             agent.isStopped = true;
-            StartCoroutine(HitDetection.InitAttack(weapon.startup, weapon.endlag, weapon.damage));
+            StartCoroutine(HitDetection.InitAttack(weapon));
             localSwingWillyFlag = false;
             return BTStatus.RUNNING;
         } 
@@ -21,4 +21,6 @@ public class GruntHandler : AIHandler
             return BTStatus.SUCCESS;
         }
     }
+    */
+
 }

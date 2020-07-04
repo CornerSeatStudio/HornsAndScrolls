@@ -42,6 +42,8 @@ public class PatrolState : AIState {
     public PatrolState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
 
     public override IEnumerator OnStateEnter() { //Debug.Log("enteredPatrol");
+        if(character.NextWaypointLocation == null) { Debug.LogWarning("no waypoints on some cunt"); character.SetStateDriver(new IdleState(character, animator, agent)); };
+        
         animator.SetBool(character.AnimationHashes["IsPatrol"], true);
         moveToLocationCoroutine = MoveToLocation(character.NextWaypointLocation);
         yield return character.StartCoroutine(moveToLocationCoroutine);

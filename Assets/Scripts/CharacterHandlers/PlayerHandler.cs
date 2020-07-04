@@ -5,35 +5,21 @@ using UnityEngine;
 public class PlayerHandler : CharacterHandler
 {
 
-    public List<WeaponData> weapons;
-    public float startupDelay = .2f;
-    public float endDelay = .2f; 
-    public float damage = 3f;
-    private bool attackCooldown = false;
+    public WeaponData weapon; //Todo: list to choose between
 
     
     public enum PlayerState { HIDDEN, COMBAT, DEAD };
 
     
     void Update() {
-
         if(Input.GetButtonDown("Fire1") == true) {
-            if(!attackCooldown){
-                Debug.Log("Fire1'd");
-                StartCoroutine(HitDetection.InitAttack(startupDelay, endDelay, damage));
-                StartCoroutine(CooldownManager());
-                
+            Debug.Log("Fire1'd, inAttackCoroutine?: " + attackHandler.InAttackCoroutine);
+            if(!attackHandler.InAttackCoroutine){
+                StartCoroutine(attackHandler.FindTargetAndDealDamage(weapon.MeleeAttackMoves[0]));
             }
         }
         
     }
-
-    private IEnumerator CooldownManager() { //prevents spam clicking
-        attackCooldown = true;
-        yield return new WaitForSeconds(startupDelay + endDelay);
-        attackCooldown = false;
-    }
-  
     
 
 }

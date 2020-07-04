@@ -12,11 +12,12 @@ public enum CombatSlot {GUARANTEE, EVICTION, IN, OUT};
 
 public class AIHandler : CharacterHandler {    
 
-    //core
+    //core - TODO REQUIRE BOX COLLIDER
     [Header("AICore")]
-    public CharacterHandler target; 
+    public CharacterHandler target;
     public WeaponData weapon;
     public AISpecificEvent onTakeDamage;
+    public Detection Detection {get; private set; }
     public AIGlobalState GlobalState {get; set; } = AIGlobalState.UNAGGRO;
     public float Priority { get; set; }
     public Dictionary<string, int> AnimationHashes { get; private set; }
@@ -40,36 +41,38 @@ public class AIHandler : CharacterHandler {
     public int combatPocket;
     public CombatSlot CombatSlot {get; set;} = CombatSlot.OUT;
 
+    #region callbacks and core
     protected override void Start() {
         base.Start();
+        Detection = this.GetComponent<Detection>();
         agent = this.GetComponent<NavMeshAgent>();
-
-        AnimationHashes = new Dictionary<string, int>();
-        //initialize animation stuff as hash (more efficient)
-        //uses a dict for organization - O(1) access (probably a hash table)
-        AnimationHashes.Add("IsPatrol", Animator.StringToHash("IsPatrol"));
-        AnimationHashes.Add("IsAggroWalk", Animator.StringToHash("IsAggroWalk"));
-        AnimationHashes.Add("IsSearching", Animator.StringToHash("IsSearching"));
-        AnimationHashes.Add("IsStaring", Animator.StringToHash("IsStaring"));
-
-
-        NextWaypointLocation = patrolWaypoints[0].transform.position; //set first patrol waypoint
-        SetStateDriver(new PatrolState(this, animator, agent));
-
+        setupAnimationHashes();
+        //if (patrolWaypoints.Any()) NextWaypointLocation = patrolWaypoints[0].transform.position; //set first patrol waypoint
+        //SetStateDriver(new PatrolState(this, animator, agent));
     }
-
+    
     public override void TakeDamage(float damage) {
         base.TakeDamage(damage);
         //release an event indicating x has taken damage
         onTakeDamage.Invoke(this);
     }
 
+    //initialize animation stuff as hash (more efficient)
+    //uses a dict for organization - O(1) access (probably a hash table)
+    private void setupAnimationHashes() {
+        AnimationHashes = new Dictionary<string, int>();
+        AnimationHashes.Add("IsPatrol", Animator.StringToHash("IsPatrol"));
+        AnimationHashes.Add("IsAggroWalk", Animator.StringToHash("IsAggroWalk"));
+        AnimationHashes.Add("IsSearching", Animator.StringToHash("IsSearching"));
+        AnimationHashes.Add("IsStaring", Animator.StringToHash("IsStaring"));
+    }
+    #endregion
+
+    #region stealthstuff
     public bool LOSOnPlayer() {
-        return HitDetection.VisibleTargets.Count != 0;
+        return Detection.VisibleTargets.Count != 0;
     }
     
-    //non combat tree
-
     public BTStatus VerifyStealth() { //verify if stealth is valid
         //todo: also check for transitions DIRECTLY to aggro
         return GlobalState == AIGlobalState.AGGRO? BTStatus.FAILURE : BTStatus.RUNNING;
@@ -79,9 +82,10 @@ public class AIHandler : CharacterHandler {
         currPatrolIndex = (currPatrolIndex + 1) % patrolWaypoints.Count;
         NextWaypointLocation = patrolWaypoints[currPatrolIndex].transform.position;
     }
+    #endregion
 
-
-    //combat tree stuff
+    #region combat
+    /*
     public BTStatus ChasePlayer() { 
         //unfreeze cause im lazy
         if (HitDetection.InMeleeRoutine) { agent.isStopped = true;} else { agent.isStopped = false;}
@@ -100,14 +104,13 @@ public class AIHandler : CharacterHandler {
 
         return BTStatus.RUNNING;
      }
- 
+    */
     private IEnumerator ChaseCoroutine(){
         while (true){
             agent.SetDestination(target.transform.position);
             yield return null;
         }
     }
-
-    public BTStatus SpaceFromTarget() {return BTStatus.RUNNING;}
-
+    #endregion
+    
 }
