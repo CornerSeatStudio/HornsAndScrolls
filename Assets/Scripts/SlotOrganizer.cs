@@ -59,8 +59,8 @@ public class SlotOrganizer : MonoBehaviour
             else if(enemy.CombatSlot != CombatSlot.GUARANTEE) {
                 inCombat = true;
 
-                //archers always have 0 priority
-                if(enemy.weaponType == WeaponType.RANGED ) { enemy.Priority = 0; }
+                //archers always have 0 priority TODO
+                if(false) { enemy.Priority = 0; }
 
                 else {
                     //ARBRITRARY VALUE -> closer == higher priority
