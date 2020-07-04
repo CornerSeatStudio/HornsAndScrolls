@@ -10,7 +10,7 @@ public class PlayerHandler : CharacterHandler
     public float endDelay = .2f; 
     public float damage = 3f;
     private bool attackCooldown = false;
-
+    private bool IsAttacking;
     
     public enum PlayerState { HIDDEN, COMBAT, DEAD };
 
@@ -24,6 +24,9 @@ public class PlayerHandler : CharacterHandler
                 StartCoroutine(CooldownManager());
                 
             }
+            IsAttacking=true;
+        }else{
+            IsAttacking=false;
         }
         
     }
@@ -32,6 +35,10 @@ public class PlayerHandler : CharacterHandler
         attackCooldown = true;
         yield return new WaitForSeconds(startupDelay + endDelay);
         attackCooldown = false;
+    }
+
+    void LateUpdate(){
+        animator.SetBool("IsAttacking", IsAttacking);
     }
   
     
