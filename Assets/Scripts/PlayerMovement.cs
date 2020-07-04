@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour {
 
     private bool IsCrouching=false;
     private bool IsWalking;
-
+    private bool IsSideSteppingRight;
     Vector3 angleOfPlayer;
     private bool IsWalkingBack;
     private bool IsCrouchingWalking;
@@ -25,6 +25,7 @@ public class PlayerMovement : MonoBehaviour {
     public float mouseRotationSmoothness = 7f;
     public float keyRotationSmoothness = 15f;
 
+    private bool IsWalkingLeft;
     void Start() {
         animator = this.GetComponent<Animator>();
         controller = this.GetComponent<CharacterController>();
@@ -68,6 +69,7 @@ public class PlayerMovement : MonoBehaviour {
         if((inputVector.x != 0 || inputVector.z != 0)&&!IsSprinting&&IsCrouching){
             IsCrouchingWalking = true;
             movementSpeed = 10f;
+            IsWeaponout=false;
 
         }else if(inputVector.x ==0 && inputVector.z == 0){
             IsCrouchingWalking=false;
@@ -77,9 +79,9 @@ public class PlayerMovement : MonoBehaviour {
         if(Input.GetKeyDown(KeyCode.LeftShift)&&!IsCrouching&&!IsCrouchingWalking){
             movementSpeed=25f;
             IsSprinting=true;
-            
+            IsWeaponout=false;
         }
-        else if(Input.GetKeyDown(KeyCode.LeftShift)){
+        else if(Input.GetKeyUp(KeyCode.LeftShift)){
             IsSprinting=false;
         }
 
@@ -94,7 +96,7 @@ public class PlayerMovement : MonoBehaviour {
         }
         
         //sheathe weapon
-        if(Input.GetKeyDown(KeyCode.X)&&!IsWeaponout){
+        if(Input.GetKeyDown(KeyCode.X)&&!IsWeaponout&&!IsSprinting){
             IsWeaponout=true;
                 
         }else if(Input.GetKeyDown(KeyCode.X)&&IsWeaponout){
@@ -104,20 +106,26 @@ public class PlayerMovement : MonoBehaviour {
 
 
 
-
-
-
-        
-        Debug.Log(transform.eulerAngles);
         angleOfPlayer=transform.eulerAngles;
-        if((((210>angleOfPlayer.y&&angleOfPlayer.y>130)&&inputVector.z>0))||((330<angleOfPlayer.y||angleOfPlayer.y<30)&&inputVector.z<0)||(60<angleOfPlayer.y&&angleOfPlayer.y<120&&inputVector.x<0)||(240<angleOfPlayer.y&&angleOfPlayer.y<300&&inputVector.x>0)){
+        if(IsWeaponout&&((210>angleOfPlayer.y&&angleOfPlayer.y>130&&inputVector.z>0))||((330<angleOfPlayer.y||angleOfPlayer.y<30)&&inputVector.z<0)||(60<angleOfPlayer.y&&angleOfPlayer.y<120&&inputVector.x<0)||(240<angleOfPlayer.y&&angleOfPlayer.y<300&&inputVector.x>0)){
              IsWalkingBack=true;
          }
          else {
              IsWalkingBack=false;
         }
+        
+        if(IsWeaponout&&((210>angleOfPlayer.y&&angleOfPlayer.y>130&&inputVector.x>0)||(330<angleOfPlayer.y||angleOfPlayer.y<30)&&inputVector.x<0)||(60<angleOfPlayer.y&&angleOfPlayer.y<120&&inputVector.z<0)||(240<angleOfPlayer.y&&angleOfPlayer.y<300&&inputVector.z>0)){
+            IsSideSteppingRight=true;
+        } else{
+            IsSideSteppingRight=false;
+        }
 
+        if(IsWeaponout&&(210>angleOfPlayer.y&&angleOfPlayer.y>130&&inputVector.x<0)||((330<angleOfPlayer.y||angleOfPlayer.y<30)&&inputVector.x>0)||(60<angleOfPlayer.y&&angleOfPlayer.y<120&&inputVector.z>0)||(240<angleOfPlayer.y&&angleOfPlayer.y<300&&inputVector.z<0)){
+            IsWalkingLeft=true;
 
+        }else{
+            IsWalkingLeft=false;
+        }
 
 
         //normal walking if statements
@@ -171,6 +179,8 @@ public class PlayerMovement : MonoBehaviour {
         animator.SetBool("IsCrouchingWalking", IsCrouchingWalking);
         animator.SetBool("IsWalkingBack", IsWalkingBack);
         animator.SetBool("IsWeaponout", IsWeaponout);
+        animator.SetBool("IsSideSteppingRight", IsSideSteppingRight);
+        animator.SetBool("IsWalkingLeft", IsWalkingLeft);
     }
     
 }
