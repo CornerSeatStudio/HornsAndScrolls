@@ -110,7 +110,6 @@ public class PlayerMovement : MonoBehaviour {
 
 
         
-        Debug.Log(transform.eulerAngles);
         angleOfPlayer=transform.eulerAngles;
         if((((210>angleOfPlayer.y&&angleOfPlayer.y>130)&&inputVector.z>0))||((330<angleOfPlayer.y||angleOfPlayer.y<30)&&inputVector.z<0)||(60<angleOfPlayer.y&&angleOfPlayer.y<120&&inputVector.x<0)||(240<angleOfPlayer.y&&angleOfPlayer.y<300&&inputVector.x>0)){
              IsWalkingBack=true;
