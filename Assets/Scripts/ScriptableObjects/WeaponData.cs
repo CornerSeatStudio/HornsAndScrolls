@@ -8,7 +8,7 @@ public enum WeaponType { MELEE, RANGED };
 public class WeaponData : ScriptableObject
 {
     public string WeaponName;
-    public List<MeleeAttackMove> MeleeAttackMoves ;
+    public List<MeleeMove> MeleeMoves;
 
 }
 

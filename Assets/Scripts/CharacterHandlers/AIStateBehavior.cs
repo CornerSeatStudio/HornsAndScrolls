@@ -217,15 +217,3 @@ public class InvestigationState : AIState {
         yield return null;
     }
 }
-
-public class CombatState : AIState {
-    private IEnumerator combatCoroutine;
-
-    public CombatState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
-
-    public override IEnumerator OnStateEnter() {
-        Debug.Log("entered combat state");
-        yield return null;
-    }
-
-}

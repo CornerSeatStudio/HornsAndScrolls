@@ -13,20 +13,20 @@ public enum CombatSlot {GUARANTEE, EVICTION, IN, OUT};
 public class AIHandler : CharacterHandler {    
 
     //core - TODO REQUIRE BOX COLLIDER
-    [Header("AICore")]
+    [Header("Core Components/SOs")]
     public CharacterHandler target;
-    public WeaponData weapon;
-    public AISpecificEvent onTakeDamage;
+    protected NavMeshAgent agent;
     public Detection Detection {get; private set; }
+
+    //nav stuff
+    [Header("Core Members")]
+    protected AIState localState;
+    public AISpecificEvent onTakeDamage;
+    private bool chaseInitializer = true;
     public AIGlobalState GlobalState {get; set; } = AIGlobalState.UNAGGRO;
     public float Priority { get; set; }
     public Dictionary<string, int> AnimationHashes { get; private set; }
     private List<AIHandler> proximateAI;
-
-    //nav stuff
-    [Header("Nav Core")]
-    protected NavMeshAgent agent;
-    private bool chaseInitializer = true;
 
     //stealth stuff
     [Header("Stealth stuff")]
@@ -41,7 +41,7 @@ public class AIHandler : CharacterHandler {
     public int combatPocket;
     public CombatSlot CombatSlot {get; set;} = CombatSlot.OUT;
 
-    #region callbacks and core
+    #region callbacks
     protected override void Start() {
         base.Start();
         Detection = this.GetComponent<Detection>();
@@ -49,14 +49,8 @@ public class AIHandler : CharacterHandler {
         setupAnimationHashes();
         //if (patrolWaypoints.Any()) NextWaypointLocation = patrolWaypoints[0].transform.position; //set first patrol waypoint
         //SetStateDriver(new PatrolState(this, animator, agent));
-    }
+    }  
     
-    public override void TakeDamage(float damage) {
-        base.TakeDamage(damage);
-        //release an event indicating x has taken damage
-        onTakeDamage.Invoke(this);
-    }
-
     //initialize animation stuff as hash (more efficient)
     //uses a dict for organization - O(1) access (probably a hash table)
     private void setupAnimationHashes() {
@@ -68,6 +62,27 @@ public class AIHandler : CharacterHandler {
     }
     #endregion
 
+    #region core
+    public override void TakeDamage(float damage) {
+        base.TakeDamage(damage);
+        //release an event indicating x has taken damage
+        onTakeDamage.Invoke(this);
+    }
+    #endregion
+
+    #region AIFSM
+    //everytime the state is changed, do an exit routine (if applicable), switch the state, then trigger start routine (if applicable)
+    public void SetStateDriver(AIState state) { 
+        StartCoroutine(SetState(state));
+    }
+
+    private IEnumerator SetState(AIState state) {
+        if(localState != null) yield return StartCoroutine(localState.OnStateExit());
+        localState = state;
+        yield return StartCoroutine(localState.OnStateEnter());
+    }
+    #endregion
+
     #region stealthstuff
     public bool LOSOnPlayer() {
         return Detection.VisibleTargets.Count != 0;
@@ -76,6 +91,8 @@ public class AIHandler : CharacterHandler {
     public BTStatus VerifyStealth() { //verify if stealth is valid
         //todo: also check for transitions DIRECTLY to aggro
         return GlobalState == AIGlobalState.AGGRO? BTStatus.FAILURE : BTStatus.RUNNING;
+
+        //if fails, STOP DETECTION todo
     }
 
     public void SetNextPatrolDestination() { 

@@ -30,6 +30,7 @@ public class DetectionEditor : Editor
     
 }
 
+/*
 [CustomEditor (typeof (RaycastAttackHandler))]
 public class RaycastAttackHandlerEditor : Editor
 {        
@@ -54,3 +55,5 @@ public class RaycastAttackHandlerEditor : Editor
     }
     
 }
+
+*/
