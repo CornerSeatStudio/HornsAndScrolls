@@ -26,13 +26,10 @@ public class PlayerMovement : MonoBehaviour {
     public float mouseRotationSmoothness = 7f;
     private bool IsWalkingLeft;
     public float keyRotationSmoothness = 15f;
-
-    private bool IsWalkingLeft;
+    
     void Start() {
         animator = this.GetComponent<Animator>();
         controller = this.GetComponent<CharacterController>();
-        //NEVER APPLY ROOT MOTION
-        animator.applyRootMotion = false;
 //        Debug.Log("Hello World");
         //temp character contorller settings
         controller.center = new Vector3(0, 2, 0);
@@ -111,9 +108,6 @@ public class PlayerMovement : MonoBehaviour {
 
 
 
-
-        
-
         angleOfPlayer=transform.eulerAngles;
         if(IsWeaponout&&((210>angleOfPlayer.y&&angleOfPlayer.y>130&&inputVector.z>0))||((330<angleOfPlayer.y||angleOfPlayer.y<30)&&inputVector.z<0)||(60<angleOfPlayer.y&&angleOfPlayer.y<120&&inputVector.x<0)||(240<angleOfPlayer.y&&angleOfPlayer.y<300&&inputVector.x>0)){
              IsWalkingBack=true;
@@ -150,8 +144,7 @@ public class PlayerMovement : MonoBehaviour {
             IsWalking=false;
         }
         
-        //mouse movement - check later if this should be in fixed update instead
-        //test - only face player to mouse when aiming
+        //mouse movement
          if (IsWeaponout) {
              Plane playerPlane = new Plane(Vector3.up, transform.position);
              Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -179,7 +172,6 @@ public class PlayerMovement : MonoBehaviour {
      }
 
     void FixedUpdate() {
-        
         controller.Move(inputVector * Time.fixedDeltaTime); 
     }
 
