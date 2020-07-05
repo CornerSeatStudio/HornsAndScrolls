@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+//[System.Serializable] public class CounterEvent : UnityEvent<>{}
+
+
 public class CharacterHandler : MonoBehaviour
 {
     [Header("Core Components/SOs")]
@@ -13,9 +16,12 @@ public class CharacterHandler : MonoBehaviour
     public Dictionary<string, MeleeMove> MeleeMoves {get; private set;} //for easier access 
 
 
-    [Header("Core Members")]
-    protected CombatState combatState;
+    //[Header("Core Members")]
+    public CombatState combatState {get; private set;}
     public float Health {get; set; }
+
+    public UnityEvent counterEvent;
+
     
     #region Callbacks
     protected virtual void Start() {
@@ -40,32 +46,60 @@ public class CharacterHandler : MonoBehaviour
         //if the character is blocking or was hit in the middle of the attack
         //additionally, if the player countered or dodged, 
         
-        //take LAST PERCIEVED EVENT
+        if(this.combatState is AttackState) {
+            //i am currently in an unblockable attack while being attacked
+            //if enemy is simultaneously in attack
+            if(attackingCharacter.combatState is AttackState){
+                //if my attack is unblockable
+                if(!(this.combatState as AttackState).chosenMove.blockableAttack){
+                    //take damage but dont stagger
+                } else {
+                    //take damage, stagger as usual
+                }
+            }
+            
+        } else if (this.combatState is BlockState) {
+            //i am blocking an unblockable attack
+            if(!(attackingCharacter.combatState as AttackState).chosenMove.blockableAttack) {
+                //take damage and stagger
+            } else {
+                //drain stamina instead
+            }
 
-        //todo: put in respective classes (replace/add to TakeDamage method)
 
-        //attacking anyone
-        //if character is blocking && I am using blockable attack, dont do damage but finish animation - global flag toggle
-        //if I was hit && I am using blockable attack, stagger instead
+        } else if (this.combatState is CounterState) {
+            //if i am countering an unblockable attack
+            if(!(attackingCharacter.combatState as AttackState).chosenMove.blockableAttack){
+                //act like block, no damage, lose stamina
+            } else {
+                //proper counter here
+            }
 
-        //attacking Player
-        //if i, AI, was hit && i, AI, am using unblockable attack, damage to player as usual
-        //if player is blocking && i, AI, am using unblockable attack, deal damage still
-        //if player is countering && i, AI, am using unblockable attack, act like blockable attack
-        //if player is countering && i, AI, am using blockable attack, begin stagger animation, yield return slower maybe?
-        //if player dodges, do no damage/nothing
+        } else if (this.combatState is DodgeState) {
 
-        //if all else fails, deal the damage
+        } else if (this.combatState is DodgeState) {
+        } else {
+            //take damage, stagger
+        }
+
+
+
+        
+
+
+        TakeDamage(damage);
+
+        //return counter state to block,
     }
 
     public virtual void TakeDamage(float damage){ 
         Health -= damage;
     }
 
-    public virtual void Block() { //deal with block (and counter for player)
-        
+    public virtual void Counter() {
 
     }
+
     #endregion
 
     #region COMBATFSM

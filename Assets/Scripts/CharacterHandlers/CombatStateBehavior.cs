@@ -21,7 +21,7 @@ public class DefaultState : CombatState {
 
 public class AttackState : CombatState {
     protected IEnumerator currAttackCoroutine;
-    protected MeleeMove chosenMove;
+    public MeleeMove chosenMove {get; private set;}
 
     public AttackState(CharacterHandler character, Animator animator, MeleeRaycastHandler attackHandler) : base(character, animator, attackHandler) {
         chosenMove = character.MeleeMoves["default"]; //TEMPORARY, WILL MAKE POLYMORPHIC
@@ -36,7 +36,7 @@ public class AttackState : CombatState {
     }    
 
     protected virtual IEnumerator FindTargetAndDealDamage(){
-        yield return attackHandler.FindTarget(chosenMove);
+        yield return character.StartCoroutine(attackHandler.FindTarget(chosenMove));
         //if no targets in range
         if (attackHandler.chosenTarget == null) {
             Debug.Log("no targets in range");
@@ -47,7 +47,8 @@ public class AttackState : CombatState {
         //upon completion of finding target/at attack move setup, START listening
         yield return new WaitForSeconds(chosenMove.startup); //assumption: start up == counter window
 
-        attackHandler.chosenTarget.TakeDamage(chosenMove.damage);
+
+        attackHandler.chosenTarget.AttackResponse(chosenMove.damage, character);
         //replcae with AttackResponse ->
 
         //during the endlag phase, check again
@@ -65,23 +66,23 @@ public class AttackState : CombatState {
 
 }
 
-
 public class BlockState : CombatState {
     protected IEnumerator currBlockRoutine;
-    protected MeleeMove chosenMove;
+    protected MeleeMove block;
 
     public BlockState(CharacterHandler character, Animator animator, MeleeRaycastHandler attackHandler) : base(character, animator, attackHandler) {
-        chosenMove = character.MeleeMoves["block"]; //TEMPORARY, 
+        block = character.MeleeMoves["block"]; //TEMPORARY, 
     }
 
     public override IEnumerator OnStateEnter() { 
         currBlockRoutine = CheckBlockRange();
         yield return character.StartCoroutine(currBlockRoutine);
     } 
-    //provides information on blocking
+
+    //provides information on blocking CONTINUOUSLY
     private IEnumerator CheckBlockRange() {
         while (true) {
-            yield return attackHandler.FindTarget(chosenMove); //run find target while blocking
+            yield return character.StartCoroutine(attackHandler.FindTarget(block)); //run find target while blocking
             //if the attackHandler.chosenTarget exists, the block IS ALLOWED
         }
     }
@@ -93,4 +94,44 @@ public class BlockState : CombatState {
     } 
 }
 
+public class CounterState : CombatState {
+    protected IEnumerator currCounterRoutine;
+    protected MeleeMove block;
 
+    public CounterState(CharacterHandler character, Animator animator, MeleeRaycastHandler attackHandler) : base(character, animator, attackHandler) {}
+
+    public override IEnumerator OnStateEnter() {        
+        //trigger counter event
+        //if enemy is attacking you specifically (dont trigger if coming from a specific state)
+        //shouldnt be done here, should be done in attack response via comparing type
+        currCounterRoutine = CheckCounterRange();
+        yield return character.StartCoroutine(currCounterRoutine);
+        if(attackHandler.chosenTarget != null && attackHandler.chosenTarget.combatState is AttackState) {
+        }
+
+        yield return new WaitForSeconds(0.3f); //where param is counter timeframe
+        character.SetStateDriver(new BlockState(character, animator, attackHandler));
+    }
+
+    //check ONCE for counter check
+    private IEnumerator CheckCounterRange() {
+        yield return character.StartCoroutine(attackHandler.FindTarget(block));
+    }
+
+    public override IEnumerator OnStateExit() {
+        Debug.Log("exiting counter state");
+        if (currCounterRoutine != null) character.StopCoroutine(currCounterRoutine);
+        yield break;
+    }
+
+}
+
+public class DodgeState : CombatState {
+    public DodgeState(CharacterHandler character, Animator animator, MeleeRaycastHandler attackHandler) : base(character, animator, attackHandler) {}
+
+}
+
+public class StaggerState : CombatState {
+    public StaggerState(CharacterHandler character, Animator animator, MeleeRaycastHandler attackHandler) : base(character, animator, attackHandler) {}
+
+}

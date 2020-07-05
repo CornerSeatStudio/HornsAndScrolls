@@ -20,11 +20,11 @@ public class PlayerHandler : CharacterHandler
                 SetStateDriver(new AttackState(this, animator, meleeRaycastHandler));
             } else if(Input.GetButtonDown("Fire2") == true) {
                 Debug.Log("Fire2'd/counter trigger");
-                SetStateDriver(new BlockState(this, animator, meleeRaycastHandler));
+                SetStateDriver(new CounterState(this, animator, meleeRaycastHandler));
                 //counter event is here
             }
      
-        } else if (combatState is BlockState) {
+        } else if (combatState is BlockState) { //gets to here after "counter timer" runs up, aka has to wait for a bit to release block
             //if still blocking
             if(Input.GetButton("Fire2") == true) {
                 Debug.Log("holding blocking");
