@@ -33,36 +33,7 @@ ModelImporter:
     animationWrapMode: 0
     extraExposedTransformPaths: []
     extraUserProperties: []
-    clipAnimations:
-    - serializedVersion: 16
-      name: Armature|Polearm_walk_agro
-      takeName: Armature|Polearm_walk_agro
-      internalID: 0
-      firstFrame: 0
-      lastFrame: 40
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      hasAdditiveReferencePose: 0
-      loopTime: 0
-      loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask: []
-      maskType: 3
-      maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
+    clipAnimations: []
     isReadable: 0
   meshes:
     lODScreenPercentages: []
@@ -193,7 +164,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: Shoulders.L
+    - boneName: Shoulder.L
       humanName: LeftShoulder
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -201,7 +172,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: Shoulders.R
+    - boneName: Shoulder.R
       humanName: RightShoulder
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -241,7 +212,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: Hand.L
+    - boneName: Hands.L
       humanName: LeftHand
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -249,7 +220,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: Hand.R
+    - boneName: Hands.R
       humanName: RightHand
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -308,13 +279,13 @@ ModelImporter:
       position: {x: -0, y: 0.017566418, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
-    - name: Shoulders.L
+    - name: Shoulder.L
       parentName: Chest
       position: {x: -0.0066998503, y: 0.012709015, z: 0.0031613866}
       rotation: {x: 0.012061099, y: -0.026860055, z: 0.5842301, w: 0.8110538}
       scale: {x: 0.9999999, y: 1, z: 0.9999998}
     - name: Upper_Arm.L
-      parentName: Shoulders.L
+      parentName: Shoulder.L
       position: {x: 0.0000000018394609, y: 0.008246896, z: -1.4901161e-10}
       rotation: {x: 0.01079151, y: -0.012658551, z: 0.19604743, w: 0.9804534}
       scale: {x: 1.0000004, y: 1.0000004, z: 1}
@@ -323,23 +294,23 @@ ModelImporter:
       position: {x: -9.388895e-10, y: 0.021080196, z: 0.0000000014016405}
       rotation: {x: 0.040826797, y: 0.0021522746, z: -0.0341983, w: 0.99857855}
       scale: {x: 1.0000004, y: 0.99999994, z: 1.0000002}
-    - name: Hand.L
+    - name: Hands.L
       parentName: Lower_Arm.L
       position: {x: -0.0000000024196924, y: 0.0204799, z: -5.5879353e-11}
       rotation: {x: -0.1801628, y: 0.0009846169, z: 0.01041847, w: 0.9835812}
       scale: {x: 0.9999999, y: 0.9999998, z: 0.99999994}
-    - name: Hand.L_end
-      parentName: Hand.L
+    - name: Hands.L_end
+      parentName: Hands.L
       position: {x: -0, y: 0.011895251, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
-    - name: Shoulders.R
+    - name: Shoulder.R
       parentName: Chest
       position: {x: 0.0066998526, y: 0.012709015, z: 0.0031613847}
       rotation: {x: 0.012060834, y: 0.026860183, z: -0.58422965, w: 0.8110542}
       scale: {x: 0.9999998, y: 0.9999998, z: 0.99999976}
     - name: Upper_Arm.R
-      parentName: Shoulders.R
+      parentName: Shoulder.R
       position: {x: 0.000000002928909, y: 0.008246898, z: 4.4703483e-10}
       rotation: {x: 0.010864808, y: 0.012613665, z: -0.19605847, w: 0.9804509}
       scale: {x: 1.0000006, y: 1.0000004, z: 1}
@@ -348,13 +319,13 @@ ModelImporter:
       position: {x: 0.0000000016944249, y: 0.020982437, z: -0.0000000012246891}
       rotation: {x: 0.04074224, y: -0.002116094, z: 0.034218397, w: 0.99858135}
       scale: {x: 1, y: 1.0000001, z: 1}
-    - name: Hand.R
+    - name: Hands.R
       parentName: Lower_Arm.R
       position: {x: 0.0000000011746306, y: 0.02092917, z: 9.941868e-10}
       rotation: {x: -0.18045312, y: -0.0009997152, z: -0.010369583, w: 0.98352844}
       scale: {x: 1, y: 0.9999999, z: 1}
-    - name: Hand.R_end
-      parentName: Hand.R
+    - name: Hands.R_end
+      parentName: Hands.R
       position: {x: -0, y: 0.011895251, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
