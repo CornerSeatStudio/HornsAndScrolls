@@ -13,7 +13,9 @@ public class PlayerHandler : CharacterHandler
 
     }
 
-    void Update() {
+    protected override void Update() {
+        base.Update(); 
+
         //sadness is respresented by the length of if else blocks statents
         
         if(combatState is DefaultState) {

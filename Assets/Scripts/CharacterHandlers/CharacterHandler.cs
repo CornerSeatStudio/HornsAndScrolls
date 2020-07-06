@@ -45,7 +45,7 @@ public class CharacterHandler : MonoBehaviour
         }
     }
 
-    void LateUpdate(){
+    protected virtual void Update(){
         debugState.SetText(combatState.toString());
     }
 
@@ -53,8 +53,10 @@ public class CharacterHandler : MonoBehaviour
 
     #region core/var manipulation
     //upon contact with le weapon, this handles the appropriate response (such as tackign damage, stamina drain, counters etc)
+    
     public virtual void AttackResponse(float damage, CharacterHandler attackingCharacter) { 
-        
+        string result = "null";//for debug
+
         if(this.combatState is AttackState) {
             //i am currently in an unblockable attack while being attacked
             //if enemy is simultaneously in attack
@@ -62,8 +64,10 @@ public class CharacterHandler : MonoBehaviour
                 //if my attack is unblockable
                 if(!(this.combatState as AttackState).chosenMove.blockableAttack){
                     //take damage but dont stagger
+                    result = "both take damage, but reacter staggers only due to unblockable attack";
                 } else {
                     //take damage, stagger as usual
+                    result = "both take damage and stagger";
                 }
             }
             
@@ -71,8 +75,10 @@ public class CharacterHandler : MonoBehaviour
             //i am blocking an unblockable attack
             if(!(attackingCharacter.combatState as AttackState).chosenMove.blockableAttack) {
                 //take damage and stagger
+                result = "requester beats block with unblockable, receiver takes damage and staggers";
             } else {
                 //drain stamina instead
+                result = "receiver blocks, only stamina drain";
             }
 
 
@@ -82,27 +88,35 @@ public class CharacterHandler : MonoBehaviour
                 //no damage, but enemy isnt staggared
                 //either a heavy attack with long endlag,
                 //OR can be instantly followed up with another swing maybe
+                result = "requester used unblockable attack but is countered, no effect to either";
             } else {
+                result = "receiver counters, requester staggers";
                 //proper counter here
             }
 
         } else if (this.combatState is DodgeState) {
-
-        } else if (this.combatState is DodgeState) {
+            result = "receiver dodged, no damage, stamina only";
+        } else if (this.combatState is StaggerState) {
+            result = "receiver hit when staggered";
+            //everytime this is triggered, increment
+            //"prevent camping when down" counter maybe
         } else {
+            result = "default situation, receiver takes damage and staggers";
             //take damage, stagger
         }
 
 
 
         
-
+        Debug.Log("REQUESTER: " + attackingCharacter.combatState.toString() 
+                + ", REACTER: " + combatState.toString()
+                + ", RESULT: " + result);
 
         TakeDamage(damage);
 
     }
 
-    public virtual void TakeDamage(float damage){ 
+    protected virtual void TakeDamage(float damage){ 
         Health -= damage;
         heathbar.fillAmount = Health / characterdata.maxHealth;
     }

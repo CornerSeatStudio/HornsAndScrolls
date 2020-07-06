@@ -7,12 +7,12 @@ public class DefaultState : CombatState {
     public DefaultState(CharacterHandler character, Animator animator, MeleeRaycastHandler attackHandler) : base(character, animator, attackHandler) {}
 
     public override IEnumerator OnStateEnter() {
-        Debug.Log("entering default combat state");
+        //Debug.Log("entering default combat state");
         yield break;
     }
 
     public override IEnumerator OnStateExit() {
-        Debug.Log("exiting default combat state");
+        //Debug.Log("exiting default combat state");
         yield break;
     }
     //probably just animator stuff
@@ -32,7 +32,7 @@ public class AttackState : CombatState {
     }
 
     public override IEnumerator OnStateEnter() { 
-        Debug.Log("entering attacking state");
+        //Debug.Log("entering attacking state");
         currAttackCoroutine = FindTargetAndDealDamage();
         yield return character.StartCoroutine(currAttackCoroutine);
         character.SetStateDriver(new DefaultState(character, animator, attackHandler));
@@ -41,7 +41,7 @@ public class AttackState : CombatState {
     protected virtual IEnumerator FindTargetAndDealDamage(){
         yield return character.StartCoroutine(attackHandler.FindTarget(chosenMove));
         
-        Debug.Log(chosenMove.angle + " " + chosenMove.range);
+        //Debug.Log(chosenMove.angle + " " + chosenMove.range);
         //if no targets in range
         if (attackHandler.chosenTarget == null) {
             Debug.Log("no targets in range");
@@ -53,8 +53,7 @@ public class AttackState : CombatState {
         yield return new WaitForSeconds(chosenMove.startup); //assumption: start up == counter window
 
 
-        //attackHandler.chosenTarget.AttackResponse(chosenMove.damage, character);
-        attackHandler.chosenTarget.TakeDamage(chosenMove.damage); //temp
+        attackHandler.chosenTarget.AttackResponse(chosenMove.damage, character);
         //during the endlag phase, check again
         //if I was hit && I am using blockable attack, stagger instead
         yield return new WaitForSeconds(chosenMove.endlag);
@@ -63,7 +62,7 @@ public class AttackState : CombatState {
 
  
     public override IEnumerator OnStateExit() {
-        Debug.Log("exiting attacking state");
+        //Debug.Log("exiting attacking state");
         if(currAttackCoroutine != null) character.StopCoroutine(currAttackCoroutine); 
         yield break;
     }
@@ -130,7 +129,7 @@ public class CounterState : CombatState {
     }
 
     public override IEnumerator OnStateExit() {
-        Debug.Log("exiting counter state");
+        //Debug.Log("exiting counter state");
         if (currCounterRoutine != null) character.StopCoroutine(currCounterRoutine);
         yield break;
     }

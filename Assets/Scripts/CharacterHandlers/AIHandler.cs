@@ -63,7 +63,7 @@ public class AIHandler : CharacterHandler {
     #endregion
 
     #region core
-    public override void TakeDamage(float damage) {
+    protected override void TakeDamage(float damage) {
         base.TakeDamage(damage);
         //release an event indicating x has taken damage
         onTakeDamage.Invoke(this);

@@ -12,6 +12,8 @@ public class DetectionEditor : Editor
 
     }
 
+    
+
     public void setup(Detection fov){
         //view arc
         Handles.color = Color.white;
