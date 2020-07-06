@@ -8,6 +8,8 @@ public class PlayerHandler : CharacterHandler
     
     protected override void Start(){
         base.Start();
+        CharacterController cc = GetComponent<CharacterController>();
+        cc.center = new Vector3(0,7,0); //temp idk why
 
     }
 

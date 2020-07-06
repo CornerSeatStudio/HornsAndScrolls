@@ -4,10 +4,6 @@ using UnityEngine;
 
 [CreateAssetMenu(fileName = "CharacterData", menuName = "ScriptableObjects/CharacterData")]
 public class CharacterData : ScriptableObject {
-    
-    //make private later
-    public string Charactername;
-    
     //description
     public float maxHealth;
     public float maxStamina; 

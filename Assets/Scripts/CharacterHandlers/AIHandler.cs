@@ -22,9 +22,7 @@ public class AIHandler : CharacterHandler {
     [Header("Core Members")]
     protected AIState localState;
     public AISpecificEvent onTakeDamage;
-    private bool chaseInitializer = true;
     public AIGlobalState GlobalState {get; set; } = AIGlobalState.UNAGGRO;
-    public float Priority { get; set; }
     public Dictionary<string, int> AnimationHashes { get; private set; }
     private List<AIHandler> proximateAI;
 
@@ -40,6 +38,8 @@ public class AIHandler : CharacterHandler {
     [Header("Combat stuff")]
     public int combatPocket;
     public CombatSlot CombatSlot {get; set;} = CombatSlot.OUT;
+    public float Priority { get; set; }
+
 
     #region callbacks
     protected override void Start() {
@@ -102,26 +102,7 @@ public class AIHandler : CharacterHandler {
     #endregion
 
     #region combat
-    /*
-    public BTStatus ChasePlayer() { 
-        //unfreeze cause im lazy
-        if (HitDetection.InMeleeRoutine) { agent.isStopped = true;} else { agent.isStopped = false;}
-        //chase the player until within hit range
-        if(chaseInitializer){
-            StartCoroutine("ChaseCoroutine");
-            chaseInitializer = false;
-        }
-        
-        //if within range
-        if((transform.position - target.transform.position).sqrMagnitude < HitDetection.interactionDistance * HitDetection.interactionDistance){
-            StopCoroutine("ChaseCoroutine");
-            chaseInitializer = true;
-            return BTStatus.SUCCESS;
-        }
 
-        return BTStatus.RUNNING;
-     }
-    */
     private IEnumerator ChaseCoroutine(){
         while (true){
             agent.SetDestination(target.transform.position);

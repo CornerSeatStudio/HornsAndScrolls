@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
+using TMPro;
 
 //[System.Serializable] public class CounterEvent : UnityEvent<>{}
 
@@ -16,9 +18,12 @@ public class CharacterHandler : MonoBehaviour
     public Dictionary<string, MeleeMove> MeleeMoves {get; private set;} //for easier access 
 
 
-    //[Header("Core Members")]
+    [Header("Core Members")]
+    public Image heathbar;
+    public TextMeshProUGUI debugState; 
     public CombatState combatState {get; private set;}
     public float Health {get; set; }
+    public float Stamina {get; set; }
 
     public UnityEvent counterEvent;
 
@@ -28,8 +33,8 @@ public class CharacterHandler : MonoBehaviour
         animator = this.GetComponent<Animator>();
         meleeRaycastHandler = this.GetComponent<MeleeRaycastHandler>();
         Health = characterdata.maxHealth;
+        Stamina = characterdata.maxStamina;
         PopulateMeleeMoves();
-
         SetStateDriver(new DefaultState(this, animator, meleeRaycastHandler)); //start as default
     }
 
@@ -39,12 +44,16 @@ public class CharacterHandler : MonoBehaviour
             MeleeMoves.Add(attack.name, attack);
         }
     }
+
+    void LateUpdate(){
+        debugState.SetText(combatState.toString());
+    }
+
     #endregion
 
-    #region core
-    public virtual void AttackResponse(float damage, CharacterHandler attackingCharacter) { //invoked every time character receives an attack
-        //if the character is blocking or was hit in the middle of the attack
-        //additionally, if the player countered or dodged, 
+    #region core/var manipulation
+    //upon contact with le weapon, this handles the appropriate response (such as tackign damage, stamina drain, counters etc)
+    public virtual void AttackResponse(float damage, CharacterHandler attackingCharacter) { 
         
         if(this.combatState is AttackState) {
             //i am currently in an unblockable attack while being attacked
@@ -70,7 +79,9 @@ public class CharacterHandler : MonoBehaviour
         } else if (this.combatState is CounterState) {
             //if i am countering an unblockable attack
             if(!(attackingCharacter.combatState as AttackState).chosenMove.blockableAttack){
-                //act like block, no damage, lose stamina
+                //no damage, but enemy isnt staggared
+                //either a heavy attack with long endlag,
+                //OR can be instantly followed up with another swing maybe
             } else {
                 //proper counter here
             }
@@ -89,12 +100,20 @@ public class CharacterHandler : MonoBehaviour
 
         TakeDamage(damage);
 
-        //return counter state to block,
     }
 
     public virtual void TakeDamage(float damage){ 
         Health -= damage;
+        heathbar.fillAmount = Health / characterdata.maxHealth;
     }
+
+    protected void TakeStaminaDrain(float staminaDrain){
+        Stamina -= staminaDrain;
+    }
+
+    
+
+    
 
     public virtual void Counter() {
 

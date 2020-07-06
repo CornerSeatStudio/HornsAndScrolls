@@ -16,6 +16,9 @@ public class DefaultState : CombatState {
         yield break;
     }
     //probably just animator stuff
+    public override string toString() {
+        return "DEFAULT";
+    }
 
 }
 
@@ -37,20 +40,21 @@ public class AttackState : CombatState {
 
     protected virtual IEnumerator FindTargetAndDealDamage(){
         yield return character.StartCoroutine(attackHandler.FindTarget(chosenMove));
+        
+        Debug.Log(chosenMove.angle + " " + chosenMove.range);
         //if no targets in range
         if (attackHandler.chosenTarget == null) {
             Debug.Log("no targets in range");
             yield return new WaitForSeconds(chosenMove.startup + chosenMove.endlag); //swing anyways
             character.SetStateDriver(new DefaultState(character, animator, attackHandler));
+            yield break;
         }
-
         //upon completion of finding target/at attack move setup, START listening
         yield return new WaitForSeconds(chosenMove.startup); //assumption: start up == counter window
 
 
-        attackHandler.chosenTarget.AttackResponse(chosenMove.damage, character);
-        //replcae with AttackResponse ->
-
+        //attackHandler.chosenTarget.AttackResponse(chosenMove.damage, character);
+        attackHandler.chosenTarget.TakeDamage(chosenMove.damage); //temp
         //during the endlag phase, check again
         //if I was hit && I am using blockable attack, stagger instead
         yield return new WaitForSeconds(chosenMove.endlag);
@@ -64,6 +68,9 @@ public class AttackState : CombatState {
         yield break;
     }
 
+    public override string toString() {
+        return "ATTACK";
+    }
 }
 
 public class BlockState : CombatState {
@@ -92,6 +99,10 @@ public class BlockState : CombatState {
         attackHandler.chosenTarget = null; //empty attackHandler.chosenTarget
         yield break;
     } 
+
+    public override string toString() {
+        return "BLOCK";
+    }
 }
 
 public class CounterState : CombatState {
@@ -124,6 +135,9 @@ public class CounterState : CombatState {
         yield break;
     }
 
+    public override string toString() {
+        return "COUNTER";
+    }
 }
 
 public class DodgeState : CombatState {

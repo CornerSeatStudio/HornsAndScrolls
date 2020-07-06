@@ -22,5 +22,9 @@ public abstract class CombatState
     public virtual IEnumerator OnStateExit() {
         yield break;
     }
+
+    public virtual string toString() {
+        return "to be replaced";
+    }
     
 }
