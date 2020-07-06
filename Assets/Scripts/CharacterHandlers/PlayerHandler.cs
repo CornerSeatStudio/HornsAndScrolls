@@ -8,10 +8,14 @@ public class PlayerHandler : CharacterHandler
     
     protected override void Start(){
         base.Start();
+        CharacterController cc = GetComponent<CharacterController>();
+        cc.center = new Vector3(0,7,0); //temp idk why
 
     }
 
-    void Update() {
+    protected override void Update() {
+        base.Update(); 
+
         //sadness is respresented by the length of if else blocks statents
         
         if(combatState is DefaultState) {
@@ -20,11 +24,11 @@ public class PlayerHandler : CharacterHandler
                 SetStateDriver(new AttackState(this, animator, meleeRaycastHandler));
             } else if(Input.GetButtonDown("Fire2") == true) {
                 Debug.Log("Fire2'd/counter trigger");
-                SetStateDriver(new BlockState(this, animator, meleeRaycastHandler));
+                SetStateDriver(new CounterState(this, animator, meleeRaycastHandler));
                 //counter event is here
             }
      
-        } else if (combatState is BlockState) {
+        } else if (combatState is BlockState) { //gets to here after "counter timer" runs up, aka has to wait for a bit to release block
             //if still blocking
             if(Input.GetButton("Fire2") == true) {
                 Debug.Log("holding blocking");
