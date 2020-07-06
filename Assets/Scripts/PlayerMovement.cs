@@ -8,17 +8,21 @@ public class PlayerMovement : MonoBehaviour {
 
     private bool IsSprinting;
     private bool IsSlowWalking;
-
+    private float directionofdodgeFB;
+    private float directionofdodgeLR;
     private bool IsCrouching=false;
     private bool IsWalking;
-    private bool IsSideSteppingRight;
+    private bool IsDodging;
     Vector3 angleOfPlayer;
     private bool IsWalkingBack;
     private bool IsWalkingRight;
     private bool IsCrouchingWalking;
-
+    private bool IsDodgingRight;
+    private bool IsDodgingLeft;
+    private bool IsDodgingBack;
+    private float rachedtimer;
     private Vector3 inputVector; //key inputs
-
+    private Vector3 dodgingdirections; //dodging stuff
     private bool IsWeaponout;
     public float movementSpeed = 15f; //5 is current goldilocks 
     public float fallspeed = 10f;
@@ -107,28 +111,21 @@ public class PlayerMovement : MonoBehaviour {
 
 
 
-
+        //walking at different angles
         angleOfPlayer=transform.eulerAngles;
         if(IsWeaponout&&((210>angleOfPlayer.y&&angleOfPlayer.y>130&&inputVector.z>0))||((330<angleOfPlayer.y||angleOfPlayer.y<30)&&inputVector.z<0)||(60<angleOfPlayer.y&&angleOfPlayer.y<120&&inputVector.x<0)||(240<angleOfPlayer.y&&angleOfPlayer.y<300&&inputVector.x>0)){
-             IsWalkingBack=true;
+            IsWalkingBack=true;
          }
-         else {
-             IsWalkingBack=false;
+        else {
+            IsWalkingBack=false;
         }
-        if((210>angleOfPlayer.y&&angleOfPlayer.y>130&&inputVector.x>0)||((330<angleOfPlayer.y||angleOfPlayer.y<30)&&inputVector.x<0)||(60<angleOfPlayer.y&&angleOfPlayer.y<120&&inputVector.z<0)||(240<angleOfPlayer.y&&angleOfPlayer.y<300&&inputVector.z>0)){
-             IsWalkingLeft=true;
-         }
-         else {
-             IsWalkingLeft=false;
-        }
-        if((210>angleOfPlayer.y&&angleOfPlayer.y>130&&inputVector.x<0)||((330<angleOfPlayer.y||angleOfPlayer.y<30)&&inputVector.x>0)||(60<angleOfPlayer.y&&angleOfPlayer.y<120&&inputVector.z>0)||(240<angleOfPlayer.y&&angleOfPlayer.y<300&&inputVector.z<0)){
+        if((210>angleOfPlayer.y&&angleOfPlayer.y>130&&inputVector.x<0)||((330<angleOfPlayer.y||angleOfPlayer.y<30)&&inputVector.x>0)||(60<angleOfPlayer.y&&angleOfPlayer.y<120&&inputVector.z<0)||(240<angleOfPlayer.y&&angleOfPlayer.y<300&&inputVector.z>0)){
              IsWalkingRight=true;
          }
-         else {
+        else {
              IsWalkingRight=false;
         }
-
-        if(IsWeaponout&&(210>angleOfPlayer.y&&angleOfPlayer.y>130&&inputVector.x<0)||((330<angleOfPlayer.y||angleOfPlayer.y<30)&&inputVector.x>0)||(60<angleOfPlayer.y&&angleOfPlayer.y<120&&inputVector.z>0)||(240<angleOfPlayer.y&&angleOfPlayer.y<300&&inputVector.z<0)){
+        if((210>angleOfPlayer.y&&angleOfPlayer.y>130&&inputVector.x>0)||((330<angleOfPlayer.y||angleOfPlayer.y<30)&&inputVector.x<0)||(60<angleOfPlayer.y&&angleOfPlayer.y<120&&inputVector.z>0)||(240<angleOfPlayer.y&&angleOfPlayer.y<300&&inputVector.z<0)){
             IsWalkingLeft=true;
 
         }else{
@@ -136,6 +133,27 @@ public class PlayerMovement : MonoBehaviour {
         }
 
 
+        //Dodging
+
+        if(IsWeaponout&&Input.GetKeyDown(KeyCode.Space)){
+            directionofdodgeFB=inputVector.z;
+            directionofdodgeLR=inputVector.x;
+            if(directionofdodgeFB>0){
+                IsDodging=true;
+            }else if(directionofdodgeFB<0){
+                IsDodgingBack=true;
+            }
+            if(directionofdodgeLR>0){
+                IsDodgingRight=true;
+            }else if(directionofdodgeLR<0){
+                IsDodgingLeft=true;
+            }
+            rachedtimer=30f;
+        }else if(rachedtimer==0&&IsDodging){
+            IsDodging=false;
+        }
+        rachedtimer=rachedtimer-1;
+        dodgingdirections = new Vector3(3f*directionofdodgeLR, 0f, 3f*directionofdodgeFB);
         //normal walking if statements
         if((inputVector.x != 0 || inputVector.z != 0)&&!IsCrouching&&!IsSprinting&&!IsSlowWalking&&!IsCrouchingWalking){
             IsWalking=true;
@@ -172,7 +190,13 @@ public class PlayerMovement : MonoBehaviour {
      }
 
     void FixedUpdate() {
-        controller.Move(inputVector * Time.fixedDeltaTime); 
+        if(IsDodging){
+            controller.Move(dodgingdirections * Time.fixedDeltaTime);
+        }
+        if(!IsDodging){
+            controller.Move(inputVector * Time.fixedDeltaTime); 
+        }
+
     }
 
     void LateUpdate(){
@@ -187,6 +211,10 @@ public class PlayerMovement : MonoBehaviour {
         animator.SetBool("IsWeaponout", IsWeaponout);
         animator.SetBool("IsWalkingRight", IsWalkingRight);
         animator.SetBool("IsWalkingLeft", IsWalkingLeft);
+        animator.SetBool("IsDodging", IsDodging);
+        animator.SetBool("IsDodgingBack", IsDodgingBack);
+        animator.SetBool("IsDodgingRight", IsDodgingRight);
+        animator.SetBool("IsDodingLeft", IsDodgingLeft);
     }
     
 }
