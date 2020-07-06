@@ -8,29 +8,32 @@ public class PlayerMovement : MonoBehaviour {
 
     private bool IsSprinting;
     private bool IsSlowWalking;
-
+    private float directionofdodgeFB;
+    private float directionofdodgeLR;
     private bool IsCrouching=false;
     private bool IsWalking;
-    private bool IsSideSteppingRight;
+    private bool IsDodging;
     Vector3 angleOfPlayer;
     private bool IsWalkingBack;
+    private bool IsWalkingRight;
     private bool IsCrouchingWalking;
-
+    private bool IsDodgingRight;
+    private bool IsDodgingLeft;
+    private bool IsDodgingBack;
+    private float rachedtimer;
     private Vector3 inputVector; //key inputs
-
+    private Vector3 dodgingdirections; //dodging stuff
     private bool IsWeaponout;
     public float movementSpeed = 15f; //5 is current goldilocks 
     public float fallspeed = 10f;
     //to declare mouse vs key presedence, compare via > operator
     public float mouseRotationSmoothness = 7f;
-    public float keyRotationSmoothness = 15f;
-
     private bool IsWalkingLeft;
+    public float keyRotationSmoothness = 15f;
+    
     void Start() {
         animator = this.GetComponent<Animator>();
         controller = this.GetComponent<CharacterController>();
-        //NEVER APPLY ROOT MOTION
-        animator.applyRootMotion = false;
 //        Debug.Log("Hello World");
         //temp character contorller settings
         controller.center = new Vector3(0, 2, 0);
@@ -96,31 +99,33 @@ public class PlayerMovement : MonoBehaviour {
         }
         
         //sheathe weapon
-        if(Input.GetKeyDown(KeyCode.X)&&!IsWeaponout&&!IsSprinting){
+        if(Input.GetKeyDown(KeyCode.X)&&!IsWeaponout&&!IsSprinting&&!IsCrouching){
+
             IsWeaponout=true;
                 
-        }else if(Input.GetKeyDown(KeyCode.X)&&IsWeaponout){
+        }else if((Input.GetKeyDown(KeyCode.X)&&IsWeaponout)||IsSprinting||IsCrouching){
             IsWeaponout=false;
              //independent of y
         }
 
 
 
+
+        //walking at different angles
         angleOfPlayer=transform.eulerAngles;
         if(IsWeaponout&&((210>angleOfPlayer.y&&angleOfPlayer.y>130&&inputVector.z>0))||((330<angleOfPlayer.y||angleOfPlayer.y<30)&&inputVector.z<0)||(60<angleOfPlayer.y&&angleOfPlayer.y<120&&inputVector.x<0)||(240<angleOfPlayer.y&&angleOfPlayer.y<300&&inputVector.x>0)){
-             IsWalkingBack=true;
+            IsWalkingBack=true;
          }
-         else {
-             IsWalkingBack=false;
+        else {
+            IsWalkingBack=false;
         }
-        
-        if(IsWeaponout&&((210>angleOfPlayer.y&&angleOfPlayer.y>130&&inputVector.x>0)||(330<angleOfPlayer.y||angleOfPlayer.y<30)&&inputVector.x<0)||(60<angleOfPlayer.y&&angleOfPlayer.y<120&&inputVector.z<0)||(240<angleOfPlayer.y&&angleOfPlayer.y<300&&inputVector.z>0)){
-            IsSideSteppingRight=true;
-        } else{
-            IsSideSteppingRight=false;
+        if((210>angleOfPlayer.y&&angleOfPlayer.y>130&&inputVector.x<0)||((330<angleOfPlayer.y||angleOfPlayer.y<30)&&inputVector.x>0)||(60<angleOfPlayer.y&&angleOfPlayer.y<120&&inputVector.z<0)||(240<angleOfPlayer.y&&angleOfPlayer.y<300&&inputVector.z>0)){
+             IsWalkingRight=true;
+         }
+        else {
+             IsWalkingRight=false;
         }
-
-        if(IsWeaponout&&(210>angleOfPlayer.y&&angleOfPlayer.y>130&&inputVector.x<0)||((330<angleOfPlayer.y||angleOfPlayer.y<30)&&inputVector.x>0)||(60<angleOfPlayer.y&&angleOfPlayer.y<120&&inputVector.z>0)||(240<angleOfPlayer.y&&angleOfPlayer.y<300&&inputVector.z<0)){
+        if((210>angleOfPlayer.y&&angleOfPlayer.y>130&&inputVector.x>0)||((330<angleOfPlayer.y||angleOfPlayer.y<30)&&inputVector.x<0)||(60<angleOfPlayer.y&&angleOfPlayer.y<120&&inputVector.z>0)||(240<angleOfPlayer.y&&angleOfPlayer.y<300&&inputVector.z<0)){
             IsWalkingLeft=true;
 
         }else{
@@ -128,6 +133,27 @@ public class PlayerMovement : MonoBehaviour {
         }
 
 
+        //Dodging
+
+        if(IsWeaponout&&Input.GetKeyDown(KeyCode.Space)){
+            directionofdodgeFB=inputVector.z;
+            directionofdodgeLR=inputVector.x;
+            if(directionofdodgeFB>0){
+                IsDodging=true;
+            }else if(directionofdodgeFB<0){
+                IsDodgingBack=true;
+            }
+            if(directionofdodgeLR>0){
+                IsDodgingRight=true;
+            }else if(directionofdodgeLR<0){
+                IsDodgingLeft=true;
+            }
+            rachedtimer=30f;
+        }else if(rachedtimer==0&&IsDodging){
+            IsDodging=false;
+        }
+        rachedtimer=rachedtimer-1;
+        dodgingdirections = new Vector3(3f*directionofdodgeLR, 0f, 3f*directionofdodgeFB);
         //normal walking if statements
         if((inputVector.x != 0 || inputVector.z != 0)&&!IsCrouching&&!IsSprinting&&!IsSlowWalking&&!IsCrouchingWalking){
             IsWalking=true;
@@ -136,8 +162,7 @@ public class PlayerMovement : MonoBehaviour {
             IsWalking=false;
         }
         
-        //mouse movement - check later if this should be in fixed update instead
-        //test - only face player to mouse when aiming
+        //mouse movement
          if (IsWeaponout) {
              Plane playerPlane = new Plane(Vector3.up, transform.position);
              Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -165,8 +190,13 @@ public class PlayerMovement : MonoBehaviour {
      }
 
     void FixedUpdate() {
-        
-        controller.Move(inputVector * Time.fixedDeltaTime); 
+        if(IsDodging){
+            controller.Move(dodgingdirections * Time.fixedDeltaTime);
+        }
+        if(!IsDodging){
+            controller.Move(inputVector * Time.fixedDeltaTime); 
+        }
+
     }
 
     void LateUpdate(){
@@ -179,8 +209,12 @@ public class PlayerMovement : MonoBehaviour {
         animator.SetBool("IsCrouchingWalking", IsCrouchingWalking);
         animator.SetBool("IsWalkingBack", IsWalkingBack);
         animator.SetBool("IsWeaponout", IsWeaponout);
-        animator.SetBool("IsSideSteppingRight", IsSideSteppingRight);
+        animator.SetBool("IsWalkingRight", IsWalkingRight);
         animator.SetBool("IsWalkingLeft", IsWalkingLeft);
+        animator.SetBool("IsDodging", IsDodging);
+        animator.SetBool("IsDodgingBack", IsDodgingBack);
+        animator.SetBool("IsDodgingRight", IsDodgingRight);
+        animator.SetBool("IsDodingLeft", IsDodgingLeft);
     }
     
 }

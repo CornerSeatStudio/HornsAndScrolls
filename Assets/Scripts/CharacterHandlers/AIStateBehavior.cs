@@ -42,6 +42,8 @@ public class PatrolState : AIState {
     public PatrolState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
 
     public override IEnumerator OnStateEnter() { //Debug.Log("enteredPatrol");
+        if(character.NextWaypointLocation == null) { Debug.LogWarning("no waypoints on some cunt"); character.SetStateDriver(new IdleState(character, animator, agent)); };
+        
         animator.SetBool(character.AnimationHashes["IsPatrol"], true);
         moveToLocationCoroutine = MoveToLocation(character.NextWaypointLocation);
         yield return character.StartCoroutine(moveToLocationCoroutine);
@@ -137,7 +139,7 @@ public class InvestigationState : AIState {
         isDecreasingDetection = true; //start by DECREASING detection
         
         if(timerCoroutine == null) { //start timer each first time only
-            timerCoroutine = InvestigationTimer(); 
+            timerCoroutine = InvestigationTimer();
             character.StartCoroutine(timerCoroutine); 
         }
 
@@ -214,16 +216,4 @@ public class InvestigationState : AIState {
         if(timerCoroutine != null) character.StopCoroutine(timerCoroutine); //stop coroutine
         yield return null;
     }
-}
-
-public class CombatState : AIState {
-    private IEnumerator combatCoroutine;
-
-    public CombatState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
-
-    public override IEnumerator OnStateEnter() {
-        Debug.Log("entered combat state");
-        yield return null;
-    }
-
 }
