@@ -8,10 +8,12 @@ public class DefaultState : CombatState {
 
     public override IEnumerator OnStateEnter() {
         //Debug.Log("entering default combat state");
+        animator.SetBool(character.AnimationHashes["IsAgro"], true);
         yield break;
     }
 
     public override IEnumerator OnStateExit() {
+        animator.SetBool(character.AnimationHashes["IsAgro"], false);
         //Debug.Log("exiting default combat state");
         yield break;
     }
@@ -36,6 +38,7 @@ public class AttackState : CombatState {
         currAttackCoroutine = FindTargetAndDealDamage();
         yield return character.StartCoroutine(currAttackCoroutine);
         character.SetStateDriver(new DefaultState(character, animator, attackHandler));
+        animator.SetBool(character.AnimationHashes["IsAttacking"], true);
     }    
 
     protected virtual IEnumerator FindTargetAndDealDamage(){
@@ -64,6 +67,7 @@ public class AttackState : CombatState {
     public override IEnumerator OnStateExit() {
         //Debug.Log("exiting attacking state");
         if(currAttackCoroutine != null) character.StopCoroutine(currAttackCoroutine); 
+        animator.SetBool(character.AnimationHashes["IsAttacking"], false);
         yield break;
     }
 
