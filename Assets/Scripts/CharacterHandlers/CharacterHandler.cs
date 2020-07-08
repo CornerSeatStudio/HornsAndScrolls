@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
+using TMPro;
+
+//[System.Serializable] public class CounterEvent : UnityEvent<>{}
+
 
 public class CharacterHandler : MonoBehaviour
 {
@@ -14,16 +19,22 @@ public class CharacterHandler : MonoBehaviour
 
 
     [Header("Core Members")]
-    protected CombatState combatState;
+    public Image heathbar;
+    public TextMeshProUGUI debugState; 
+    public CombatState combatState {get; private set;}
     public float Health {get; set; }
+    public float Stamina {get; set; }
+
+    public UnityEvent counterEvent;
+
     
     #region Callbacks
     protected virtual void Start() {
         animator = this.GetComponent<Animator>();
         meleeRaycastHandler = this.GetComponent<MeleeRaycastHandler>();
         Health = characterdata.maxHealth;
+        Stamina = characterdata.maxStamina;
         PopulateMeleeMoves();
-
         SetStateDriver(new DefaultState(this, animator, meleeRaycastHandler)); //start as default
     }
 
@@ -33,39 +44,95 @@ public class CharacterHandler : MonoBehaviour
             MeleeMoves.Add(attack.name, attack);
         }
     }
+
+    protected virtual void Update(){
+        debugState.SetText(combatState.toString());
+    }
+
     #endregion
 
-    #region core
-    public virtual void AttackResponse(float damage, CharacterHandler attackingCharacter) { //invoked every time character receives an attack
-        //if the character is blocking or was hit in the middle of the attack
-        //additionally, if the player countered or dodged, 
+    #region core/var manipulation
+    //upon contact with le weapon, this handles the appropriate response (such as tackign damage, stamina drain, counters etc)
+    
+    public virtual void AttackResponse(float damage, CharacterHandler attackingCharacter) { 
+        string result = "null";//for debug
+
+        if(this.combatState is AttackState) {
+            //i am currently in an unblockable attack while being attacked
+            //if enemy is simultaneously in attack
+            if(attackingCharacter.combatState is AttackState){
+                //if my attack is unblockable
+                if(!(this.combatState as AttackState).chosenMove.blockableAttack){
+                    //take damage but dont stagger
+                    result = "both take damage, but reacter staggers only due to unblockable attack";
+                } else {
+                    //take damage, stagger as usual
+                    result = "both take damage and stagger";
+                }
+            }
+            
+        } else if (this.combatState is BlockState) {
+            //i am blocking an unblockable attack
+            if(!(attackingCharacter.combatState as AttackState).chosenMove.blockableAttack) {
+                //take damage and stagger
+                result = "requester beats block with unblockable, receiver takes damage and staggers";
+            } else {
+                //drain stamina instead
+                result = "receiver blocks, only stamina drain";
+            }
+
+
+        } else if (this.combatState is CounterState) {
+            //if i am countering an unblockable attack
+            if(!(attackingCharacter.combatState as AttackState).chosenMove.blockableAttack){
+                //no damage, but enemy isnt staggared
+                //either a heavy attack with long endlag,
+                //OR can be instantly followed up with another swing maybe
+                result = "requester used unblockable attack but is countered, no effect to either";
+            } else {
+                result = "receiver counters, requester staggers";
+                //proper counter here
+            }
+
+        } else if (this.combatState is DodgeState) {
+            result = "receiver dodged, no damage, stamina only";
+        } else if (this.combatState is StaggerState) {
+            result = "receiver hit when staggered";
+            //everytime this is triggered, increment
+            //"prevent camping when down" counter maybe
+        } else {
+            result = "default situation, receiver takes damage and staggers";
+            //take damage, stagger
+        }
+
+
+
         
-        //take LAST PERCIEVED EVENT
+        Debug.Log("REQUESTER: " + attackingCharacter.combatState.toString() 
+                + ", REACTER: " + combatState.toString()
+                + ", RESULT: " + result);
 
-        //todo: put in respective classes (replace/add to TakeDamage method)
+        TakeDamage(damage);
 
-        //attacking anyone
-        //if character is blocking && I am using blockable attack, dont do damage but finish animation - global flag toggle
-        //if I was hit && I am using blockable attack, stagger instead
-
-        //attacking Player
-        //if i, AI, was hit && i, AI, am using unblockable attack, damage to player as usual
-        //if player is blocking && i, AI, am using unblockable attack, deal damage still
-        //if player is countering && i, AI, am using unblockable attack, act like blockable attack
-        //if player is countering && i, AI, am using blockable attack, begin stagger animation, yield return slower maybe?
-        //if player dodges, do no damage/nothing
-
-        //if all else fails, deal the damage
     }
 
-    public virtual void TakeDamage(float damage){ 
+    protected virtual void TakeDamage(float damage){ 
         Health -= damage;
+        heathbar.fillAmount = Health / characterdata.maxHealth;
     }
 
-    public virtual void Block() { //deal with block (and counter for player)
-        
+    protected void TakeStaminaDrain(float staminaDrain){
+        Stamina -= staminaDrain;
+    }
+
+    
+
+    
+
+    public virtual void Counter() {
 
     }
+
     #endregion
 
     #region COMBATFSM
