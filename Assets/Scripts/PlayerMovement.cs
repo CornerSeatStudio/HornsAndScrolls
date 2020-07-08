@@ -214,7 +214,7 @@ public class PlayerMovement : MonoBehaviour {
         animator.SetBool("IsDodging", IsDodging);
         animator.SetBool("IsDodgingBack", IsDodgingBack);
         animator.SetBool("IsDodgingRight", IsDodgingRight);
-        animator.SetBool("IsDodingLeft", IsDodgingLeft);
+        animator.SetBool("IsDodgingLeft", IsDodgingLeft);
     }
     
 }
