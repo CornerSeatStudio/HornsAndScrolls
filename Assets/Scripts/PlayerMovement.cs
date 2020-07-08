@@ -31,6 +31,8 @@ public class PlayerMovement : MonoBehaviour {
     private bool IsWalkingLeft;
     public float keyRotationSmoothness = 15f;
     
+    public Dictionary<string, int> AnimationHashes { get; private set; }
+
     void Start() {
         animator = this.GetComponent<Animator>();
         controller = this.GetComponent<CharacterController>();
@@ -39,8 +41,28 @@ public class PlayerMovement : MonoBehaviour {
         controller.center = new Vector3(0, 2, 0);
         controller.radius = 3;
         controller.height = 15;
+        setupAnimationHashes();
     }
 
+    private void setupAnimationHashes() {
+        AnimationHashes = new Dictionary<string, int>();
+        AnimationHashes.Add("IsSprinting", Animator.StringToHash("IsSprinting"));
+        AnimationHashes.Add("IsSlowWalking", Animator.StringToHash("IsSlowWalking"));
+        AnimationHashes.Add("directionofdodgeFB", Animator.StringToHash("directionofdodgeFB"));
+        AnimationHashes.Add("directionofdodgeLR", Animator.StringToHash("directionofdodgeLR"));
+        AnimationHashes.Add("IsDodging", Animator.StringToHash("IsDodging"));
+        AnimationHashes.Add("IsWalking", Animator.StringToHash("IsWalking"));
+        AnimationHashes.Add("IsWalkingBack", Animator.StringToHash("IsWalkingBack"));
+        AnimationHashes.Add("IsCrouching", Animator.StringToHash("IsCrouching"));
+        AnimationHashes.Add("IsWalkingRight", Animator.StringToHash("IsWalkingRight"));
+        AnimationHashes.Add("IsCrouchingWalking", Animator.StringToHash("IsCrouchingWalking"));
+        AnimationHashes.Add("IsDodgingRight", Animator.StringToHash("IsDodgingRight"));
+        AnimationHashes.Add("IsDodgingLeft", Animator.StringToHash("IsDodgingLeft"));
+        AnimationHashes.Add("IsWeaponout", Animator.StringToHash("IsWeaponout"));
+        AnimationHashes.Add("IsWalkingLeft", Animator.StringToHash("IsWalkingLeft"));
+        AnimationHashes.Add("IsDodgingBack", Animator.StringToHash("IsDodgingBack"));
+        
+    }
     void Update() {
         
         //Player Movement - normalized makes diagonal movement same as normal movement
@@ -140,20 +162,28 @@ public class PlayerMovement : MonoBehaviour {
             directionofdodgeLR=inputVector.x;
             if(directionofdodgeFB>0){
                 IsDodging=true;
-            }else if(directionofdodgeFB<0){
+            }
+            if(directionofdodgeFB<0){
                 IsDodgingBack=true;
             }
             if(directionofdodgeLR>0){
                 IsDodgingRight=true;
-            }else if(directionofdodgeLR<0){
+            }
+            if(directionofdodgeLR<0){
                 IsDodgingLeft=true;
             }
             rachedtimer=30f;
-        }else if(rachedtimer==0&&IsDodging){
+        }else if(rachedtimer==0&&(IsDodging||IsDodgingBack||IsDodgingLeft||IsDodgingRight)){
             IsDodging=false;
+            IsDodgingBack=false;
+            IsDodgingLeft=false;
+            IsDodgingRight=false;
         }
         rachedtimer=rachedtimer-1;
         dodgingdirections = new Vector3(3f*directionofdodgeLR, 0f, 3f*directionofdodgeFB);
+
+
+
         //normal walking if statements
         if((inputVector.x != 0 || inputVector.z != 0)&&!IsCrouching&&!IsSprinting&&!IsSlowWalking&&!IsCrouchingWalking){
             IsWalking=true;
@@ -202,19 +232,20 @@ public class PlayerMovement : MonoBehaviour {
     void LateUpdate(){
 
         //anim stuff
-        animator.SetBool("IsWalking", IsWalking);
-        animator.SetBool("IsSprinting", IsSprinting);
-        animator.SetBool("IsSlowWalking", IsSlowWalking);
-        animator.SetBool("IsCrouching", IsCrouching);
-        animator.SetBool("IsCrouchingWalking", IsCrouchingWalking);
-        animator.SetBool("IsWalkingBack", IsWalkingBack);
-        animator.SetBool("IsWeaponout", IsWeaponout);
-        animator.SetBool("IsWalkingRight", IsWalkingRight);
-        animator.SetBool("IsWalkingLeft", IsWalkingLeft);
-        animator.SetBool("IsDodging", IsDodging);
-        animator.SetBool("IsDodgingBack", IsDodgingBack);
-        animator.SetBool("IsDodgingRight", IsDodgingRight);
-        animator.SetBool("IsDodingLeft", IsDodgingLeft);
+        animator.SetBool(AnimationHashes["IsWalking"], IsWalking);
+        animator.SetBool(AnimationHashes["IsSprinting"], IsSprinting);
+        animator.SetBool(AnimationHashes["IsSlowWalking"], IsSlowWalking);
+        animator.SetBool(AnimationHashes["IsCrouching"], IsCrouching);
+        animator.SetBool(AnimationHashes["IsCrouchingWalking"], IsCrouchingWalking);
+        animator.SetBool(AnimationHashes["IsWalkingBack"], IsWalkingBack);
+        animator.SetBool(AnimationHashes["IsWeaponout"], IsWeaponout);
+        animator.SetBool(AnimationHashes["IsWalkingRight"], IsWalkingRight);
+        animator.SetBool(AnimationHashes["IsWalkingLeft"], IsWalkingLeft);
+        animator.SetBool(AnimationHashes["IsDodging"], IsDodging);
+        animator.SetBool(AnimationHashes["IsDodgingBack"], IsDodgingBack);
+        animator.SetBool(AnimationHashes["IsDodgingRight"], IsDodgingRight);
+        animator.SetBool(AnimationHashes["IsDodgingLeft"], IsDodgingLeft);
+
     }
     
 }
