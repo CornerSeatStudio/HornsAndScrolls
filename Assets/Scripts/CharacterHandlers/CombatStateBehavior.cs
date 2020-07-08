@@ -89,6 +89,7 @@ public class BlockState : CombatState {
     private IEnumerator CheckBlockRange() {
         while (true) {
             yield return character.StartCoroutine(attackHandler.FindTarget(block)); //run find target while blocking
+            Debug.Log("block would be valid");
             //if the attackHandler.chosenTarget exists, the block IS ALLOWED
         }
     }

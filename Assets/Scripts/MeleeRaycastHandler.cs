@@ -20,7 +20,7 @@ public class MeleeRaycastHandler : MonoBehaviour {
             //Debug.Log(col.transform);
             Transform target = col.transform; //get the targets locatoin
             Vector3 directionToTarget = (target.position - transform.position).normalized; //direction vector of where bloke is
-            if (Vector3.Angle(transform.forward, directionToTarget) < meleeMove.angle/2){ //if the FOV is within bounds, /2 cause left right
+            if (Vector3.Angle(transform.forward, directionToTarget) < meleeMove.angle/2){ //if the attack is within bounds, /2 cause left right
                 //do the ray 
                 float distanceToTarget = Vector3.Distance(transform.position, target.position);
                 if(!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleMask)){ //if, from character at given angle and distance, it DOESNT collide with obstacleMask

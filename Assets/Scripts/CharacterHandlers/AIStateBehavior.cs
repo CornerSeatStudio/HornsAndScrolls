@@ -129,6 +129,7 @@ public class InvestigationState : AIState {
         } else { //caught, change global state, let mono behavior handle the rest
             animator.SetBool(character.AnimationHashes["IsAggroWalk"], true); //todo: to be put in separate class
             character.GlobalState = AIGlobalState.AGGRO;
+            character.ThrowStateToGCDriver();
         }
 
     }

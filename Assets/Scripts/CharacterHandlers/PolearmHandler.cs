@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GruntHandler : AIHandler
-{   
+public class PolearmHandler : AIHandler
+{
+   
   
 
 }

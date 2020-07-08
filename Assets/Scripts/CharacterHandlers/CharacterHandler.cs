@@ -15,19 +15,20 @@ public class CharacterHandler : MonoBehaviour
     public WeaponData weapon; //Todo: list to choose between
     protected Animator animator;
     protected MeleeRaycastHandler meleeRaycastHandler;
-    public Dictionary<string, MeleeMove> MeleeMoves {get; private set;} //for easier access 
-
 
     [Header("Core Members")]
     public Image heathbar;
+    public Image staminabar;
     public TextMeshProUGUI debugState; 
+    public float staminaRegenerationWindow = 3f;
+    public UnityEvent counterEvent;
+
+    //private stuff
     public CombatState combatState {get; private set;}
     public float Health {get; set; }
     public float Stamina {get; set; }
+    public Dictionary<string, MeleeMove> MeleeMoves {get; private set;} //for easier access 
 
-    public UnityEvent counterEvent;
-
-    
     #region Callbacks
     protected virtual void Start() {
         animator = this.GetComponent<Animator>();
@@ -36,6 +37,7 @@ public class CharacterHandler : MonoBehaviour
         Stamina = characterdata.maxStamina;
         PopulateMeleeMoves();
         SetStateDriver(new DefaultState(this, animator, meleeRaycastHandler)); //start as default
+        
     }
 
     private void PopulateMeleeMoves() {
@@ -48,16 +50,14 @@ public class CharacterHandler : MonoBehaviour
     protected virtual void Update(){
         debugState.SetText(combatState.toString());
     }
-
     #endregion
 
     #region core/var manipulation
     //upon contact with le weapon, this handles the appropriate response (such as tackign damage, stamina drain, counters etc)
-    
     public virtual void AttackResponse(float damage, CharacterHandler attackingCharacter) { 
         string result = "null";//for debug
 
-        if(this.combatState is AttackState) {
+        if(this.combatState is AttackState) { //TODO AM IN RANGE
             //i am currently in an unblockable attack while being attacked
             //if enemy is simultaneously in attack
             if(attackingCharacter.combatState is AttackState){
@@ -71,8 +71,8 @@ public class CharacterHandler : MonoBehaviour
                 }
             }
             
-        } else if (this.combatState is BlockState) {
-            //i am blocking an unblockable attack
+        } else if (this.combatState is BlockState && meleeRaycastHandler.chosenTarget != null) {
+            //i am blocking an unblockable attack AND if its a valid block (should be null if no target)
             if(!(attackingCharacter.combatState as AttackState).chosenMove.blockableAttack) {
                 //take damage and stagger
                 result = "requester beats block with unblockable, receiver takes damage and staggers";
@@ -100,41 +100,67 @@ public class CharacterHandler : MonoBehaviour
             result = "receiver hit when staggered";
             //everytime this is triggered, increment
             //"prevent camping when down" counter maybe
-        } else {
+        } else { 
             result = "default situation, receiver takes damage and staggers";
             //take damage, stagger
         }
 
-
-
-        
         Debug.Log("REQUESTER: " + attackingCharacter.combatState.toString() 
                 + ", REACTER: " + combatState.toString()
                 + ", RESULT: " + result);
 
-        TakeDamage(damage);
+        DealStamina(damage);
 
     }
 
+    //ONLY method that allows damage
     protected virtual void TakeDamage(float damage){ 
         Health -= damage;
         heathbar.fillAmount = Health / characterdata.maxHealth;
+    
+        //if dead:
+            //change CombatState to death
+                //which in itself handels death stuff 
+                    //(including ragdolls, animations, enum)
+            //if AI (when overwritten), change AIstate 
+
     }
 
-    protected void TakeStaminaDrain(float staminaDrain){
+    private IEnumerator staminaRegenCoroutine;
+    private IEnumerator staminaDrainAndCooldown;
+
+    public void DealStamina(float staminaDrain) {
+        //cancel the wait from current dealing of stamina
+        if(staminaDrainAndCooldown != null) StopCoroutine(staminaDrainAndCooldown);
+        //also stop regenerating stamina
+        if(staminaRegenCoroutine != null) StopCoroutine(staminaRegenCoroutine);
+        
+        //deal stamina damage again, restart cooldown
+        staminaDrainAndCooldown = TakeStaminaDrain(staminaDrain);
+        StartCoroutine(staminaDrainAndCooldown);
+    }
+
+    protected IEnumerator StaminaRegeneration() {
+        Debug.Log("in stam regen");
+        while (Stamina < characterdata.maxStamina) {
+            Stamina += characterdata.staminaRegenerationRatePerS / 10;
+            staminabar.fillAmount = Stamina / characterdata.maxStamina; //update el bar
+            yield return new WaitForSeconds(0.1f);
+        }
+        staminaRegenCoroutine = null;
+    }
+
+    protected IEnumerator TakeStaminaDrain(float staminaDrain){
         Stamina -= staminaDrain;
-    }
-
-    
-
-    
-
-    public virtual void Counter() {
-
+        staminabar.fillAmount = Stamina / characterdata.maxStamina;
+        yield return new WaitForSeconds(staminaRegenerationWindow);
+        //start regening again
+        staminaRegenCoroutine = StaminaRegeneration();
+        StartCoroutine(staminaRegenCoroutine); 
+        staminaDrainAndCooldown = null; //allow reuse   
     }
 
     #endregion
-
     #region COMBATFSM
     //everytime the state is changed, do an exit routine (if applicable), switch the state, then trigger start routine (if applicable)
     public void SetStateDriver(CombatState state) { 

@@ -42,9 +42,12 @@ public class ThinkCycle : MonoBehaviour
     public BTNode buildTree(GruntHandler ai) { 
         BTSetup builder = new BTSetup();
         return builder
-                .EmplaceSequencer("sequencer1")
-                    .EmplaceTask("task1", t => ai.VerifyStealth())
-                    .EmplaceTask("task2", t => alwaysTrue()) //todo - fix for inheritence
+                .EmplaceSelector("main selector")
+                    .EmplaceTask("stealth", t => ai.VerifyStealth()) 
+                    .EmplaceSelector("combat sequence")
+                        .EmplaceConditional("verify", t => ai.VerifyCombatIncapable()) 
+                        .EmplaceTask("engage", t => ai.EngageDriver())
+                    .FinishNonTask()
                 .FinishNonTask()
                 .Build();
 
@@ -56,6 +59,7 @@ public class ThinkCycle : MonoBehaviour
 
     BTStatus alwaysTrue() {
         Debug.Log("stealth has FAILED, breaking into combat");
+        //stop detection script, start stamina script?
         return BTStatus.RUNNING;
     }
 
