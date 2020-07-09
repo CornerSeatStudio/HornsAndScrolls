@@ -5,43 +5,32 @@ using UnityEngine.AI;
 
 public class ThinkCycle : MonoBehaviour
 {
-    private SlotOrganizer slotter;
-    private List<BTNode> AItrees;
+    //private SlotOrganizer slotter;
+    private BTNode root;
+    private AIHandler ai;
     private IEnumerator tempRoutine;
-    public float thinkDelay;
+    public float thinkDelay = .2f;
+    private bool isDead = false;
 
     void Start()
     {        
-        AItrees = new List<BTNode>();
-        slotter = this.GetComponent<SlotOrganizer>();
-        foreach(AIHandler ai in slotter.AllEnemiesInScene) {
-            //Debug.Log(ai.transform.position);
-            if (ai.GetType() == typeof(GruntHandler)) {
-                AItrees.Add(buildTree((GruntHandler)ai));
-                break;
-            }
-        }
-
+        ai = this.GetComponent<AIHandler>();
+        buildTree();
         //nce all trees are in, start thinking process
-        StartCoroutine("RunTrees", thinkDelay);
+        StartCoroutine("RunTree", thinkDelay);
 
     }
 
-    IEnumerator RunTrees(float delay) {
-        while (true) {
+    IEnumerator RunTree(float delay) {
+        while (!isDead) {
             yield return new WaitForSeconds(delay);
-            //evaluate combat slots
-
-            foreach(BTNode tree in AItrees) {
-                tree.Evaluate(delay);
-
-            }
+            root.Evaluate(Time.deltaTime);
         }
     }
 
-    public BTNode buildTree(GruntHandler ai) { 
+    public void buildTree() { 
         BTSetup builder = new BTSetup();
-        return builder
+        this.root = builder
                 .EmplaceSelector("main selector")
                     //.EmplaceTask("stealth", t => ai.VerifyStealth()) 
                     .EmplaceTask("testfalse", t => alwaysFalse())
@@ -58,10 +47,9 @@ public class ThinkCycle : MonoBehaviour
         return BTStatus.FAILURE;
     }
 
-    BTStatus alwaysTrue() {
-        Debug.Log("stealth has FAILED, breaking into combat");
-        //stop detection script, start stamina script?
-        return BTStatus.RUNNING;
+    BTStatus KillBrain() {
+        isDead = true;
+        return BTStatus.SUCCESS;
     }
 
 }

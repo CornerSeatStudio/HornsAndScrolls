@@ -6,7 +6,8 @@ using UnityEngine;
 
 public class SlotOrganizer : MonoBehaviour
 {
-    public AIHandler[] AllEnemiesInScene { get; set; }
+
+/*    public AIHandler[] AllEnemiesInScene { get; set; }
     [SerializeField] private GameObject target;
     public int combatSlotSize = 3;
     public float guaranteeDuration = 3; //determines turnover time between guarnatee an in
@@ -60,7 +61,7 @@ public class SlotOrganizer : MonoBehaviour
                 inCombat = true;
 
                 //archers always have 0 priority TODO
-                if(false) { enemy.Priority = 0; }
+                if(false) {; }
 
                 else {
                     //ARBRITRARY VALUE -> closer == higher priority
@@ -88,5 +89,8 @@ public class SlotOrganizer : MonoBehaviour
         }
 
     }
-
+*/
 }
+
+
+

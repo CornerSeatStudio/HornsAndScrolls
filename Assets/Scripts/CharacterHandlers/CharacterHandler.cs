@@ -5,7 +5,6 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using TMPro;
 
-//[System.Serializable] public class CounterEvent : UnityEvent<>{}
 
 
 public class CharacterHandler : MonoBehaviour
@@ -21,7 +20,6 @@ public class CharacterHandler : MonoBehaviour
     public Image staminabar;
     public TextMeshProUGUI debugState; 
     public float staminaRegenerationWindow = 3f;
-    public UnityEvent counterEvent;
     public Dictionary<string, int> AnimationHashes { get; private set; }
 
     //private stuff
@@ -33,7 +31,9 @@ public class CharacterHandler : MonoBehaviour
 
     #region Callbacks
     protected virtual void Start() {
+        
         animator = this.GetComponent<Animator>();
+        //DisableRagdoll();
         MeleeRaycastHandler = this.GetComponent<MeleeRaycastHandler>();
         Health = characterdata.maxHealth;
         Stamina = characterdata.maxStamina;
@@ -42,6 +42,24 @@ public class CharacterHandler : MonoBehaviour
         SetStateDriver(new DefaultState(this, animator, MeleeRaycastHandler)); //start as default
         
     }
+    private void DisableRagdoll(){  
+        Rigidbody[] rigidbodies = gameObject.GetComponentsInChildren<Rigidbody>();
+        foreach(Rigidbody rb in rigidbodies){
+            if(rb.gameObject != this.gameObject){
+                rb.isKinematic = true;
+            }
+        }
+
+        Collider[] colliders = gameObject.GetComponentsInChildren<Collider>();
+        foreach(Collider col in colliders) {
+            if (col.gameObject != this.gameObject) {
+                col.enabled = false;
+            }
+        }
+        
+        
+    }
+
     private void setupAnimationHashes() {
         AnimationHashes = new Dictionary<string, int>();
         AnimationHashes.Add("IsPatrol", Animator.StringToHash("IsPatrol"));
@@ -114,7 +132,7 @@ public class CharacterHandler : MonoBehaviour
             //everytime this is triggered, increment
             //"prevent camping when down" counter maybe
         } else { 
-            result = "default situation, receiver takes damage and staggers";
+            result = "default situation, receiver takes damage and staggers, possible out of range";
             //take damage, stagger
         }
 
@@ -122,7 +140,7 @@ public class CharacterHandler : MonoBehaviour
                 + ", REACTER: " + combatState.toString()
                 + ", RESULT: " + result);
 
-        DealStamina(damage);
+        TakeDamage(damage);
 
     }
 

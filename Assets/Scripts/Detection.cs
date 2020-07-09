@@ -16,6 +16,7 @@ public class Detection : MonoBehaviour
     public List<Transform> VisibleTargets {get; } = new List<Transform>();
     public List<GameObject> InteractableTargets {get; } = new List<GameObject>();
 
+    public bool IsAlive {get; set; }= true;
     //[Range(0, 0.25f)] public float meshResolution; //# of triangle divisions of FOV, larger == more circular
     //public MeshFilter viewMeshFilter; 
     //Mesh viewMesh; 
@@ -53,11 +54,12 @@ public class Detection : MonoBehaviour
     }
 
     private IEnumerator FindTargetsWithDelay(float delay){
-        while (true){
+        while (IsAlive){
             yield return new WaitForSeconds(delay); //only coroutine every delay seconds
             findVisibleTargets();
         }
     }
+
 
 
     //for every target (via an array), lock on em, the core logic

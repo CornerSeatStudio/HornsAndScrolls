@@ -8,8 +8,7 @@ using UnityEngine.Events;
 public enum AIGlobalState { UNAGGRO, AGGRO, DEAD };
 public enum CombatSlot {GUARANTEE, EVICTION, IN, OUT};
 
-[System.Serializable] public class AISpecificEvent : UnityEvent<AIHandler>{}
-
+[RequireComponent(typeof(Collider))]
 public class AIHandler : CharacterHandler {    
 
     //core - TODO REQUIRE BOX COLLIDER
@@ -20,26 +19,18 @@ public class AIHandler : CharacterHandler {
 
     //nav stuff
     [Header("AI Core Members")]
-    public AISpecificEvent onTakeDamage;
     protected AIState localState; //stealth state
-
     public AIGlobalState GlobalState {get; set; } = AIGlobalState.UNAGGRO; //for general labeling
-        private List<AIHandler> proximateAI;
 
     //stealth stuff
     [Header("Stealth stuff")]
     public List<PatrolWaypoint> patrolWaypoints;
     public float idleTimeAtWaypoint;
     public float spotTimerThreshold; //time it takes to go into aggro
-    
+    public float AIGlobalStateCheckRange = 30f;
+
     private int currPatrolIndex;
     public Vector3 NextWaypointLocation {get; private set;} 
-
-    //combat stuff
-    [Header("Combat stuff")]
-    public int combatPocket;
-    public CombatSlot CombatSlot {get; set;} = CombatSlot.OUT;
-    public float Priority { get; set; }
 
 
     #region callbacks
@@ -64,8 +55,6 @@ public class AIHandler : CharacterHandler {
             SetStateDriver(new DeathState(this, animator, MeleeRaycastHandler)); //anything to do with death is dealt with here
         }
 
-        //release an event indicating x has taken damage
-        onTakeDamage.Invoke(this);
     }
     #endregion
 
@@ -93,10 +82,19 @@ public class AIHandler : CharacterHandler {
 
     #region stealthstuff
     public BTStatus VerifyStealth() { //verify if stealth is valid
-        //todo: also check for transitions DIRECTLY to aggro
-        return GlobalState == AIGlobalState.AGGRO? BTStatus.FAILURE : BTStatus.RUNNING;
+        if(GlobalState == AIGlobalState.AGGRO) return BTStatus.FAILURE;
 
-        //if fails, STOP DETECTION todo
+        //cast a sphere, if any AI in that sphere is Aggro, turn into aggro as well
+        Collider[] aiInRange = Physics.OverlapSphere(transform.position, AIGlobalStateCheckRange, Detection.obstacleMask);
+            foreach(Collider col in aiInRange) {
+            AIHandler proximateAI = col.GetComponent<AIHandler>();
+            if(proximateAI.GlobalState == AIGlobalState.AGGRO){
+                GlobalState = AIGlobalState.AGGRO;
+                return BTStatus.FAILURE;
+            }
+        }
+
+        return BTStatus.SUCCESS;
     }
 
     public bool LOSOnPlayer() {
@@ -147,15 +145,20 @@ public class AIHandler : CharacterHandler {
         StartCoroutine(currEngagementAction);
 
         //if cunt is attacked anytime in the process
-        yield return new WaitUntil(() => EngageInterrupt());
+        yield return new WaitUntil(() => EngageInterrupt() || GlobalState == AIGlobalState.DEAD);
 
+        if(GlobalState == AIGlobalState.DEAD) {
+            agent.SetDestination(this.transform.position);
+            if(currLocalOffensiveAction != null) StopCoroutine(currLocalOffensiveAction);
+            StopCoroutine(currEngagementAction);
+            yield break;
+        }
+        
         //determine randomly via block quota if ai is to block
-
         if(Random.Range(0, 1) < characterdata.blockQuota) {
             //stop local move, deal with set position as well
-            if(currLocalOffensiveAction != null) StopCoroutine(currLocalOffensiveAction);
             agent.SetDestination(this.transform.position);
-
+            if(currLocalOffensiveAction != null) StopCoroutine(currLocalOffensiveAction);
             //stop the curr engagement action
             StopCoroutine(currEngagementAction);
 
@@ -226,7 +229,7 @@ public class AIHandler : CharacterHandler {
         bool locationFound = false;
         //pick a random destination within a given area behind the character (only try 30 times to be safe)
         for(int i = 0; i < 30; ++i){
-            if(NavMesh.SamplePosition(transform.position - target.transform.position, out hit, 2f, NavMesh.AllAreas)){
+            if(NavMesh.SamplePosition(transform.position, out hit, 5f, NavMesh.AllAreas)){
                 locationFound = true;
                 movePosition = hit.position;
                 break;
@@ -235,11 +238,11 @@ public class AIHandler : CharacterHandler {
 
         //if hit was found:
         if(locationFound) {
-            Debug.Log("found in 30 tries");
+            Debug.Log("sample location found, wait 5f");
             agent.SetDestination(movePosition);
             yield return new WaitForSeconds(5f);
         } else {
-            Debug.Log("no location in 30 tries? (temp wait for 5");
+            Debug.Log("no sample location found, wait 5f");
             yield return new WaitForSeconds(5f);
 
         }
@@ -269,10 +272,6 @@ public class AIHandler : CharacterHandler {
         SetStateDriver(new DefaultState(this, animator, MeleeRaycastHandler));
     }
 
-    public BTStatus NeutralAction() { //default action if engage fails
-        //face player
-        return BTStatus.RUNNING;
-    }
     #endregion
 
     #region self preservation
@@ -282,8 +281,5 @@ public class AIHandler : CharacterHandler {
     }
 
     #endregion
-    public BTStatus KillBrain() {
-        return BTStatus.RUNNING;
-        //upon death, kill think cycle (and all other shit)
-    }
+    
 }   
