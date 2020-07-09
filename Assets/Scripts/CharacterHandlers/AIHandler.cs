@@ -24,8 +24,7 @@ public class AIHandler : CharacterHandler {
     protected AIState localState; //stealth state
 
     public AIGlobalState GlobalState {get; set; } = AIGlobalState.UNAGGRO; //for general labeling
-    public Dictionary<string, int> AnimationHashes { get; private set; }
-    private List<AIHandler> proximateAI;
+        private List<AIHandler> proximateAI;
 
     //stealth stuff
     [Header("Stealth stuff")]
@@ -48,20 +47,13 @@ public class AIHandler : CharacterHandler {
         base.Start();
         Detection = this.GetComponent<Detection>();
         agent = this.GetComponent<NavMeshAgent>();
-        setupAnimationHashes();
         //if (patrolWaypoints.Any()) NextWaypointLocation = patrolWaypoints[0].transform.position; //set first patrol waypoint
         //SetStateDriver(new PatrolState(this, animator, agent));
     }  
     
     //initialize animation stuff as hash (more efficient)
     //uses a dict for organization - O(1) access (probably a hash table)
-    private void setupAnimationHashes() {
-        AnimationHashes = new Dictionary<string, int>();
-        AnimationHashes.Add("IsPatrol", Animator.StringToHash("IsPatrol"));
-        AnimationHashes.Add("IsAggroWalk", Animator.StringToHash("IsAggroWalk"));
-        AnimationHashes.Add("IsSearching", Animator.StringToHash("IsSearching"));
-        AnimationHashes.Add("IsStaring", Animator.StringToHash("IsStaring"));
-    }
+    
     #endregion
 
     #region core

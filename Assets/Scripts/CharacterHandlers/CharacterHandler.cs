@@ -22,6 +22,7 @@ public class CharacterHandler : MonoBehaviour
     public TextMeshProUGUI debugState; 
     public float staminaRegenerationWindow = 3f;
     public UnityEvent counterEvent;
+    public Dictionary<string, int> AnimationHashes { get; private set; }
 
     //private stuff
     public CombatState combatState {get; private set;}
@@ -36,10 +37,21 @@ public class CharacterHandler : MonoBehaviour
         Health = characterdata.maxHealth;
         Stamina = characterdata.maxStamina;
         PopulateMeleeMoves();
+        setupAnimationHashes();
         SetStateDriver(new DefaultState(this, animator, meleeRaycastHandler)); //start as default
         
     }
-
+    private void setupAnimationHashes() {
+        AnimationHashes = new Dictionary<string, int>();
+        AnimationHashes.Add("IsPatrol", Animator.StringToHash("IsPatrol"));
+        AnimationHashes.Add("IsAggroWalk", Animator.StringToHash("IsAggroWalk"));
+        AnimationHashes.Add("IsSearching", Animator.StringToHash("IsSearching"));
+        AnimationHashes.Add("IsStaring", Animator.StringToHash("IsStaring"));
+        AnimationHashes.Add("IsAttacking", Animator.StringToHash("IsAttacking"));
+        AnimationHashes.Add("IsAgro", Animator.StringToHash("IsAgro"));
+        AnimationHashes.Add("IsBlocking", animator.StringToHash("IsBlocking"));
+        AnimationHashes.Add("IsCountering", animator.StringToHash("IsCountering"));
+    }
     private void PopulateMeleeMoves() {
         MeleeMoves = new Dictionary<string, MeleeMove>();
         foreach(MeleeMove attack in weapon.MeleeMoves) {
