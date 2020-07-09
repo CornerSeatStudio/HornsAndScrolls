@@ -14,7 +14,7 @@ public class CharacterHandler : MonoBehaviour
     public CharacterData characterdata;
     public WeaponData weapon; //Todo: list to choose between
     protected Animator animator;
-    protected MeleeRaycastHandler meleeRaycastHandler;
+    public MeleeRaycastHandler MeleeRaycastHandler {get; private set;}
 
     [Header("Core Members")]
     public Image heathbar;
@@ -27,24 +27,27 @@ public class CharacterHandler : MonoBehaviour
     public CombatState combatState {get; private set;}
     public float Health {get; set; }
     public float Stamina {get; set; }
-    public Dictionary<string, MeleeMove> MeleeMoves {get; private set;} //for easier access 
+    public Dictionary<string, MeleeMove> MeleeAttacks {get; private set;} //for easier access 
+    public MeleeMove MeleeBlock {get; private set;}
 
     #region Callbacks
     protected virtual void Start() {
         animator = this.GetComponent<Animator>();
-        meleeRaycastHandler = this.GetComponent<MeleeRaycastHandler>();
+        MeleeRaycastHandler = this.GetComponent<MeleeRaycastHandler>();
         Health = characterdata.maxHealth;
         Stamina = characterdata.maxStamina;
         PopulateMeleeMoves();
-        SetStateDriver(new DefaultState(this, animator, meleeRaycastHandler)); //start as default
+        SetStateDriver(new DefaultState(this, animator, MeleeRaycastHandler)); //start as default
         
     }
 
     private void PopulateMeleeMoves() {
-        MeleeMoves = new Dictionary<string, MeleeMove>();
-        foreach(MeleeMove attack in weapon.MeleeMoves) {
-            MeleeMoves.Add(attack.name, attack);
+        MeleeAttacks = new Dictionary<string, MeleeMove>();
+        foreach(MeleeMove attack in weapon.Attacks) {
+            MeleeAttacks.Add(attack.name, attack);
         }
+
+        MeleeBlock = weapon.block;
     }
 
     protected virtual void Update(){
@@ -57,7 +60,7 @@ public class CharacterHandler : MonoBehaviour
     public virtual void AttackResponse(float damage, CharacterHandler attackingCharacter) { 
         string result = "null";//for debug
 
-        if(this.combatState is AttackState) { //TODO AM IN RANGE
+        if(this.combatState is AttackState && MeleeRaycastHandler.chosenTarget != null) { //TODO AM IN RANGE
             //i am currently in an unblockable attack while being attacked
             //if enemy is simultaneously in attack
             if(attackingCharacter.combatState is AttackState){
@@ -71,7 +74,7 @@ public class CharacterHandler : MonoBehaviour
                 }
             }
             
-        } else if (this.combatState is BlockState && meleeRaycastHandler.chosenTarget != null) {
+        } else if (this.combatState is BlockState && MeleeRaycastHandler.chosenTarget != null) {
             //i am blocking an unblockable attack AND if its a valid block (should be null if no target)
             if(!(attackingCharacter.combatState as AttackState).chosenMove.blockableAttack) {
                 //take damage and stagger
@@ -82,7 +85,7 @@ public class CharacterHandler : MonoBehaviour
             }
 
 
-        } else if (this.combatState is CounterState) {
+        } else if (this.combatState is CounterState && MeleeRaycastHandler.chosenTarget != null) {
             //if i am countering an unblockable attack
             if(!(attackingCharacter.combatState as AttackState).chosenMove.blockableAttack){
                 //no damage, but enemy isnt staggared
@@ -101,15 +104,19 @@ public class CharacterHandler : MonoBehaviour
             //everytime this is triggered, increment
             //"prevent camping when down" counter maybe
         } else { 
-            result = "default situation, receiver takes damage and staggers";
+            result = "default situation, receiver takes damage and staggers (possibly because receiver's action was out of range)";
             //take damage, stagger
         }
+
+        
 
         Debug.Log("REQUESTER: " + attackingCharacter.combatState.toString() 
                 + ", REACTER: " + combatState.toString()
                 + ", RESULT: " + result);
 
-        DealStamina(damage);
+        
+
+        TakeDamage(damage);
 
     }
 

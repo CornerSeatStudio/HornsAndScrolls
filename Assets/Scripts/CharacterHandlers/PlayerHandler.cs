@@ -21,10 +21,10 @@ public class PlayerHandler : CharacterHandler
         if(combatState is DefaultState) {
             if(Input.GetButtonDown("Fire1") == true) {
                 Debug.Log("Fire1'd");
-                SetStateDriver(new AttackState(this, animator, meleeRaycastHandler));
+                SetStateDriver(new AttackState(this, animator, MeleeRaycastHandler));
             } else if(Input.GetButtonDown("Fire2") == true) {
                 Debug.Log("Fire2'd/counter trigger");
-                SetStateDriver(new CounterState(this, animator, meleeRaycastHandler));
+                SetStateDriver(new CounterState(this, animator, MeleeRaycastHandler));
                 //counter event is here
             }
      
@@ -34,7 +34,7 @@ public class PlayerHandler : CharacterHandler
                 Debug.Log("holding blocking");
             } else {
                 Debug.Log("release block");
-                SetStateDriver(new DefaultState(this, animator, meleeRaycastHandler));
+                SetStateDriver(new DefaultState(this, animator, MeleeRaycastHandler));
             }
         }
     }

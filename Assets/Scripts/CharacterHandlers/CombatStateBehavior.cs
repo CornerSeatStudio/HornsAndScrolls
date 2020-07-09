@@ -27,10 +27,12 @@ public class AttackState : CombatState {
     public MeleeMove chosenMove {get; private set;}
 
     public AttackState(CharacterHandler character, Animator animator, MeleeRaycastHandler attackHandler) : base(character, animator, attackHandler) {
-        chosenMove = character.MeleeMoves["default"]; //TEMPORARY, WILL MAKE POLYMORPHIC
-        //Debug.Log(chosenAttackMove.name + ": " + chosenAttackMove.startup);
+        chosenMove = character.MeleeAttacks["default"]; 
     }
 
+    public AttackState(CharacterHandler character, Animator animator, MeleeRaycastHandler attackHandler, MeleeMove chosenMove) : base(character, animator, attackHandler) {
+        this.chosenMove = chosenMove;
+    }
     public override IEnumerator OnStateEnter() { 
         //Debug.Log("entering attacking state");
         currAttackCoroutine = FindTargetAndDealDamage();
@@ -39,6 +41,8 @@ public class AttackState : CombatState {
     }    
 
     protected virtual IEnumerator FindTargetAndDealDamage(){
+        yield return new WaitForSeconds(chosenMove.startup); 
+        
         yield return character.StartCoroutine(attackHandler.FindTarget(chosenMove));
         
         //Debug.Log(chosenMove.angle + " " + chosenMove.range);
@@ -49,8 +53,9 @@ public class AttackState : CombatState {
             character.SetStateDriver(new DefaultState(character, animator, attackHandler));
             yield break;
         }
-        //upon completion of finding target/at attack move setup, START listening
-        yield return new WaitForSeconds(chosenMove.startup); //assumption: start up == counter window
+        
+        
+        Debug.Log("chosen attack: " + chosenMove.name);
 
 
         attackHandler.chosenTarget.AttackResponse(chosenMove.damage, character);
@@ -77,7 +82,7 @@ public class BlockState : CombatState {
     protected MeleeMove block;
 
     public BlockState(CharacterHandler character, Animator animator, MeleeRaycastHandler attackHandler) : base(character, animator, attackHandler) {
-        block = character.MeleeMoves["block"]; //TEMPORARY, 
+        block = character.MeleeBlock; //TEMPORARY, 
     }
 
     public override IEnumerator OnStateEnter() { 
@@ -89,7 +94,7 @@ public class BlockState : CombatState {
     private IEnumerator CheckBlockRange() {
         while (true) {
             yield return character.StartCoroutine(attackHandler.FindTarget(block)); //run find target while blocking
-            Debug.Log("block would be valid");
+            //Debug.Log("block would be valid");
             //if the attackHandler.chosenTarget exists, the block IS ALLOWED
         }
     }
@@ -117,8 +122,8 @@ public class CounterState : CombatState {
         //shouldnt be done here, should be done in attack response via comparing type
         currCounterRoutine = CheckCounterRange();
         yield return character.StartCoroutine(currCounterRoutine);
-        if(attackHandler.chosenTarget != null && attackHandler.chosenTarget.combatState is AttackState) {
-        }
+        // if(attackHandler.chosenTarget != null && attackHandler.chosenTarget.combatState is AttackState) {
+        // }
 
         yield return new WaitForSeconds(0.3f); //where param is counter timeframe
         character.SetStateDriver(new BlockState(character, animator, attackHandler));
