@@ -2216,6 +2216,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Soldier_new_prefab
       objectReference: {fileID: 0}
+    - target: {fileID: 3061534844867687431, guid: 3d8dfc84aba83c84c8bef7e57c459ee3,
+        type: 3}
+      propertyPath: targetMask.m_Bits
+      value: 1024
+      objectReference: {fileID: 0}
+    - target: {fileID: 3061534844867687431, guid: 3d8dfc84aba83c84c8bef7e57c459ee3,
+        type: 3}
+      propertyPath: obstacleMask.m_Bits
+      value: 512
+      objectReference: {fileID: 0}
     - target: {fileID: 3061534844867687433, guid: 3d8dfc84aba83c84c8bef7e57c459ee3,
         type: 3}
       propertyPath: target
@@ -2236,6 +2246,12 @@ PrefabInstance:
       propertyPath: debugState
       value: 
       objectReference: {fileID: 1919408161}
+    - target: {fileID: 3061534844867687433, guid: 3d8dfc84aba83c84c8bef7e57c459ee3,
+        type: 3}
+      propertyPath: weapon
+      value: 
+      objectReference: {fileID: 11400000, guid: 84acff344000e7b49bab2b4c8d8c3d9a,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3d8dfc84aba83c84c8bef7e57c459ee3, type: 3}
 --- !u!1001 &4752215554742827903
@@ -2330,6 +2346,12 @@ PrefabInstance:
       propertyPath: staminabar
       value: 
       objectReference: {fileID: 2115465876}
+    - target: {fileID: 4752215555110140391, guid: 3e480895f898d6c4ba63ed175ba26b9d,
+        type: 3}
+      propertyPath: weapon
+      value: 
+      objectReference: {fileID: 11400000, guid: 84acff344000e7b49bab2b4c8d8c3d9a,
+        type: 2}
     - target: {fileID: 4752215555110140392, guid: 3e480895f898d6c4ba63ed175ba26b9d,
         type: 3}
       propertyPath: m_Name

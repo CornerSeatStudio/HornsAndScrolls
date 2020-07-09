@@ -43,7 +43,8 @@ public class ThinkCycle : MonoBehaviour
         BTSetup builder = new BTSetup();
         return builder
                 .EmplaceSelector("main selector")
-                    .EmplaceTask("stealth", t => ai.VerifyStealth()) 
+                    //.EmplaceTask("stealth", t => ai.VerifyStealth()) 
+                    .EmplaceTask("testfalse", t => alwaysFalse())
                     .EmplaceSelector("combat sequence")
                         .EmplaceConditional("verify", t => ai.VerifyCombatIncapable()) 
                         .EmplaceTask("engage", t => ai.EngageDriver())
@@ -54,7 +55,7 @@ public class ThinkCycle : MonoBehaviour
     } 
 
     BTStatus alwaysFalse() {
-        return BTStatus.SUCCESS;
+        return BTStatus.FAILURE;
     }
 
     BTStatus alwaysTrue() {

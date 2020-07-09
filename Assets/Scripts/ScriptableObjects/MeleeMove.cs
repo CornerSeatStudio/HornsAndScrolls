@@ -13,3 +13,5 @@ public class MeleeMove : ScriptableObject
     public bool blockableAttack = true; //special case
 
 }
+
+

@@ -9,11 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 356e9e1c89bca854db28c8e00afbc9d9, type: 3}
-  m_Name: Sword
+  m_Script: {fileID: 11500000, guid: 7ad2c565cd8f7f449a8b3d667dbe0ac2, type: 3}
+  m_Name: heavyAttack
   m_EditorClassIdentifier: 
-  WeaponName: Sword
-  weaponType: 0
   startup: 0.5
-  endlag: 0.5
-  damage: 3
+  endlag: 0.8
+  damage: 10
+  range: 30
+  angle: 120
+  blockableAttack: 1
