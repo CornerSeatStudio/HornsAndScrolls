@@ -79,7 +79,7 @@ public class CharacterHandler : MonoBehaviour
     }
 
     protected virtual void Update(){
-        debugState.SetText(combatState.toString());
+        if(combatState != null) debugState.SetText(combatState.toString());
     }
     #endregion
 
