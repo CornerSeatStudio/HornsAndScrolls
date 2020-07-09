@@ -86,6 +86,7 @@ public class BlockState : CombatState {
 
     public override IEnumerator OnStateEnter() { 
         currBlockRoutine = CheckBlockRange();
+        animator.SetBool(character.AnimationHashes["IsBlocking"], true);
         yield return character.StartCoroutine(currBlockRoutine);
     } 
 
@@ -100,6 +101,7 @@ public class BlockState : CombatState {
 
     public override IEnumerator OnStateExit() { 
         if(currBlockRoutine != null) character.StopCoroutine(currBlockRoutine); //stop block coroutine
+        animator.SetBool(character.AnimationHashes["IsBlocking"], false);
         attackHandler.chosenTarget = null; //empty attackHandler.chosenTarget
         yield break;
     } 

@@ -50,6 +50,7 @@ public class CharacterHandler : MonoBehaviour
         AnimationHashes.Add("IsAttacking", Animator.StringToHash("IsAttacking"));
         AnimationHashes.Add("IsAgro", Animator.StringToHash("IsAgro"));
         AnimationHashes.Add("IsBlocking", animator.StringToHash("IsBlocking"));
+        AnimationHashes.Add("IsCountering", animator.StringToHash("IsCountering"));
     }
     private void PopulateMeleeMoves() {
         MeleeMoves = new Dictionary<string, MeleeMove>();
