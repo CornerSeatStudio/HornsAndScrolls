@@ -6,7 +6,6 @@ public class Detection : MonoBehaviour
 {
     [Range(0, 360)] public float viewAngle = 30;
     public float viewRadius = 10;
-    public float interactionDistance = 3;
     public float coroutineDelay = .2f;
 
     //LayerMasks allow for raycasts to choose what to and not to register
@@ -14,8 +13,8 @@ public class Detection : MonoBehaviour
     public LayerMask obstacleMask;
 
     public List<Transform> VisibleTargets {get; } = new List<Transform>();
-    public List<GameObject> InteractableTargets {get; } = new List<GameObject>();
 
+    public bool IsAlive {get; set; }= true;
     //[Range(0, 0.25f)] public float meshResolution; //# of triangle divisions of FOV, larger == more circular
     //public MeshFilter viewMeshFilter; 
     //Mesh viewMesh; 
@@ -53,17 +52,17 @@ public class Detection : MonoBehaviour
     }
 
     private IEnumerator FindTargetsWithDelay(float delay){
-        while (true){
+        while (IsAlive){
             yield return new WaitForSeconds(delay); //only coroutine every delay seconds
             findVisibleTargets();
         }
     }
 
 
+
     //for every target (via an array), lock on em, the core logic
     private void findVisibleTargets(){
         VisibleTargets.Clear(); //reset list every time so no dupes
-        InteractableTargets.Clear();
         //cast a sphere over player, store everything inside col
         Collider[] targetsInView = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
         foreach(Collider col in targetsInView){
@@ -74,11 +73,6 @@ public class Detection : MonoBehaviour
                 float distanceToTarget = Vector3.Distance(transform.position, target.position);
                 if(!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleMask)){ //if, from character at given angle and distance, it DOESNT collide with obstacleMask
                     VisibleTargets.Add(target);
-                    //Debug.Log("spot a cunt");
-                    if(distanceToTarget <= interactionDistance) { //additional check if in range of an interaction
-                        InteractableTargets.Add(col.gameObject);
-                        //Debug.Log("interactable distance satisfied");
-                    }
                 }
             }
         }

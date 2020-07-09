@@ -83,7 +83,7 @@ public class BlockState : CombatState {
     protected MeleeMove block;
 
     public BlockState(CharacterHandler character, Animator animator, MeleeRaycastHandler attackHandler) : base(character, animator, attackHandler) {
-        block = character.MeleeAttacks["block"]; //TEMPORARY, 
+        block = character.MeleeBlock; 
     }
 
     public override IEnumerator OnStateEnter() { 
@@ -164,10 +164,18 @@ public class DeathState : CombatState {
     public DeathState(CharacterHandler character, Animator animator, MeleeRaycastHandler attackHandler) : base(character, animator, attackHandler) {}
 
     public override IEnumerator OnStateEnter(){
-        //ragdoll 
-        //stop all coroutines
         //change globalState
+        (character as AIHandler).GlobalState = AIGlobalState.DEAD;
+        //stop APPROPRITE coroutines
+        (character as AIHandler).Detection.IsAlive = false; //detection
+        //ragdoll 
+
+        Debug.Log("agh i haveth been a slain o");
         yield return null;
+    }
+
+    public override string ToString()  {
+        return "DEAD";
     }
 
 }
