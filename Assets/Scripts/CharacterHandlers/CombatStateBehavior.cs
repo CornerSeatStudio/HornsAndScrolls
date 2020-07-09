@@ -29,10 +29,12 @@ public class AttackState : CombatState {
     public MeleeMove chosenMove {get; private set;}
 
     public AttackState(CharacterHandler character, Animator animator, MeleeRaycastHandler attackHandler) : base(character, animator, attackHandler) {
-        chosenMove = character.MeleeMoves["default"]; //TEMPORARY, WILL MAKE POLYMORPHIC
-        //Debug.Log(chosenAttackMove.name + ": " + chosenAttackMove.startup);
+        chosenMove = character.MeleeAttacks["default"]; 
     }
 
+    public AttackState(CharacterHandler character, Animator animator, MeleeRaycastHandler attackHandler, MeleeMove chosenMove) : base(character, animator, attackHandler) {
+        this.chosenMove = chosenMove;
+    }
     public override IEnumerator OnStateEnter() { 
         //Debug.Log("entering attacking state");
         currAttackCoroutine = FindTargetAndDealDamage();
@@ -81,7 +83,7 @@ public class BlockState : CombatState {
     protected MeleeMove block;
 
     public BlockState(CharacterHandler character, Animator animator, MeleeRaycastHandler attackHandler) : base(character, animator, attackHandler) {
-        block = character.MeleeMoves["block"]; //TEMPORARY, 
+        block = character.MeleeAttacks["block"]; //TEMPORARY, 
     }
 
     public override IEnumerator OnStateEnter() { 
@@ -155,5 +157,17 @@ public class DodgeState : CombatState {
 
 public class StaggerState : CombatState {
     public StaggerState(CharacterHandler character, Animator animator, MeleeRaycastHandler attackHandler) : base(character, animator, attackHandler) {}
+
+}
+
+public class DeathState : CombatState {
+    public DeathState(CharacterHandler character, Animator animator, MeleeRaycastHandler attackHandler) : base(character, animator, attackHandler) {}
+
+    public override IEnumerator OnStateEnter(){
+        //ragdoll 
+        //stop all coroutines
+        //change globalState
+        yield return null;
+    }
 
 }

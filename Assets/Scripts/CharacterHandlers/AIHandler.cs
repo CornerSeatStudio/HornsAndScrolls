@@ -59,6 +59,11 @@ public class AIHandler : CharacterHandler {
     #region core
     protected override void TakeDamage(float damage) {
         base.TakeDamage(damage);
+
+        if(Health <= 0) {
+            SetStateDriver(new DeathState(this, animator, MeleeRaycastHandler)); //anything to do with death is dealt with here
+        }
+
         //release an event indicating x has taken damage
         onTakeDamage.Invoke(this);
     }
@@ -221,7 +226,7 @@ public class AIHandler : CharacterHandler {
         bool locationFound = false;
         //pick a random destination within a given area behind the character (only try 30 times to be safe)
         for(int i = 0; i < 30; ++i){
-            if(NavMesh.SamplePosition(transform.position - target.transform.position, out hit, 5f, NavMesh.AllAreas)){
+            if(NavMesh.SamplePosition(transform.position - target.transform.position, out hit, 2f, NavMesh.AllAreas)){
                 locationFound = true;
                 movePosition = hit.position;
                 break;
@@ -234,7 +239,9 @@ public class AIHandler : CharacterHandler {
             agent.SetDestination(movePosition);
             yield return new WaitForSeconds(5f);
         } else {
-            Debug.Log("no location in 30 tries?");
+            Debug.Log("no location in 30 tries? (temp wait for 5");
+            yield return new WaitForSeconds(5f);
+
         }
 
         agent.SetDestination(transform.position);
