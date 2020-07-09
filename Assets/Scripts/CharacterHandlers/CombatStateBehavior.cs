@@ -121,10 +121,12 @@ public class CounterState : CombatState {
         //trigger counter event
         //if enemy is attacking you specifically (dont trigger if coming from a specific state)
         //shouldnt be done here, should be done in attack response via comparing type
+        
+        animator.SetBool(character.AnimationHashes["IsBlocking"], true);
+
         currCounterRoutine = CheckCounterRange();
         yield return character.StartCoroutine(currCounterRoutine);
-        if(attackHandler.chosenTarget != null && attackHandler.chosenTarget.combatState is AttackState) {
-        }
+
 
         yield return new WaitForSeconds(0.3f); //where param is counter timeframe
         character.SetStateDriver(new BlockState(character, animator, attackHandler));
