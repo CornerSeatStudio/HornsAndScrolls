@@ -158,6 +158,16 @@ public class DodgeState : CombatState {
 public class StaggerState : CombatState {
     public StaggerState(CharacterHandler character, Animator animator, MeleeRaycastHandler attackHandler) : base(character, animator, attackHandler) {}
 
+    public override IEnumerator OnStateEnter() {  
+        yield return new WaitForSeconds(.5f); //stagger time
+        character.SetStateDriver(new DefaultState(character, animator, attackHandler));      
+    }
+
+    public override string toString(){
+        return "STAGGER";
+    }
+
+
 }
 
 public class DeathState : CombatState {
@@ -165,16 +175,32 @@ public class DeathState : CombatState {
 
     public override IEnumerator OnStateEnter(){
         //change globalState
-        (character as AIHandler).GlobalState = AIGlobalState.DEAD;
+        (character as AIHandler).GlobalState = GlobalState.DEAD;
         //stop APPROPRITE coroutines
         (character as AIHandler).Detection.IsAlive = false; //detection
         //ragdoll 
+        (character as AIHandler).GetComponent<Collider>().enabled = false;
+        Rigidbody[] rigidbodies = character.GetComponentsInChildren<Rigidbody>();
+        foreach(Rigidbody rb in rigidbodies){
+            if(rb.gameObject != character.gameObject){
+                rb.isKinematic = false;
+            }
+        }
 
+        Collider[] colliders = character.GetComponentsInChildren<Collider>();
+        foreach(Collider col in colliders) {
+            if (col.gameObject != character.gameObject) {
+                col.enabled = true;
+            } 
+        }
+
+        //disable animator as last step
+        animator.enabled = false;
         Debug.Log("agh i haveth been a slain o");
         yield return null;
     }
 
-    public override string ToString()  {
+    public override string toString()  {
         return "DEAD";
     }
 

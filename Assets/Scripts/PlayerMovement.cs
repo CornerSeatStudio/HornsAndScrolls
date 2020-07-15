@@ -36,11 +36,6 @@ public class PlayerMovement : MonoBehaviour {
     void Start() {
         animator = this.GetComponent<Animator>();
         controller = this.GetComponent<CharacterController>();
-//        Debug.Log("Hello World");
-        //temp character contorller settings
-        controller.center = new Vector3(0, 2, 0);
-        controller.radius = 3;
-        controller.height = 15;
         setupAnimationHashes();
     }
 
@@ -77,13 +72,17 @@ public class PlayerMovement : MonoBehaviour {
             inputVector.y = 0;
         }
 
-        //my nomilization fuck the normal stuff
+        //my normilization fuck the normal stuff
         if(inputVector.x !=0 && inputVector.z!=0){
             inputVector = new Vector3(Input.GetAxisRaw("Horizontal")*movementSpeed*0.7f, 0f, Input.GetAxisRaw("Vertical")*movementSpeed*0.7f);
             //Debug.Log(inputVector);
         }
 
+        //only 
+
+
         //Crouching if statement
+        //if pressing C, am currently not crouching, am not moving, and am not sprinting
         if(Input.GetKeyDown(KeyCode.C)&&!IsCrouching&&(inputVector.x == 0 || inputVector.z == 0)&&!IsSprinting){
             IsCrouching=true;
         }else if(Input.GetKeyDown(KeyCode.C)&&IsCrouching){
@@ -91,6 +90,7 @@ public class PlayerMovement : MonoBehaviour {
         }
 
         //Crouch walking if statement
+        //if i am moving, not sprinting, and crouching
         if((inputVector.x != 0 || inputVector.z != 0)&&!IsSprinting&&IsCrouching){
             IsCrouchingWalking = true;
             movementSpeed = 10f;
@@ -101,6 +101,7 @@ public class PlayerMovement : MonoBehaviour {
         }
 
         //sprinting if statements
+        //if i am pressing left shift, am not crouching, and am not crouch walking
         if(Input.GetKeyDown(KeyCode.LeftShift)&&!IsCrouching&&!IsCrouchingWalking){
             movementSpeed=25f;
             IsSprinting=true;
@@ -112,15 +113,16 @@ public class PlayerMovement : MonoBehaviour {
 
 
         //slow walking if statements
-        if(Input.GetKeyDown(KeyCode.LeftAlt)){
+        if(Input.GetKeyDown(KeyCode.Z)){
             IsSlowWalking=true;
             movementSpeed=5f;
         }
-        else if(Input.GetKeyUp(KeyCode.LeftAlt)){
+        else if(Input.GetKeyUp(KeyCode.Z)){
             IsSlowWalking=false;
         }
         
         //sheathe weapon
+        //if i am pressing x, the weapoin isnt out, i am not sprinting nor crouching
         if(Input.GetKeyDown(KeyCode.X)&&!IsWeaponout&&!IsSprinting&&!IsCrouching){
 
             IsWeaponout=true;

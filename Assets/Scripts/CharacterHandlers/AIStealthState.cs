@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public abstract class AIState
+public abstract class AIStealthState
 {
     protected readonly AIHandler character;
     protected Animator animator;
     protected NavMeshAgent agent;
 
-    public AIState(AIHandler character, Animator animator, NavMeshAgent agent) {
+    public AIStealthState(AIHandler character, Animator animator, NavMeshAgent agent) {
         this.character = character;
         this.animator = animator;
         this.agent = agent;

@@ -5,14 +5,11 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using TMPro;
 
+public class CharacterHandler : MonoBehaviour {
 
-
-public class CharacterHandler : MonoBehaviour
-{
     [Header("Core Components/SOs")]
     public CharacterData characterdata;
-    public WeaponData weapon; //Todo: list to choose between
-    protected Animator animator;
+    public WeaponData weapon; 
     public MeleeRaycastHandler MeleeRaycastHandler {get; protected set;}
 
     [Header("Core Members")]
@@ -20,29 +17,42 @@ public class CharacterHandler : MonoBehaviour
     public Image staminabar;
     public TextMeshProUGUI debugState; 
     public float staminaRegenerationWindow = 3f;
-    public Dictionary<string, int> AnimationHashes { get; private set; }
 
     //private stuff
-    public CombatState combatState {get; private set;}
-    public float Health {get; set; }
-    public float Stamina {get; set; }
-    public Dictionary<string, MeleeMove> MeleeAttacks {get; private set;} //for easier access 
+    protected Animator animator;
+
+    public Dictionary<string, int> AnimationHashes { get; private set; }
+    public Dictionary<string, MeleeMove> MeleeAttacks {get; private set;} 
     public MeleeMove MeleeBlock {get; private set; }
+    public float Health {get; private set; }
+    public float Stamina {get; private set; }
+    public CombatState combatState {get; private set;}
 
     #region Callbacks
     protected virtual void Start() {
         
         animator = this.GetComponent<Animator>();
-        //DisableRagdoll();
         MeleeRaycastHandler = this.GetComponent<MeleeRaycastHandler>();
+        
+        
         Health = characterdata.maxHealth;
         Stamina = characterdata.maxStamina;
-        PopulateMeleeMoves();
+
+        
+        DisableRagdoll(); //NECCESARY to a. disable ragdoll and b. not fuck up attack script
         setupAnimationHashes();
+        PopulateMeleeMoves(); 
         SetStateDriver(new DefaultState(this, animator, MeleeRaycastHandler)); //start as default
+
         
     }
-    private void DisableRagdoll(){  
+
+    protected virtual void Update(){
+        if(combatState != null) debugState.SetText(combatState.toString());
+    }
+
+    //disables ragdoll on character on game start
+    private void DisableRagdoll() {  
         Rigidbody[] rigidbodies = gameObject.GetComponentsInChildren<Rigidbody>();
         foreach(Rigidbody rb in rigidbodies){
             if(rb.gameObject != this.gameObject){
@@ -56,10 +66,9 @@ public class CharacterHandler : MonoBehaviour
                 col.enabled = false;
             }
         }
-        
-        
     }
 
+    //put animations as hashes for efficiency
     private void setupAnimationHashes() {
         AnimationHashes = new Dictionary<string, int>();
         AnimationHashes.Add("IsPatrol", Animator.StringToHash("IsPatrol"));
@@ -71,15 +80,18 @@ public class CharacterHandler : MonoBehaviour
         AnimationHashes.Add("IsBlocking", Animator.StringToHash("IsBlocking"));
         AnimationHashes.Add("IsCountering", Animator.StringToHash("IsCountering"));
     }
+    
+    //organize ALL melee moves moves in dictionary
     private void PopulateMeleeMoves() {
+
+        //for attack
         MeleeAttacks = new Dictionary<string, MeleeMove>();
         foreach(MeleeMove attack in weapon.Attacks) {
             MeleeAttacks.Add(attack.name, attack);
         }
-    }
 
-    protected virtual void Update(){
-        if(combatState != null) debugState.SetText(combatState.toString());
+        //for block
+        MeleeBlock = weapon.block;
     }
     #endregion
 
@@ -95,9 +107,12 @@ public class CharacterHandler : MonoBehaviour
                 //if my attack is unblockable
                 if(!(this.combatState as AttackState).chosenMove.blockableAttack){
                     //take damage but dont stagger
+                    TakeDamage(damage);
                     result = "both take damage, but reacter staggers only due to unblockable attack";
                 } else {
                     //take damage, stagger as usual
+                    TakeDamage(damage);
+                    SetStateDriver(new StaggerState(this, animator, MeleeRaycastHandler));
                     result = "both take damage and stagger";
                 }
             }
@@ -107,8 +122,12 @@ public class CharacterHandler : MonoBehaviour
             if(!(attackingCharacter.combatState as AttackState).chosenMove.blockableAttack) {
                 //take damage and stagger
                 result = "requester beats block with unblockable, receiver takes damage and staggers";
+                    TakeDamage(damage);
+                    SetStateDriver(new StaggerState(this, animator, MeleeRaycastHandler));
+           
             } else {
                 //drain stamina instead
+                TakeStaminaDrain(damage);
                 result = "receiver blocks, only stamina drain";
             }
 
@@ -122,29 +141,34 @@ public class CharacterHandler : MonoBehaviour
                 result = "requester used unblockable attack but is countered, no effect to either";
             } else {
                 result = "receiver counters, requester staggers";
+                attackingCharacter.SetStateDriver(new StaggerState(attackingCharacter, attackingCharacter.animator, attackingCharacter.MeleeRaycastHandler));
                 //proper counter here
             }
 
         } else if (this.combatState is DodgeState) {
             result = "receiver dodged, no damage, stamina only";
+            TakeStaminaDrain(3f);
         } else if (this.combatState is StaggerState) {
             result = "receiver hit when staggered";
-            //everytime this is triggered, increment
+            TakeDamage(damage);
+            //everytime this is triggered, increment todo
             //"prevent camping when down" counter maybe
         } else { 
             result = "default situation, receiver takes damage and staggers, possible out of range";
             //take damage, stagger
+            TakeDamage(damage);
+            SetStateDriver(new StaggerState(this, animator, MeleeRaycastHandler));
+
         }
 
         Debug.Log("REQUESTER: " + attackingCharacter.combatState.toString() 
                 + ", REACTER: " + combatState.toString()
                 + ", RESULT: " + result);
 
-        TakeDamage(damage);
 
     }
 
-    //ONLY method that allows damage
+    //upon taking damage
     protected virtual void TakeDamage(float damage){ 
         Health -= damage;
         heathbar.fillAmount = Health / characterdata.maxHealth;
@@ -157,9 +181,11 @@ public class CharacterHandler : MonoBehaviour
 
     }
 
-    private IEnumerator staminaRegenCoroutine;
-    private IEnumerator staminaDrainAndCooldown;
+    //stamina management
+    private IEnumerator staminaRegenCoroutine; //for the actual regening
+    private IEnumerator staminaDrainAndCooldown; //for the drain, and short break before allowing cooldown
 
+    //take stamina drain, stop and start appropriate coroutines
     public void DealStamina(float staminaDrain) {
         //cancel the wait from current dealing of stamina
         if(staminaDrainAndCooldown != null) StopCoroutine(staminaDrainAndCooldown);
@@ -172,7 +198,7 @@ public class CharacterHandler : MonoBehaviour
     }
 
     protected IEnumerator StaminaRegeneration() {
-        Debug.Log("in stam regen");
+        //Debug.Log("in stam regen");
         while (Stamina < characterdata.maxStamina) {
             Stamina += characterdata.staminaRegenerationRatePerS / 10;
             staminabar.fillAmount = Stamina / characterdata.maxStamina; //update el bar
@@ -185,6 +211,7 @@ public class CharacterHandler : MonoBehaviour
         Stamina -= staminaDrain;
         staminabar.fillAmount = Stamina / characterdata.maxStamina;
         yield return new WaitForSeconds(staminaRegenerationWindow);
+
         //start regening again
         staminaRegenCoroutine = StaminaRegeneration();
         StartCoroutine(staminaRegenCoroutine); 
@@ -192,6 +219,7 @@ public class CharacterHandler : MonoBehaviour
     }
 
     #endregion
+
     #region COMBATFSM
     //everytime the state is changed, do an exit routine (if applicable), switch the state, then trigger start routine (if applicable)
     public void SetStateDriver(CombatState state) { 

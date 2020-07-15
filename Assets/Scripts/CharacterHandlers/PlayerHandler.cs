@@ -2,16 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerHandler : CharacterHandler
-{
-    private IEnumerator currAttackCoroutine;
-    
-    protected override void Start(){
-        base.Start();
-        CharacterController cc = GetComponent<CharacterController>();
-        cc.center = new Vector3(0,7,0); //temp idk why
-
-    }
+public class PlayerHandler : CharacterHandler {
 
     protected override void Update() {
         base.Update(); 

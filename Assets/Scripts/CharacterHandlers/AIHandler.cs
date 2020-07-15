@@ -5,54 +5,44 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
 
-public enum AIGlobalState { UNAGGRO, AGGRO, DEAD };
-public enum CombatSlot {GUARANTEE, EVICTION, IN, OUT};
+public enum GlobalState { UNAGGRO, AGGRO, DEAD }; //determines ai state tree area
 
-[RequireComponent(typeof(Collider))]
+[RequireComponent(typeof(Collider))] //cause hit registry requires colliders
 public class AIHandler : CharacterHandler {    
 
-    //core - TODO REQUIRE BOX COLLIDER
     [Header("AI Core Components/SOs")]
-    public CharacterHandler target;
-    protected NavMeshAgent agent;
-    public Detection Detection {get; private set; }
+    public CharacterHandler targetPlayer; 
 
-    //nav stuff
-    [Header("AI Core Members")]
-    protected AIState localState; //stealth state
-    public AIGlobalState GlobalState {get; set; } = AIGlobalState.UNAGGRO; //for general labeling
+    protected NavMeshAgent agent;
+    protected AIStealthState stealthState; 
+    public Detection Detection {get; private set; }
+    public GlobalState GlobalState {get; set; } = GlobalState.UNAGGRO; //spawn/start as aggro (todo unless otherwise stated)
 
     //stealth stuff
     [Header("Stealth stuff")]
-    public List<PatrolWaypoint> patrolWaypoints;
-    public float idleTimeAtWaypoint;
+    public List<PatrolWaypoint> patrolWaypoints; //where ai walks
+    public float idleTimeAtWaypoint; //how long ai stays at each patrol waypoint
     public float spotTimerThreshold; //time it takes to go into aggro
-    public float AIGlobalStateCheckRange = 30f;
+    public float AIGlobalStateCheckRange = 30f; //range ai can sense other AI and their states
 
-    private int currPatrolIndex;
     public Vector3 NextWaypointLocation {get; private set;} 
-
 
     #region callbacks
     protected override void Start() {
-        base.Start();
+        base.Start(); //all character stuff
         Detection = this.GetComponent<Detection>();
         agent = this.GetComponent<NavMeshAgent>();
         //if (patrolWaypoints.Any()) NextWaypointLocation = patrolWaypoints[0].transform.position; //set first patrol waypoint
         //SetStateDriver(new PatrolState(this, animator, agent));
     }  
-    
-    //initialize animation stuff as hash (more efficient)
-    //uses a dict for organization - O(1) access (probably a hash table)
-    
     #endregion
 
     #region core
     protected override void TakeDamage(float damage) {
         base.TakeDamage(damage);
 
-        if(Health <= 0) {
-            SetStateDriver(new DeathState(this, animator, MeleeRaycastHandler)); //anything to do with death is dealt with here
+        if(Health <= 0) { //UPON AI DEATH todo should this be in super class
+            SetStateDriver(new DeathState(this, animator, MeleeRaycastHandler)); 
         }
 
     }
@@ -60,36 +50,38 @@ public class AIHandler : CharacterHandler {
 
     #region AIFSM
     //everytime the state is changed, do an exit routine (if applicable), switch the state, then trigger start routine (if applicable)
-    public void SetStateDriver(AIState state) { 
+    public void SetStateDriver(AIStealthState state) { 
         StartCoroutine(SetState(state));
     }
 
-    private IEnumerator SetState(AIState state) {
-        if(localState != null) yield return StartCoroutine(localState.OnStateExit());
-        localState = state;
-        yield return StartCoroutine(localState.OnStateEnter());
+    private IEnumerator SetState(AIStealthState state) {
+        if(stealthState != null) yield return StartCoroutine(stealthState.OnStateExit());
+        stealthState = state;
+        yield return StartCoroutine(stealthState.OnStateEnter());
     }
 
+    //used when stealth is broken, aka "deleting"
     public void ThrowStateToGCDriver() {
         StartCoroutine(ThrowStateToGC());
     }
 
     private IEnumerator ThrowStateToGC() {
-        yield return StartCoroutine(localState.OnStateExit());
-        localState = null;
+        yield return StartCoroutine(stealthState.OnStateExit());
+        stealthState = null;
     }
     #endregion
 
     #region stealthstuff
-    public BTStatus VerifyStealth() { //verify if stealth is valid
-        if(GlobalState == AIGlobalState.AGGRO) return BTStatus.FAILURE;
+    //verify if stealth is valid
+    public BTStatus VerifyStealth() {
+        if(GlobalState == GlobalState.AGGRO) return BTStatus.FAILURE; 
 
         //cast a sphere, if any AI in that sphere is Aggro, turn into aggro as well
         Collider[] aiInRange = Physics.OverlapSphere(transform.position, AIGlobalStateCheckRange, Detection.obstacleMask);
             foreach(Collider col in aiInRange) {
             AIHandler proximateAI = col.GetComponent<AIHandler>();
-            if(proximateAI.GlobalState == AIGlobalState.AGGRO){
-                GlobalState = AIGlobalState.AGGRO;
+            if(proximateAI.GlobalState == GlobalState.AGGRO){
+                GlobalState = GlobalState.AGGRO;
                 return BTStatus.FAILURE;
             }
         }
@@ -97,10 +89,13 @@ public class AIHandler : CharacterHandler {
         return BTStatus.SUCCESS;
     }
 
+    //check if ai has line of sight on player
     public bool LOSOnPlayer() {
         return Detection.VisibleTargets.Count != 0;
     }
     
+    //move to next patrol point
+    private int currPatrolIndex;
     public void SetNextPatrolDestination() { 
         currPatrolIndex = (currPatrolIndex + 1) % patrolWaypoints.Count;
         NextWaypointLocation = patrolWaypoints[currPatrolIndex].transform.position;
@@ -108,23 +103,34 @@ public class AIHandler : CharacterHandler {
     #endregion
     
     #region combatstuff
+    //deals with AI BT if combat is still a viable option
     public bool VerifyCombatIncapable() { 
         //if not combat capable (either dead or pu55y), fail
         //otherwise, run OVERRIDE method from child class
-        return GlobalState == AIGlobalState.DEAD;
+        return GlobalState == GlobalState.DEAD;
 
     }
 
-    //for bt
-    IEnumerator currEngagementCoroutine;
-    IEnumerator currLookCoroutine;
+    /*
+    start a combat cycle -> dealting with offensive and defensive behaviors
+    each combat cycle ends when a certain criteria is met (ex. hitting the player and waiting a bit, blockign the player, etc)
+    ienumeration hierarchy:
+        currEngagementCoroutine // the cycle
+            currEngagementAction // the general action the ai is taking, such as the attack or defence process
+                currLocal...Action //the current action being took to complete an engagement action
+        currLookCoroutine // controls enemy look direction, can go anywhere honestly
+    */
+
+    IEnumerator currEngagementCycle; //the actual engagement cycle
+    IEnumerator currEngagementAction; //the chosen engagement action, to complete engagement cycle
+    IEnumerator currSubEngagementAction; //current action to complete engagement actoin
+    IEnumerator currLookCoroutine; //deals with enemy look direction
+
+    //upon verifying i am ready for combat
     public BTStatus EngageDriver() {
-        //Debug.Log("engaging think loop");
-        //begin an engagement instance - aka the prep and actual attack of an AI OR the defense response
-        //if coroutine needs is running, return running
-        if(currEngagementCoroutine == null) {
-            currEngagementCoroutine = Engage();
-            StartCoroutine(currEngagementCoroutine);
+        if(currEngagementCycle == null) {
+            currEngagementCycle = Engage();
+            StartCoroutine(currEngagementCycle);
         }
 
         if(currLookCoroutine == null) {
@@ -135,91 +141,125 @@ public class AIHandler : CharacterHandler {
         return BTStatus.RUNNING;
     }
 
-    //core engagement loop
-    IEnumerator currEngagementAction;
     protected IEnumerator Engage() {
-        Debug.Log("engaging...");
+        //Debug.Log("engaging...");
 
-
-        currEngagementAction = OffensiveAction();
-        StartCoroutine(currEngagementAction);
-
-        //if cunt is attacked anytime in the process
-        yield return new WaitUntil(() => EngageInterrupt() || GlobalState == AIGlobalState.DEAD);
-
-        if(GlobalState == AIGlobalState.DEAD) {
-            agent.SetDestination(this.transform.position);
-            if(currLocalOffensiveAction != null) StopCoroutine(currLocalOffensiveAction);
-            StopCoroutine(currEngagementAction);
-            yield break;
-        }
-        
-        //determine randomly via block quota if ai is to block
-        if(Random.Range(0, 1) < characterdata.blockQuota) {
-            //stop local move, deal with set position as well
-            agent.SetDestination(this.transform.position);
-            if(currLocalOffensiveAction != null) StopCoroutine(currLocalOffensiveAction);
-            //stop the curr engagement action
-            StopCoroutine(currEngagementAction);
-
-            //start and wait out a defensive action
-            currEngagementAction = DefensiveAction();
+        //if i am staggering, do stagger related thing
+        if(combatState is StaggerState) {
+            //when staggering, stop chasing for an attack and do something else (todo make it its own engagementAction)
+            currEngagementAction = StaggerAction();
             yield return StartCoroutine(currEngagementAction);
+        }
+        //else, attack as normal
+        else {
+            currEngagementAction = OffensiveAction(); //first thought is to begin an offensive action
+            StartCoroutine(currEngagementAction); //note - this function will know when to stop the cycle by itself
+            
 
-            currEngagementCoroutine = null; //once done, go rethink
+            //if i am attacked anytime in the process, happened to have died, or am currently staggering consider a defensive option. Otherwise, 
+            yield return new WaitUntil(() => EngageInterrupt() || GlobalState == GlobalState.DEAD || combatState is StaggerState);
+
+            //situation 1, ive died
+            if(GlobalState == GlobalState.DEAD) {
+                agent.SetDestination(this.transform.position); //stop moving
+
+                //stop appropraite coroutines
+                if(currSubEngagementAction != null) StopCoroutine(currSubEngagementAction); 
+                StopCoroutine(currEngagementAction); 
+            }        
+            
+            //situatino 2, if i am hit mid offensive action
+            else if(combatState is StaggerState) {
+                //when staggering, stop chasing for an attack and do something else (todo make it its own engagementAction)
+
+                //stop appropraite coroutines
+                if(currSubEngagementAction != null) StopCoroutine(currSubEngagementAction);
+                StopCoroutine(currEngagementAction); 
+
+                currEngagementAction = StaggerAction();
+                yield return StartCoroutine(currEngagementAction);
+            }
+
+            //situation 3, i should block
+            //determine randomly via block quota if ai is to block
+            else if(Random.Range(0, 1) < characterdata.blockQuota) {
+                //stop local move, deal with set position as well
+                agent.SetDestination(this.transform.position);
+
+                if(currSubEngagementAction != null) StopCoroutine(currSubEngagementAction);
+                StopCoroutine(currEngagementAction);
+
+                //start and wait out a defensive action
+                currEngagementAction = DefensiveAction();
+                yield return StartCoroutine(currEngagementAction);
+            } 
         }
     }
 
     //checks if theres reason to engage a defensive interrupt
-    protected bool EngageInterrupt() {
+    private bool EngageInterrupt() {
         return Detection.VisibleTargets.Any() //if i can see a cunt
         && Detection.VisibleTargets[0].GetComponent<CharacterHandler>().combatState is AttackState //cunts attacking
         && Detection.VisibleTargets[0].GetComponent<CharacterHandler>().MeleeRaycastHandler.chosenTarget == this //cunts attacking me in particular
-        && !(combatState is AttackState); //im not already mid swing
-
-        //IF THEY BE MSISING IS IPORTANT TOO
-        
+        && !(combatState is AttackState); //im not already mid swing        
     }
 
-    MeleeMove chosenAttack;
-    IEnumerator currLocalOffensiveAction;
+    //offensive engagement
     protected virtual IEnumerator OffensiveAction() {
-        //if the player is already close to the ai, do a close-range attack
+        //todo if the player is already close to the ai, do a close-range attack
 
         //otherwise, pick an offensive attack move at random
-        chosenAttack = weapon.Attacks[Random.Range(0, weapon.Attacks.Count)];
+        MeleeMove chosenAttack = weapon.Attacks[Random.Range(0, weapon.Attacks.Count)];
 
         //close the distance to the player
-        
-        Debug.Log("AI is closing distance to player");
+        //Debug.Log("AI is closing distance to player");
+        currSubEngagementAction = ChasePlayer(chosenAttack.range);
+        yield return StartCoroutine(currSubEngagementAction);
 
-        currLocalOffensiveAction = ChasePlayer();
-        yield return StartCoroutine(currLocalOffensiveAction);
-
-        Debug.Log("AI attempting an attack...");
+        //Debug.Log("AI attempting an attack...");
         SetStateDriver(new AttackState(this, animator, MeleeRaycastHandler, chosenAttack));
 
         //once attack is finished
         yield return new WaitUntil(() => combatState is DefaultState);
 
-        Debug.Log("attack finished, spacing from target");
-        currLocalOffensiveAction = SpaceFromPlayer();
-        yield return StartCoroutine(currLocalOffensiveAction);
+        //Debug.Log("attack finished, spacing from target");
+        currSubEngagementAction = SpaceFromPlayer();
+        yield return StartCoroutine(currSubEngagementAction);
 
-        StopCoroutine(currEngagementCoroutine);
-        currEngagementCoroutine = null;
+        StopCoroutine(currEngagementCycle);
+        currEngagementCycle = null;
     }
 
-    private IEnumerator ChasePlayer() {
-        agent.SetDestination(target.transform.position);
-        while(chosenAttack.range < agent.remainingDistance || agent.pathPending){
-            agent.SetDestination(target.transform.position);
+    protected virtual IEnumerator DefensiveAction(){
+        Debug.Log("defending...");
+
+        SetStateDriver(new BlockState(this, animator, MeleeRaycastHandler));
+        yield return new WaitForSeconds(3f); //aka block time
+        SetStateDriver(new DefaultState(this, animator, MeleeRaycastHandler));
+
+        currEngagementCycle = null; //once done with defensive action, restart cycle
+    }
+
+    protected virtual IEnumerator StaggerAction(){
+        Debug.Log("stagger action");
+
+        currSubEngagementAction = SpaceFromPlayer();
+        yield return StartCoroutine(currSubEngagementAction);
+        currEngagementCycle = null; //once done, go rethink
+
+    }
+
+    //sub actions
+    private IEnumerator ChasePlayer(float attackRange) {
+        agent.SetDestination(targetPlayer.transform.position);
+        while(attackRange < agent.remainingDistance || agent.pathPending){
+            agent.SetDestination(targetPlayer.transform.position);
             yield return new WaitForSeconds(.2f);
         }
 
         //sotp guy from movin aboot
         agent.SetDestination(this.transform.position);
-        currLocalOffensiveAction = null;   
+        currSubEngagementAction = null;   
     }
 
     private IEnumerator SpaceFromPlayer() {
@@ -251,25 +291,16 @@ public class AIHandler : CharacterHandler {
         agent.updateRotation = true;
     }
 
+    //look stuff
     private IEnumerator FacePlayer() {
         //TODO: only when in combat
-        while(GlobalState != AIGlobalState.DEAD) {
-            Vector3 dirVec = target.transform.position - transform.position;
+        while(GlobalState != GlobalState.DEAD) {
+            Vector3 dirVec = targetPlayer.transform.position - transform.position;
             dirVec.y = 0;
             Quaternion facePlayerRotation = Quaternion.LookRotation(dirVec);
             transform.rotation = Quaternion.Lerp(transform.rotation, facePlayerRotation, 1);
             yield return null;
         }
-    }
-
-    protected virtual IEnumerator DefensiveAction(){
-        Debug.Log("defending...");
-
-        //FACE PLAYER DUMBASS
-
-        SetStateDriver(new BlockState(this, animator, MeleeRaycastHandler));
-        yield return new WaitForSeconds(3f); //aka block time
-        SetStateDriver(new DefaultState(this, animator, MeleeRaycastHandler));
     }
 
     #endregion

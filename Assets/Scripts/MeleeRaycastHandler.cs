@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MeleeRaycastHandler : MonoBehaviour {
     
-    //test
+    //todo - have findTarget return the target instead
     public CharacterHandler chosenTarget {get; set;}
     private float minDistanceToTarget;
 
