@@ -42,7 +42,7 @@ public class AIHandler : CharacterHandler {
         base.TakeDamage(damage);
 
         if(Health <= 0) { //UPON AI DEATH todo should this be in super class
-            SetStateDriver(new DeathState(this, animator, MeleeRaycastHandler)); 
+            SetStateDriver(new DeathState(this, animator)); 
         }
 
     }
@@ -145,19 +145,22 @@ public class AIHandler : CharacterHandler {
         //Debug.Log("engaging...");
 
         //if i am staggering, do stagger related thing
-        if(combatState is StaggerState) {
+        if(genericState is StaggerState) {
             //when staggering, stop chasing for an attack and do something else (todo make it its own engagementAction)
             currEngagementAction = StaggerAction();
             yield return StartCoroutine(currEngagementAction);
         }
         //else, attack as normal
         else {
-            currEngagementAction = OffensiveAction(); //first thought is to begin an offensive action
+            //todo if the player is already close to the ai, do a close-range attack
+
+            MeleeMove chosenAttack = weapon.Attacks[Random.Range(0, weapon.Attacks.Count)];
+            currEngagementAction = OffensiveAction(chosenAttack); //first thought is to begin an offensive action
             StartCoroutine(currEngagementAction); //note - this function will know when to stop the cycle by itself
             
 
             //if i am attacked anytime in the process, happened to have died, or am currently staggering consider a defensive option. Otherwise, 
-            yield return new WaitUntil(() => EngageInterrupt() || GlobalState == GlobalState.DEAD || combatState is StaggerState);
+            yield return new WaitUntil(() => EngageInterrupt(chosenAttack) || GlobalState == GlobalState.DEAD || genericState is StaggerState);
 
             //situation 1, ive died
             if(GlobalState == GlobalState.DEAD) {
@@ -169,7 +172,7 @@ public class AIHandler : CharacterHandler {
             }        
             
             //situatino 2, if i am hit mid offensive action
-            else if(combatState is StaggerState) {
+            else if(genericState is StaggerState) {
                 //when staggering, stop chasing for an attack and do something else (todo make it its own engagementAction)
 
                 //stop appropraite coroutines
@@ -197,19 +200,15 @@ public class AIHandler : CharacterHandler {
     }
 
     //checks if theres reason to engage a defensive interrupt
-    private bool EngageInterrupt() {
+    private bool EngageInterrupt(MeleeMove meleeMove) {
         return Detection.VisibleTargets.Any() //if i can see a cunt
-        && Detection.VisibleTargets[0].GetComponent<CharacterHandler>().combatState is AttackState //cunts attacking
-        && Detection.VisibleTargets[0].GetComponent<CharacterHandler>().MeleeRaycastHandler.chosenTarget == this //cunts attacking me in particular
-        && !(combatState is AttackState); //im not already mid swing        
+        && Detection.VisibleTargets[0].GetComponent<CharacterHandler>().genericState is AttackState //cunts attacking
+        && Detection.VisibleTargets[0].GetComponent<CharacterHandler>().FindTarget(meleeMove) == this //cunts attacking me in particular
+        && !(genericState is AttackState); //im not already mid swing        
     }
 
     //offensive engagement
-    protected virtual IEnumerator OffensiveAction() {
-        //todo if the player is already close to the ai, do a close-range attack
-
-        //otherwise, pick an offensive attack move at random
-        MeleeMove chosenAttack = weapon.Attacks[Random.Range(0, weapon.Attacks.Count)];
+    protected virtual IEnumerator OffensiveAction(MeleeMove chosenAttack) {
 
         //close the distance to the player
         //Debug.Log("AI is closing distance to player");
@@ -217,10 +216,10 @@ public class AIHandler : CharacterHandler {
         yield return StartCoroutine(currSubEngagementAction);
 
         //Debug.Log("AI attempting an attack...");
-        SetStateDriver(new AttackState(this, animator, MeleeRaycastHandler, chosenAttack));
+        SetStateDriver(new AttackState(this, animator, chosenAttack));
 
         //once attack is finished
-        yield return new WaitUntil(() => combatState is DefaultState);
+        yield return new WaitUntil(() => genericState is DefaultCombatState);
 
         //Debug.Log("attack finished, spacing from target");
         currSubEngagementAction = SpaceFromPlayer();
@@ -233,9 +232,9 @@ public class AIHandler : CharacterHandler {
     protected virtual IEnumerator DefensiveAction(){
         Debug.Log("defending...");
 
-        SetStateDriver(new BlockState(this, animator, MeleeRaycastHandler));
+        SetStateDriver(new BlockState(this, animator));
         yield return new WaitForSeconds(3f); //aka block time
-        SetStateDriver(new DefaultState(this, animator, MeleeRaycastHandler));
+        SetStateDriver(new DefaultCombatState(this, animator));
 
         currEngagementCycle = null; //once done with defensive action, restart cycle
     }

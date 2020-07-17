@@ -3,16 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public abstract class CombatState
-{
+public abstract class CombatState : GenericState {
     protected readonly CharacterHandler character;
     protected Animator animator;
-    protected MeleeRaycastHandler attackHandler;
 
-    public CombatState(CharacterHandler character, Animator animator, MeleeRaycastHandler attackHandler) {
+    public CombatState(CharacterHandler character, Animator animator) {
         this.character = character;
         this.animator = animator;
-        this.attackHandler = attackHandler;
     }
 
     public virtual IEnumerator OnStateEnter() {
@@ -21,10 +18,6 @@ public abstract class CombatState
 
     public virtual IEnumerator OnStateExit() {
         yield break;
-    }
-
-    public virtual string toString() {
-        return "to be replaced";
     }
     
 }

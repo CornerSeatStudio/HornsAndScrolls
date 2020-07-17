@@ -1755,7 +1755,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 515939345}
-  cameraSnapSpeed: 0.125
+  cameraSnapSpeed: 0.89
   offset: {x: 0, y: 30, z: -16}
   scrollZoomSmoothness: 0.5
   scrollZoomMultiplier: 20
@@ -2596,7 +2596,7 @@ PrefabInstance:
     - target: {fileID: 986239471517569964, guid: 5fb278a1c6f2e2d449d100868bba4dba,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 16
+      value: 19.6
       objectReference: {fileID: 0}
     - target: {fileID: 986239471517569964, guid: 5fb278a1c6f2e2d449d100868bba4dba,
         type: 3}
@@ -2734,7 +2734,7 @@ PrefabInstance:
     - target: {fileID: 4752215555107759982, guid: 3e480895f898d6c4ba63ed175ba26b9d,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.7
+      value: 7.2
       objectReference: {fileID: 0}
     - target: {fileID: 4752215555107759982, guid: 3e480895f898d6c4ba63ed175ba26b9d,
         type: 3}
@@ -2781,10 +2781,20 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4752215555110140387, guid: 3e480895f898d6c4ba63ed175ba26b9d,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: eb0a954ab4af1ca4bb7c081172429d6d, type: 2}
+    - target: {fileID: 4752215555110140387, guid: 3e480895f898d6c4ba63ed175ba26b9d,
+        type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4752215555110140388, guid: 3e480895f898d6c4ba63ed175ba26b9d,
         type: 3}
       propertyPath: m_Center.y
-      value: 7
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4752215555110140388, guid: 3e480895f898d6c4ba63ed175ba26b9d,
         type: 3}
@@ -2795,6 +2805,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Height
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752215555110140390, guid: 3e480895f898d6c4ba63ed175ba26b9d,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4752215555110140391, guid: 3e480895f898d6c4ba63ed175ba26b9d,
         type: 3}
@@ -2817,6 +2832,56 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 84acff344000e7b49bab2b4c8d8c3d9a,
         type: 2}
+    - target: {fileID: 4752215555110140391, guid: 3e480895f898d6c4ba63ed175ba26b9d,
+        type: 3}
+      propertyPath: movementSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752215555110140391, guid: 3e480895f898d6c4ba63ed175ba26b9d,
+        type: 3}
+      propertyPath: turnSmoothness
+      value: 0.19
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752215555110140391, guid: 3e480895f898d6c4ba63ed175ba26b9d,
+        type: 3}
+      propertyPath: mainMovementSpeed
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752215555110140391, guid: 3e480895f898d6c4ba63ed175ba26b9d,
+        type: 3}
+      propertyPath: walkSpeed
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752215555110140391, guid: 3e480895f898d6c4ba63ed175ba26b9d,
+        type: 3}
+      propertyPath: sprintSpeed
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752215555110140391, guid: 3e480895f898d6c4ba63ed175ba26b9d,
+        type: 3}
+      propertyPath: jogSpeed
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752215555110140391, guid: 3e480895f898d6c4ba63ed175ba26b9d,
+        type: 3}
+      propertyPath: crouchWalkSpeed
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752215555110140391, guid: 3e480895f898d6c4ba63ed175ba26b9d,
+        type: 3}
+      propertyPath: dodgeTime
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752215555110140391, guid: 3e480895f898d6c4ba63ed175ba26b9d,
+        type: 3}
+      propertyPath: dodgeSpeed
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752215555110140391, guid: 3e480895f898d6c4ba63ed175ba26b9d,
+        type: 3}
+      propertyPath: combatMoveSpeed
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 4752215555110140392, guid: 3e480895f898d6c4ba63ed175ba26b9d,
         type: 3}
       propertyPath: m_Name
