@@ -5,44 +5,47 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using TMPro;
 
+public class CharacterHandler : MonoBehaviour {
 
-
-public class CharacterHandler : MonoBehaviour
-{
     [Header("Core Components/SOs")]
     public CharacterData characterdata;
-    public WeaponData weapon; //Todo: list to choose between
-    protected Animator animator;
-    public MeleeRaycastHandler MeleeRaycastHandler {get; protected set;}
+    public WeaponData weapon; 
 
     [Header("Core Members")]
     public Image heathbar;
     public Image staminabar;
     public TextMeshProUGUI debugState; 
     public float staminaRegenerationWindow = 3f;
-    public Dictionary<string, int> AnimationHashes { get; private set; }
 
     //private stuff
-    public CombatState combatState {get; private set;}
-    public float Health {get; set; }
-    public float Stamina {get; set; }
-    public Dictionary<string, MeleeMove> MeleeAttacks {get; private set;} //for easier access 
+    protected Animator animator;
+
+    public Dictionary<string, MeleeMove> MeleeAttacks {get; private set;} 
     public MeleeMove MeleeBlock {get; private set; }
+    public float Health {get; private set; }
+    public float Stamina {get; private set; }
+    public GenericState genericState {get; private set;}
 
     #region Callbacks
     protected virtual void Start() {
         
-        animator = this.GetComponent<Animator>();
-        //DisableRagdoll();
-        MeleeRaycastHandler = this.GetComponent<MeleeRaycastHandler>();
+        animator = this.GetComponent<Animator>();        
+        
         Health = characterdata.maxHealth;
         Stamina = characterdata.maxStamina;
-        PopulateMeleeMoves();
-        setupAnimationHashes();
-        SetStateDriver(new DefaultState(this, animator, MeleeRaycastHandler)); //start as default
+
+        
+        DisableRagdoll(); //NECCESARY to a. disable ragdoll and b. not fuck up attack script
+        PopulateMeleeMoves(); 
         
     }
-    private void DisableRagdoll(){  
+
+    protected virtual void Update(){
+        if(genericState != null) debugState.SetText(genericState.ToString());
+    }
+
+    //disables ragdoll on character on game start
+    private void DisableRagdoll() {  
         Rigidbody[] rigidbodies = gameObject.GetComponentsInChildren<Rigidbody>();
         foreach(Rigidbody rb in rigidbodies){
             if(rb.gameObject != this.gameObject){
@@ -56,95 +59,127 @@ public class CharacterHandler : MonoBehaviour
                 col.enabled = false;
             }
         }
-        
-        
     }
 
-    private void setupAnimationHashes() {
-        AnimationHashes = new Dictionary<string, int>();
-        AnimationHashes.Add("IsPatrol", Animator.StringToHash("IsPatrol"));
-        AnimationHashes.Add("IsAggroWalk", Animator.StringToHash("IsAggroWalk"));
-        AnimationHashes.Add("IsSearching", Animator.StringToHash("IsSearching"));
-        AnimationHashes.Add("IsStaring", Animator.StringToHash("IsStaring"));
-        AnimationHashes.Add("IsAttacking", Animator.StringToHash("IsAttacking"));
-        AnimationHashes.Add("IsAgro", Animator.StringToHash("IsAgro"));
-        AnimationHashes.Add("IsBlocking", Animator.StringToHash("IsBlocking"));
-        AnimationHashes.Add("IsCountering", Animator.StringToHash("IsCountering"));
-    }
+    //organize ALL melee moves moves in dictionary
     private void PopulateMeleeMoves() {
+        //for attack
         MeleeAttacks = new Dictionary<string, MeleeMove>();
         foreach(MeleeMove attack in weapon.Attacks) {
             MeleeAttacks.Add(attack.name, attack);
         }
-    }
 
-    protected virtual void Update(){
-        if(combatState != null) debugState.SetText(combatState.toString());
+        //for block
+        MeleeBlock = weapon.block;
     }
     #endregion
 
     #region core/var manipulation
+
+        //LayerMasks allow for raycasts to choose what to and not to register
+    public LayerMask targetMask;
+    public LayerMask obstacleMask;
+
+    public CharacterHandler FindTarget(MeleeMove meleeMove){
+        float minDistanceToTarget = float.MaxValue; //guarantees first check in findingInteractableTargets
+        CharacterHandler chosenTarget = null; //reset character chosen
+        //cast a sphere over player, store everything inside col
+        Collider[] targetsInView = Physics.OverlapSphere(transform.position, meleeMove.range, targetMask);
+        
+        foreach(Collider col in targetsInView){
+            //Debug.Log(col.transform);
+            Transform target = col.transform; //get the targets locatoin
+            Vector3 directionToTarget = (target.position - transform.position).normalized; //direction vector of where bloke is
+            if (Vector3.Angle(transform.forward, directionToTarget) < meleeMove.angle/2){ //if the attack is within bounds, /2 cause left right
+                //do the ray 
+                float distanceToTarget = Vector3.Distance(transform.position, target.position);
+                if(!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleMask)){ //if, from character at given angle and distance, it DOESNT collide with obstacleMask
+                    //if distance is closer
+                    if(distanceToTarget < minDistanceToTarget) {
+                        minDistanceToTarget = distanceToTarget;
+                        chosenTarget = col.GetComponent<CharacterHandler>();
+                    }
+                }
+            }
+        }             
+
+        return chosenTarget;
+    }
+
+
     //upon contact with le weapon, this handles the appropriate response (such as tackign damage, stamina drain, counters etc)
     public virtual void AttackResponse(float damage, CharacterHandler attackingCharacter) { 
         string result = "null";//for debug
 
-        if(this.combatState is AttackState) { //TODO AM IN RANGE
+        if(this.genericState is AttackState) { //TODO AM IN RANGE
             //i am currently in an unblockable attack while being attacked
             //if enemy is simultaneously in attack
-            if(attackingCharacter.combatState is AttackState){
+            if(attackingCharacter.genericState is AttackState){
                 //if my attack is unblockable
-                if(!(this.combatState as AttackState).chosenMove.blockableAttack){
+                if(!(this.genericState as AttackState).chosenMove.blockableAttack){
                     //take damage but dont stagger
+                    TakeDamage(damage);
                     result = "both take damage, but reacter staggers only due to unblockable attack";
                 } else {
                     //take damage, stagger as usual
+                    TakeDamage(damage);
+                    SetStateDriver(new StaggerState(this, animator));
                     result = "both take damage and stagger";
                 }
             }
             
-        } else if (this.combatState is BlockState && MeleeRaycastHandler.chosenTarget != null) {
+        } else if (this.genericState is BlockState){ //todo CHECK IF VALID BLOCK
             //i am blocking an unblockable attack AND if its a valid block (should be null if no target)
-            if(!(attackingCharacter.combatState as AttackState).chosenMove.blockableAttack) {
+            if(!(attackingCharacter.genericState as AttackState).chosenMove.blockableAttack) {
                 //take damage and stagger
                 result = "requester beats block with unblockable, receiver takes damage and staggers";
+                    TakeDamage(damage);
+                    SetStateDriver(new StaggerState(this, animator));
+           
             } else {
                 //drain stamina instead
+                TakeStaminaDrain(damage);
                 result = "receiver blocks, only stamina drain";
             }
 
 
-        } else if (this.combatState is CounterState) {
+        } else if (this.genericState is CounterState) { //todo CHECK IF VALID BLOCk
             //if i am countering an unblockable attack
-            if(!(attackingCharacter.combatState as AttackState).chosenMove.blockableAttack){
+            if(!(attackingCharacter.genericState as AttackState).chosenMove.blockableAttack){
                 //no damage, but enemy isnt staggared
                 //either a heavy attack with long endlag,
                 //OR can be instantly followed up with another swing maybe
                 result = "requester used unblockable attack but is countered, no effect to either";
             } else {
                 result = "receiver counters, requester staggers";
+                attackingCharacter.SetStateDriver(new StaggerState(attackingCharacter, attackingCharacter.animator));
                 //proper counter here
             }
 
-        } else if (this.combatState is DodgeState) {
+        } else if (this.genericState is DodgeState) {
             result = "receiver dodged, no damage, stamina only";
-        } else if (this.combatState is StaggerState) {
+            TakeStaminaDrain(3f);
+        } else if (this.genericState is StaggerState) {
             result = "receiver hit when staggered";
-            //everytime this is triggered, increment
+            TakeDamage(damage);
+            //everytime this is triggered, increment todo
             //"prevent camping when down" counter maybe
         } else { 
             result = "default situation, receiver takes damage and staggers, possible out of range";
             //take damage, stagger
+            TakeDamage(damage);
+            SetStateDriver(new StaggerState(this, animator));
+
         }
 
-        Debug.Log("REQUESTER: " + attackingCharacter.combatState.toString() 
-                + ", REACTER: " + combatState.toString()
+        Debug.Log("REQUESTER: " + attackingCharacter.genericState.ToString() 
+                + ", REACTER: " + genericState.ToString()
                 + ", RESULT: " + result);
 
-        TakeDamage(damage);
 
     }
 
-    //ONLY method that allows damage
+    //upon taking damage
     protected virtual void TakeDamage(float damage){ 
         Health -= damage;
         heathbar.fillAmount = Health / characterdata.maxHealth;
@@ -157,9 +192,11 @@ public class CharacterHandler : MonoBehaviour
 
     }
 
-    private IEnumerator staminaRegenCoroutine;
-    private IEnumerator staminaDrainAndCooldown;
+    //stamina management
+    private IEnumerator staminaRegenCoroutine; //for the actual regening
+    private IEnumerator staminaDrainAndCooldown; //for the drain, and short break before allowing cooldown
 
+    //take stamina drain, stop and start appropriate coroutines
     public void DealStamina(float staminaDrain) {
         //cancel the wait from current dealing of stamina
         if(staminaDrainAndCooldown != null) StopCoroutine(staminaDrainAndCooldown);
@@ -172,7 +209,7 @@ public class CharacterHandler : MonoBehaviour
     }
 
     protected IEnumerator StaminaRegeneration() {
-        Debug.Log("in stam regen");
+        //Debug.Log("in stam regen");
         while (Stamina < characterdata.maxStamina) {
             Stamina += characterdata.staminaRegenerationRatePerS / 10;
             staminabar.fillAmount = Stamina / characterdata.maxStamina; //update el bar
@@ -185,6 +222,7 @@ public class CharacterHandler : MonoBehaviour
         Stamina -= staminaDrain;
         staminabar.fillAmount = Stamina / characterdata.maxStamina;
         yield return new WaitForSeconds(staminaRegenerationWindow);
+
         //start regening again
         staminaRegenCoroutine = StaminaRegeneration();
         StartCoroutine(staminaRegenCoroutine); 
@@ -192,17 +230,19 @@ public class CharacterHandler : MonoBehaviour
     }
 
     #endregion
+
     #region COMBATFSM
     //everytime the state is changed, do an exit routine (if applicable), switch the state, then trigger start routine (if applicable)
-    public void SetStateDriver(CombatState state) { 
+    public void SetStateDriver(GenericState state) { 
         StartCoroutine(SetState(state));
     }
 
-    private IEnumerator SetState(CombatState state) {
-        if(combatState != null) yield return StartCoroutine(combatState.OnStateExit());
-        combatState = state;
-        yield return StartCoroutine(combatState.OnStateEnter());
+    protected IEnumerator SetState(GenericState state) {
+        if(genericState != null) yield return StartCoroutine(genericState.OnStateExit());
+        genericState = state;
+        yield return StartCoroutine(genericState.OnStateEnter());
     }
     #endregion
+
 
 }
