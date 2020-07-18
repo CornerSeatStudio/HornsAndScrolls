@@ -20,7 +20,6 @@ public class CharacterHandler : MonoBehaviour {
     //private stuff
     protected Animator animator;
 
-    public Dictionary<string, int> AnimationHashes { get; private set; }
     public Dictionary<string, MeleeMove> MeleeAttacks {get; private set;} 
     public MeleeMove MeleeBlock {get; private set; }
     public float Health {get; private set; }
@@ -37,7 +36,6 @@ public class CharacterHandler : MonoBehaviour {
 
         
         DisableRagdoll(); //NECCESARY to a. disable ragdoll and b. not fuck up attack script
-        setupAnimationHashes();
         PopulateMeleeMoves(); 
         
     }
@@ -63,34 +61,6 @@ public class CharacterHandler : MonoBehaviour {
         }
     }
 
-    //put animations as hashes for efficiency
-    protected virtual void setupAnimationHashes() {
-        AnimationHashes = new Dictionary<string, int>();
-        AnimationHashes.Add("IsPatrol", Animator.StringToHash("IsPatrol"));
-        AnimationHashes.Add("IsAggroWalk", Animator.StringToHash("IsAggroWalk"));
-        AnimationHashes.Add("IsSearching", Animator.StringToHash("IsSearching"));
-        AnimationHashes.Add("IsStaring", Animator.StringToHash("IsStaring"));
-        AnimationHashes.Add("IsAggro", Animator.StringToHash("IsAgro"));
-
-        AnimationHashes.Add("IsAttacking", Animator.StringToHash("IsAttacking"));
-        AnimationHashes.Add("IsBlocking", Animator.StringToHash("IsBlocking"));
-        AnimationHashes.Add("IsCountering", Animator.StringToHash("IsCountering"));
-    
-        AnimationHashes.Add("Idle", Animator.StringToHash("Idle"));
-        AnimationHashes.Add("Jogging", Animator.StringToHash("Jogging"));
-        AnimationHashes.Add("Sprinting", Animator.StringToHash("Sprinting"));
-        AnimationHashes.Add("Walking", Animator.StringToHash("Walking"));
-        AnimationHashes.Add("NormalMoveBlend", Animator.StringToHash("NormalMoveBlend"));
-        AnimationHashes.Add("Crouching", Animator.StringToHash("Crouching"));
-        AnimationHashes.Add("CrouchWalking", Animator.StringToHash("CrouchWalking"));
-        AnimationHashes.Add("WeaponOut", Animator.StringToHash("WeaponOut"));
-        AnimationHashes.Add("XCombatMove", Animator.StringToHash("XCombatMove"));
-        AnimationHashes.Add("ZCombatMove", Animator.StringToHash("ZCombatMove"));
-        AnimationHashes.Add("CombatWalking", Animator.StringToHash("CombatWalking"));
-        AnimationHashes.Add("Dodging", Animator.StringToHash("Dodging"));
-
-    }
-    
     //organize ALL melee moves moves in dictionary
     private void PopulateMeleeMoves() {
         //for attack
@@ -116,8 +86,6 @@ public class CharacterHandler : MonoBehaviour {
         //cast a sphere over player, store everything inside col
         Collider[] targetsInView = Physics.OverlapSphere(transform.position, meleeMove.range, targetMask);
         
-        if(targetsInView.Length == 0) {Debug.Log("nothing found in find target function"); return null; }
-
         foreach(Collider col in targetsInView){
             //Debug.Log(col.transform);
             Transform target = col.transform; //get the targets locatoin
@@ -160,7 +128,7 @@ public class CharacterHandler : MonoBehaviour {
                 }
             }
             
-        } else if (this.genericState is BlockState ){ //todo && MeleeRaycastHandler.chosenTarget != null) {
+        } else if (this.genericState is BlockState){ //todo CHECK IF VALID BLOCK
             //i am blocking an unblockable attack AND if its a valid block (should be null if no target)
             if(!(attackingCharacter.genericState as AttackState).chosenMove.blockableAttack) {
                 //take damage and stagger
@@ -175,7 +143,7 @@ public class CharacterHandler : MonoBehaviour {
             }
 
 
-        } else if (this.genericState is CounterState) {
+        } else if (this.genericState is CounterState) { //todo CHECK IF VALID BLOCk
             //if i am countering an unblockable attack
             if(!(attackingCharacter.genericState as AttackState).chosenMove.blockableAttack){
                 //no damage, but enemy isnt staggared

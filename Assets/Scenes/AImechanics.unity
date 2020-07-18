@@ -557,6 +557,16 @@ PrefabInstance:
       propertyPath: m_textInfo.pageCount
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1790523816227493424, guid: b9497ff8742f4a04190da24b37bbefec,
+        type: 3}
+      propertyPath: targetMask.m_Bits
+      value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: 1790523816227493424, guid: b9497ff8742f4a04190da24b37bbefec,
+        type: 3}
+      propertyPath: obstacleMask.m_Bits
+      value: 512
+      objectReference: {fileID: 0}
     - target: {fileID: 1790523816227493427, guid: b9497ff8742f4a04190da24b37bbefec,
         type: 3}
       propertyPath: m_Enabled
@@ -627,7 +637,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1790523816227493438, guid: b9497ff8742f4a04190da24b37bbefec, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: b9497ff8742f4a04190da24b37bbefec, type: 3}
 --- !u!1 &536361902 stripped
 GameObject:
@@ -2880,12 +2891,23 @@ PrefabInstance:
     - target: {fileID: 4752215555110140391, guid: 3e480895f898d6c4ba63ed175ba26b9d,
         type: 3}
       propertyPath: combatMoveSpeed
-      value: 8
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752215555110140391, guid: 3e480895f898d6c4ba63ed175ba26b9d,
+        type: 3}
+      propertyPath: obstacleMask.m_Bits
+      value: 512
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752215555110140391, guid: 3e480895f898d6c4ba63ed175ba26b9d,
+        type: 3}
+      propertyPath: targetMask.m_Bits
+      value: 256
       objectReference: {fileID: 0}
     - target: {fileID: 4752215555110140392, guid: 3e480895f898d6c4ba63ed175ba26b9d,
         type: 3}
       propertyPath: m_Name
       value: Player_new_prefab
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4752215555110140390, guid: 3e480895f898d6c4ba63ed175ba26b9d, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 3e480895f898d6c4ba63ed175ba26b9d, type: 3}

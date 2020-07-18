@@ -62,10 +62,7 @@ public class PlayerHandler : CharacterHandler {
         if(genericState is MoveState) { 
             //check for sheathing
             if(Input.GetKeyDown(KeyCode.X) || Input.GetButtonDown("Fire1")) { 
-               // SetStateDriver(new IdleMoveState(this, animator));
-                //animator.SetBool(AnimationHashes["Idle"], false);
-                animator.SetBool(AnimationHashes["WeaponOut"], true);
-                SetStateDriver(new DefaultCombatState(this, animator));
+                SetStateDriver(new UnsheathingCombatState(this, animator));
             } else {
                 HandleNormalMovement();
                 FaceKeyPress();
@@ -73,8 +70,11 @@ public class PlayerHandler : CharacterHandler {
         } else if (genericState is CombatState) { 
             //check for sheathing
             if(Input.GetKeyDown(KeyCode.X) && !(genericState is DodgeState)) { // but not dodge state
-                animator.SetBool(AnimationHashes["WeaponOut"], false); //manually i guess
-                SetStateDriver(new IdleMoveState(this, animator));
+                if(genericState is SheathingCombatState) {
+                    SetStateDriver(new UnsheathingCombatState(this, animator));
+                } else{
+                    SetStateDriver(new SheathingCombatState(this, animator));
+                }
             } else {
                 HandleCombatMovement();
                 HandleInteractions();
@@ -125,8 +125,8 @@ public class PlayerHandler : CharacterHandler {
         //if not dodging
         if(genericState is DodgeState){
             Vector3 localDir = transform.InverseTransformDirection(dodgeDirection).normalized;
-            animator.SetFloat(AnimationHashes["XCombatMove"], localDir.x);
-            animator.SetFloat(AnimationHashes["ZCombatMove"], localDir.z);
+            animator.SetFloat(Animator.StringToHash("XCombatMove"), localDir.x);
+            animator.SetFloat(Animator.StringToHash("ZCombatMove"), localDir.z);
         } else {
             if(Input.GetButtonDown("Jump") && (inputVector.x != 0 || inputVector.z != 0)) {
                 dodgeDirection = velocity;
@@ -134,9 +134,9 @@ public class PlayerHandler : CharacterHandler {
             } 
 
             Vector3 localDir = transform.InverseTransformDirection(velocity).normalized;
-            animator.SetFloat(AnimationHashes["XCombatMove"], localDir.x);
-            animator.SetFloat(AnimationHashes["ZCombatMove"], localDir.z);
-            animator.SetBool(AnimationHashes["CombatWalking"], (inputVector.x != 0f) || (inputVector.z != 0f));
+            animator.SetFloat(Animator.StringToHash("XCombatMove"), localDir.x);
+            animator.SetFloat(Animator.StringToHash("ZCombatMove"), localDir.z);
+            animator.SetBool(Animator.StringToHash("CombatWalking"), (inputVector.x != 0f) || (inputVector.z != 0f));
         }
 
         

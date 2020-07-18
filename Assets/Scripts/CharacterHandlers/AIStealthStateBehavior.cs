@@ -43,7 +43,7 @@ public class PatrolState : AIStealthState {
     public override IEnumerator OnStateEnter() { //Debug.Log("enteredPatrol");
         if(character.NextWaypointLocation == null) { Debug.LogWarning("no waypoints on some cunt"); character.SetStateDriver(new IdleState(character, animator, agent)); };
         
-        animator.SetBool(character.AnimationHashes["IsPatrol"], true);
+        animator.SetBool(Animator.StringToHash("IsPatrol"), true);
         moveToLocationCoroutine = MoveToLocation(character.NextWaypointLocation);
         yield return character.StartCoroutine(moveToLocationCoroutine);
     }    
@@ -64,7 +64,7 @@ public class PatrolState : AIStealthState {
 
     public override IEnumerator OnStateExit() { //Debug.Log("exitedPatrol");
         if(LOSCoroutine != null) character.StopCoroutine(LOSCoroutine);        
-        animator.SetBool(character.AnimationHashes["IsPatrol"], false);
+        animator.SetBool(Animator.StringToHash("IsPatrol"), false);
         if(moveToLocationCoroutine != null) character.StopCoroutine(moveToLocationCoroutine); //stop coroutine
         yield return null;
     }
@@ -126,7 +126,7 @@ public class InvestigationState : AIStealthState {
                 yield break;
             }
         } else { //caught, change global state, let mono behavior handle the rest
-            animator.SetBool(character.AnimationHashes["IsAggroWalk"], true); //todo: to be put in separate class
+            animator.SetBool(Animator.StringToHash("IsAggroWalk"), true); //todo: to be put in separate class
             character.GlobalState = GlobalState.AGGRO;
             character.ThrowStateToGCDriver();
         }
@@ -134,7 +134,7 @@ public class InvestigationState : AIStealthState {
     }
 
     private IEnumerator InPlaceSearch() {
-        animator.SetBool(character.AnimationHashes["IsSearching"], true);
+        animator.SetBool(Animator.StringToHash("IsSearching"), true);
         agent.isStopped = true; //halt movement
         isDecreasingDetection = true; //start by DECREASING detection
         
@@ -147,7 +147,7 @@ public class InvestigationState : AIStealthState {
 
         yield return new WaitUntil(() => character.LOSOnPlayer() || CurrInvestigationTimer <= 0); //keep decrementing until LOS is regained || lost
 
-        animator.SetBool(character.AnimationHashes["IsSearching"], false);
+        animator.SetBool(Animator.StringToHash("IsSearching"), false);
 
         //two situations
         if(character.LOSOnPlayer()) { //if sight regained, back to staring
@@ -165,13 +165,13 @@ public class InvestigationState : AIStealthState {
 
     public IEnumerator MoveToLocation(Vector3 location){ //Debug.Log("enteredMove");//shouldnt be a coroutine lol, no reason for the while statemtn
         
-        animator.SetBool(character.AnimationHashes["IsAggroWalk"], true);
+        animator.SetBool(Animator.StringToHash("IsAggroWalk"), true);
         
         agent.SetDestination(location);
         //character.debug(agent.stoppingDistance + " " + agent.remainingDistance);
         yield return new WaitUntil(() => !agent.pathPending && agent.stoppingDistance > agent.remainingDistance);
         //Debug.Log(agent.pathPending + " " + (agent.stoppingDistance < agent.remainingDistance));
-        animator.SetBool(character.AnimationHashes["IsAggroWalk"], false);
+        animator.SetBool(Animator.StringToHash("IsAggroWalk"), false);
     }
 
     private IEnumerator InvestigationTimer() {
@@ -190,12 +190,12 @@ public class InvestigationState : AIStealthState {
         //Debug.Log("chain discovering");
         character.StopCoroutine(timerCoroutine); //stop the timer
         timerCoroutine = null;
-        animator.SetBool(character.AnimationHashes["IsSearching"], true);
+        animator.SetBool(Animator.StringToHash("IsSearching"), true);
 
         //"in place search" variation - as grace period
         yield return new WaitForSeconds(3f);
 
-        animator.SetBool(character.AnimationHashes["IsSearching"], false);
+        animator.SetBool(Animator.StringToHash("IsSearching"), false);
 
         agent.isStopped = false; //allow character to move after grace period
         //move to last seen location
@@ -212,7 +212,7 @@ public class InvestigationState : AIStealthState {
         agent.isStopped = false; //ensure movement can continue
         //disable to exit possibilites (being to aggro and to patrol)
         //todo animator.SetBool("isStaring", false);
-        animator.SetBool(character.AnimationHashes["IsSearching"], false);
+        animator.SetBool(Animator.StringToHash("IsSearching"), false);
         if(timerCoroutine != null) character.StopCoroutine(timerCoroutine); //stop coroutine
         yield return null;
     }
