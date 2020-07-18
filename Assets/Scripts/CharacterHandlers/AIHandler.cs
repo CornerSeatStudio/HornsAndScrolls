@@ -34,13 +34,15 @@ public class AIHandler : CharacterHandler {
         agent = this.GetComponent<NavMeshAgent>();
         //if (patrolWaypoints.Any()) NextWaypointLocation = patrolWaypoints[0].transform.position; //set first patrol waypoint
         //SetStateDriver(new PatrolState(this, animator, agent));
+        genericState = new DefaultCombatState(this, animator); //todo temp probably
     }  
     #endregion
 
     #region core
-    protected override void TakeDamage(float damage) {
-        base.TakeDamage(damage);
+    protected override void TakeDamage(float damage, bool isStaggerable) {
+        base.TakeDamage(damage, isStaggerable);
 
+        //Debug.Log("taken damage");
         if(Health <= 0) { //UPON AI DEATH todo should this be in super class
             SetStateDriver(new DeathState(this, animator)); 
         }

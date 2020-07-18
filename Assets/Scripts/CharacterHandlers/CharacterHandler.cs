@@ -10,6 +10,7 @@ public class CharacterHandler : MonoBehaviour {
     [Header("Core Components/SOs")]
     public CharacterData characterdata;
     public WeaponData weapon; 
+    public AudioData[] audioData;
 
     [Header("Core Members")]
     public Image heathbar;
@@ -19,18 +20,17 @@ public class CharacterHandler : MonoBehaviour {
 
     //private stuff
     protected Animator animator;
-
+    public AudioSource AudioSource {get; private set;}
     public Dictionary<string, MeleeMove> MeleeAttacks {get; private set;} 
     public MeleeMove MeleeBlock {get; private set; }
     public float Health {get; private set; }
     public float Stamina {get; private set; }
-    public GenericState genericState {get; private set;}
+    public GenericState genericState {get; protected set;}
 
     #region Callbacks
     protected virtual void Start() {
-        
         animator = this.GetComponent<Animator>();        
-        
+        AudioSource = this.GetComponent<AudioSource>();
         Health = characterdata.maxHealth;
         Stamina = characterdata.maxStamina;
 
@@ -111,6 +111,13 @@ public class CharacterHandler : MonoBehaviour {
     public virtual void AttackResponse(float damage, CharacterHandler attackingCharacter) { 
         string result = "null";//for debug
 
+        // try {
+        //     if ((this as AIHandler).GlobalState == GlobalState.DEAD) {
+        //         Debug.Log("hes already dead don't bother");
+        //         return;
+        //     }
+        // } catch {}
+
         if(this.genericState is AttackState) { //TODO AM IN RANGE
             //i am currently in an unblockable attack while being attacked
             //if enemy is simultaneously in attack
@@ -118,12 +125,11 @@ public class CharacterHandler : MonoBehaviour {
                 //if my attack is unblockable
                 if(!(this.genericState as AttackState).chosenMove.blockableAttack){
                     //take damage but dont stagger
-                    TakeDamage(damage);
+                    TakeDamage(damage, false);
                     result = "both take damage, but reacter staggers only due to unblockable attack";
                 } else {
                     //take damage, stagger as usual
-                    TakeDamage(damage);
-                    SetStateDriver(new StaggerState(this, animator));
+                    TakeDamage(damage, true);
                     result = "both take damage and stagger";
                 }
             }
@@ -133,8 +139,7 @@ public class CharacterHandler : MonoBehaviour {
             if(!(attackingCharacter.genericState as AttackState).chosenMove.blockableAttack) {
                 //take damage and stagger
                 result = "requester beats block with unblockable, receiver takes damage and staggers";
-                    TakeDamage(damage);
-                    SetStateDriver(new StaggerState(this, animator));
+                    TakeDamage(damage, true);
            
             } else {
                 //drain stamina instead
@@ -161,14 +166,13 @@ public class CharacterHandler : MonoBehaviour {
             TakeStaminaDrain(3f);
         } else if (this.genericState is StaggerState) {
             result = "receiver hit when staggered";
-            TakeDamage(damage);
+            TakeDamage(damage, false);
             //everytime this is triggered, increment todo
             //"prevent camping when down" counter maybe
         } else { 
             result = "default situation, receiver takes damage and staggers, possible out of range";
             //take damage, stagger
-            TakeDamage(damage);
-            SetStateDriver(new StaggerState(this, animator));
+            TakeDamage(damage, true);
 
         }
 
@@ -180,10 +184,11 @@ public class CharacterHandler : MonoBehaviour {
     }
 
     //upon taking damage
-    protected virtual void TakeDamage(float damage){ 
+    protected virtual void TakeDamage(float damage, bool isStaggerable){ 
         Health -= damage;
         heathbar.fillAmount = Health / characterdata.maxHealth;
     
+        if (isStaggerable && Health > 0) { SetStateDriver(new StaggerState(this, animator)); }
         //if dead:
             //change CombatState to death
                 //which in itself handels death stuff 

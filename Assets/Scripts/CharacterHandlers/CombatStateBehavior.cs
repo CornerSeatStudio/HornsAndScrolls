@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using System;
 
 
 public class UnsheathingCombatState : CombatState {
@@ -10,6 +11,8 @@ public class UnsheathingCombatState : CombatState {
     public UnsheathingCombatState(CharacterHandler character, Animator animator) : base(character, animator) {}
 
     public override IEnumerator OnStateEnter() {
+        Array.Find(character.audioData, AudioData => AudioData.name == "unsheath").Play(character.AudioSource);
+
         sheathRoutine = Sheath();
         yield return character.StartCoroutine(sheathRoutine);
         character.SetStateDriver(new DefaultCombatState(character, animator));
@@ -37,6 +40,8 @@ public class SheathingCombatState : CombatState {
     public SheathingCombatState(CharacterHandler character, Animator animator) : base(character, animator) {}
 
     public override IEnumerator OnStateEnter() {
+        Array.Find(character.audioData, AudioData => AudioData.name == "sheath").Play(character.AudioSource);
+ 
         sheathRoutine = Sheath();
         yield return character.StartCoroutine(sheathRoutine);
         character.SetStateDriver(new IdleMoveState(character, animator));
@@ -53,6 +58,7 @@ public class SheathingCombatState : CombatState {
     public override IEnumerator OnStateExit() { //once drawn OR INTERUPTED
         if(sheathRoutine != null) {
             character.StopCoroutine(sheathRoutine);
+            animator.SetBool(Animator.StringToHash("WeaponOut"), false);
         } else {
             animator.SetBool(Animator.StringToHash("WeaponOut"), false); 
             animator.SetLayerWeight(1, 0);
@@ -199,6 +205,7 @@ public class StaggerState : CombatState {
     public StaggerState(CharacterHandler character, Animator animator) : base(character, animator) {}
 
     public override IEnumerator OnStateEnter() {  
+        Array.Find(character.audioData, AudioData => AudioData.name == "stagger").Play(character.AudioSource);
         yield return new WaitForSeconds(.5f); //stagger time
         character.SetStateDriver(new DefaultCombatState(character, animator));      
     }
@@ -210,6 +217,8 @@ public class DeathState : CombatState {
     public DeathState(CharacterHandler character, Animator animator) : base(character, animator) {}
 
     public override IEnumerator OnStateEnter(){
+        Array.Find(character.audioData, AudioData => AudioData.name == "death").Play(character.AudioSource);
+
         //change globalState
         try{
             (character as AIHandler).GlobalState = GlobalState.DEAD;
@@ -239,6 +248,12 @@ public class DeathState : CombatState {
         animator.enabled = false;
         Debug.Log("agh i haveth been a slain o");
         yield return null;
+    }
+
+    public override IEnumerator OnStateExit() {
+        Debug.Log("exiting death state?");
+        yield break;
+
     }
 
 }

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e81002b08bb001a4193ecc9648804b87, type: 3}
+  m_Name: stagger
+  m_EditorClassIdentifier: 
+  audioClips:
+  - {fileID: 8300000, guid: 78605d273240d6f42a680b4fdbffc0b4, type: 3}
+  - {fileID: 8300000, guid: 1e054e25fdd0a97418d99bcbf1b6a132, type: 3}
+  - {fileID: 8300000, guid: 298c02c5825f1144a82372b0aa4d3498, type: 3}
+  - {fileID: 8300000, guid: 3ea3529c797f3414ab0f9666a7a317b2, type: 3}
+  - {fileID: 8300000, guid: 662a1be6092692b4db43bb228db4a4b6, type: 3}
+  - {fileID: 8300000, guid: d436a503a5c1cfd488c4424c61617eb5, type: 3}
+  volume: 1
+  pitch: 1

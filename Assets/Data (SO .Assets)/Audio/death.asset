@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e81002b08bb001a4193ecc9648804b87, type: 3}
+  m_Name: death
+  m_EditorClassIdentifier: 
+  audioClips:
+  - {fileID: 8300000, guid: d0c64208e5f23c44584cc3a462fbc5c6, type: 3}
+  - {fileID: 8300000, guid: bdc0b0c41f3b0404c9f01b4cf7f3990e, type: 3}
+  - {fileID: 8300000, guid: e33c8097ccb63214eb2e65cb08180928, type: 3}
+  - {fileID: 8300000, guid: 2d6f7d4aa23f2c44f90f2918af4e44dd, type: 3}
+  - {fileID: 8300000, guid: 91a4e9c610361494dadf01eaf244268d, type: 3}
+  - {fileID: 8300000, guid: 4ec855eb5b5a0cb4392355f871a16612, type: 3}
+  - {fileID: 8300000, guid: 19491be6a4a478f4392d3d06e55c0ad1, type: 3}
+  - {fileID: 8300000, guid: 16b3d4102140d264cb134106d35b260a, type: 3}
+  volume: 1
+  pitch: 1
