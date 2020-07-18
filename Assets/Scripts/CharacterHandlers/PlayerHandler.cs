@@ -145,10 +145,10 @@ public class PlayerHandler : CharacterHandler {
     private void HandleInteractions() {
         if(genericState is DefaultCombatState) {
             if(Input.GetButtonDown("Fire1") == true) {
-                Debug.Log("Fire1'd");
+               // Debug.Log("Fire1'd");
                 SetStateDriver(new AttackState(this, animator));
             } else if(Input.GetButtonDown("Fire2") == true) {
-                Debug.Log("Fire2'd/counter trigger");
+                //Debug.Log("Fire2'd/counter trigger");
                 SetStateDriver(new CounterState(this, animator));
                 //counter event is here
             }
@@ -156,9 +156,9 @@ public class PlayerHandler : CharacterHandler {
         } else if (genericState is BlockState) { //gets to here after "counter timer" runs up, aka has to wait for a bit to release block
             //if still blocking
             if(Input.GetButton("Fire2") == true) {
-                Debug.Log("holding blocking");
+                //Debug.Log("holding blocking");
             } else {
-                Debug.Log("release block");
+                //Debug.Log("release block");
                 SetStateDriver(new DefaultCombatState(this, animator));
             }
         }

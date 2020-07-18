@@ -51,8 +51,8 @@ public class SheathingCombatState : CombatState {
     private IEnumerator Sheath(){
         animator.ResetTrigger(Animator.StringToHash("WeaponDraw"));
         animator.SetTrigger(Animator.StringToHash("WeaponDraw"));
-
-        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(1).length);
+        yield return new WaitForSeconds(2f); //sheath time idk why its varied
+       // yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(1).length);
     }
 
     public override IEnumerator OnStateExit() { //once drawn OR INTERUPTED
@@ -101,12 +101,11 @@ public class AttackState : CombatState {
         this.chosenMove = chosenMove;
     }
     public override IEnumerator OnStateEnter() { 
-        //Debug.Log("entering attacking state");
+        animator.SetTrigger(Animator.StringToHash("Attacking"));
         currAttackCoroutine = FindTargetAndDealDamage();
         yield return character.StartCoroutine(currAttackCoroutine);
         character.SetStateDriver(new DefaultCombatState(character, animator));
-        animator.ResetTrigger(Animator.StringToHash("Attacking"));
-        animator.SetTrigger(Animator.StringToHash("Attacking"));
+        //animator.ResetTrigger(Animator.StringToHash("Attacking"));
     }    
 
     protected virtual IEnumerator FindTargetAndDealDamage(){
