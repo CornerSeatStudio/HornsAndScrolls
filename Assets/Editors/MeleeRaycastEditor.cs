@@ -18,21 +18,21 @@ public class MeleeRaycastEditor : Editor
 
     public void setup(MeleeRaycastHandler zone){
         //view arc
-        Handles.color = Color.yellow;
-        float moveRange = 30f;
-        float moveAngle = 120f; //temp - will be found in logic later
-        Handles.DrawWireArc(zone.transform.position, Vector3.up, Vector3.forward, 360, moveRange); //view radius
+        // Handles.color = Color.yellow;
+        // float moveRange = 30f;
+        // float moveAngle = 120f; //temp - will be found in logic later
+        // Handles.DrawWireArc(zone.transform.position, Vector3.up, Vector3.forward, 360, moveRange); //view radius
 
-        Vector3 viewAngleA = DirectionGivenAngle(-moveAngle / 2 + zone.transform.eulerAngles.y);
-        Vector3 viewAngleB = DirectionGivenAngle(moveAngle /2 + zone.transform.eulerAngles.y);
-        Handles.DrawLine(zone.transform.position, zone.transform.position + viewAngleA * moveRange);
-        Handles.DrawLine(zone.transform.position, zone.transform.position + viewAngleB * moveRange);
+        // Vector3 viewAngleA = DirectionGivenAngle(-moveAngle / 2 + zone.transform.eulerAngles.y);
+        // Vector3 viewAngleB = DirectionGivenAngle(moveAngle /2 + zone.transform.eulerAngles.y);
+        // Handles.DrawLine(zone.transform.position, zone.transform.position + viewAngleA * moveRange);
+        // Handles.DrawLine(zone.transform.position, zone.transform.position + viewAngleB * moveRange);
 
-        //target identification debug
-        Handles.color = Color.red;
+        // //target identification debug
+        // Handles.color = Color.red;
 
-        if(zone.chosenTarget != null)
-        Handles.DrawLine(zone.transform.position, zone.chosenTarget.transform.position);
+        // if(zone.chosenTarget != null)
+        // Handles.DrawLine(zone.transform.position, zone.chosenTarget.transform.position);
 
     }
     

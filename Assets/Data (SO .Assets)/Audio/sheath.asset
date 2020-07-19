@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e81002b08bb001a4193ecc9648804b87, type: 3}
+  m_Name: sheath
+  m_EditorClassIdentifier: 
+  audioClips:
+  - {fileID: 8300000, guid: 122a595d046293648a3869be509713d6, type: 3}
+  - {fileID: 8300000, guid: 79c7be72f7f6eff45b2fe78f770e87bb, type: 3}
+  - {fileID: 8300000, guid: c145e185bcf82da4b844bab41eb9223d, type: 3}
+  volume: 0.45
+  pitch: 1

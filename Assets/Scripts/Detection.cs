@@ -12,6 +12,7 @@ public class Detection : MonoBehaviour
     public LayerMask targetMask;
     public LayerMask obstacleMask;
 
+    
     public List<Transform> VisibleTargets {get; } = new List<Transform>();
 
     public bool IsAlive {get; set; }= true;
