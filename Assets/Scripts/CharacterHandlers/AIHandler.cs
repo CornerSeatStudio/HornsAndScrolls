@@ -11,12 +11,7 @@ public enum GlobalState { UNAGGRO, AGGRO, DEAD }; //determines ai state tree are
 public class AIHandler : CharacterHandler {    
 
     [Header("AI Core Components/SOs")]
-    public CharacterHandler targetPlayer; 
-
-    protected NavMeshAgent agent;
-    protected AIStealthState stealthState; 
-    public Detection Detection {get; private set; }
-    public GlobalState GlobalState {get; set; } = GlobalState.UNAGGRO; //spawn/start as aggro (todo unless otherwise stated)
+    public PlayerHandler targetPlayer; 
 
     //stealth stuff
     [Header("Stealth stuff")]
@@ -25,6 +20,15 @@ public class AIHandler : CharacterHandler {
     public float spotTimerThreshold; //time it takes to go into aggro
     public float AIGlobalStateCheckRange = 30f; //range ai can sense other AI and their states
 
+    [Header("Combat Stuff")]
+    public float attackStartDistance;
+    public float shoveDistance;
+
+    //private stuff
+    protected NavMeshAgent agent;
+    protected AIStealthState stealthState; 
+    public Detection Detection {get; private set; }
+    public GlobalState GlobalState {get; set; } = GlobalState.UNAGGRO; //spawn/start as aggro (todo unless otherwise stated)
     public Vector3 NextWaypointLocation {get; private set;} 
 
     #region callbacks
@@ -113,6 +117,37 @@ public class AIHandler : CharacterHandler {
 
     }
 
+    public bool DefenceConditional(){
+        return Detection.VisibleTargets.Any() //if i can see player
+        && Detection.VisibleTargets[0].GetComponent<CharacterHandler>().genericState is AttackState //player is attacking
+        && Detection.VisibleTargets[0].GetComponent<CharacterHandler>().FindTarget(((Detection.VisibleTargets[0].GetComponent<CharacterHandler>().genericState) as AttackState).chosenMove) == this //player is attacking me in particular
+        && !(genericState is AttackState); //im not already mid attack      
+    }
+
+    public bool CloseDistanceConditional() { //returns FALSE if player is too far
+        return (targetPlayer.transform.position - transform.position).sqrMagnitude <= attackStartDistance * attackStartDistance;
+    }
+
+    public bool InstantShoveConditional() { //returns FALSE if player is too close
+        return (targetPlayer.transform.position - transform.position).sqrMagnitude >= shoveDistance * shoveDistance;
+    }
+
+    public bool StaggerCheck() {
+        return !(genericState is StaggerState);
+    }
+
+    IEnumerator mainRoutine;
+    // public BTStatus NormalDefense() {
+    //     if(mainRoutine )
+    //     return BTStatus.RUNNING
+    // }
+
+    private IEnumerator Block() {
+        SetStateDriver(new BlockState(this, animator));
+        yield return new WaitForSeconds(3f);
+        SetStateDriver(new DefaultCombatState(this, animator));
+    }
+
     /*
     start a combat cycle -> dealting with offensive and defensive behaviors
     each combat cycle ends when a certain criteria is met (ex. hitting the player and waiting a bit, blockign the player, etc)
@@ -123,6 +158,7 @@ public class AIHandler : CharacterHandler {
         currLookCoroutine // controls enemy look direction, can go anywhere honestly
     */
 
+/**
     IEnumerator currEngagementCycle; //the actual engagement cycle
     IEnumerator currEngagementAction; //the chosen engagement action, to complete engagement cycle
     IEnumerator currSubEngagementAction; //current action to complete engagement actoin
@@ -304,6 +340,7 @@ public class AIHandler : CharacterHandler {
         }
     }
 
+**/
     #endregion
 
     #region self preservation

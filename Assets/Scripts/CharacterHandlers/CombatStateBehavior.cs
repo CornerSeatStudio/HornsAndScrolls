@@ -56,13 +56,9 @@ public class SheathingCombatState : CombatState {
     }
 
     public override IEnumerator OnStateExit() { //once drawn OR INTERUPTED
-        if(sheathRoutine != null) {
-            character.StopCoroutine(sheathRoutine);
-            animator.SetBool(Animator.StringToHash("WeaponOut"), false);
-        } else {
-            animator.SetBool(Animator.StringToHash("WeaponOut"), false); 
-            animator.SetLayerWeight(1, 0);
-        }
+        if(sheathRoutine != null) character.StopCoroutine(sheathRoutine);
+        animator.SetBool(Animator.StringToHash("WeaponOut"), false); 
+        animator.SetLayerWeight(1, 0);
         yield break;
     }
 
@@ -101,6 +97,7 @@ public class AttackState : CombatState {
         this.chosenMove = chosenMove;
     }
     public override IEnumerator OnStateEnter() { 
+        animator.SetLayerWeight(1, 0); //no masking when attacking
         animator.SetTrigger(Animator.StringToHash("Attacking"));
         currAttackCoroutine = FindTargetAndDealDamage();
         yield return character.StartCoroutine(currAttackCoroutine);
@@ -125,12 +122,13 @@ public class AttackState : CombatState {
         chosenTarget.AttackResponse(chosenMove.damage, character);
         //during the endlag phase, check again
         //if I was hit && I am using blockable attack, stagger instead
-        yield return new WaitForSeconds(chosenMove.endlag);
+        yield return new WaitForSeconds(chosenMove.endlag); //TODO if manual endlag
         character.SetStateDriver(new DefaultCombatState(character, animator));
     }
 
  
     public override IEnumerator OnStateExit() {
+        animator.SetLayerWeight(1, 1); //no masking when attacking
         //Debug.Log("exiting attacking state");
         if(currAttackCoroutine != null) character.StopCoroutine(currAttackCoroutine); 
         yield break;

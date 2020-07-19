@@ -50,9 +50,11 @@ public class PlayerHandler : CharacterHandler {
         DealWithGravity();
         if(genericState is DodgeState) {
             controller.Move(dodgeDirection.normalized * dodgeSpeed *  Time.fixedDeltaTime);
-        } else {
+        } else if (genericState is AttackState) {
+            controller.Move(transform.forward * 5f * Time.fixedDeltaTime);  //todo how much you move during an attack
+        }   else {
             controller.Move(inputVector.normalized * CurrMovementSpeed * Time.fixedDeltaTime);  
-        }   
+        }
     }
     #endregion
 

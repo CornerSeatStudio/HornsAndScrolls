@@ -36,7 +36,7 @@ public class ThinkCycle : MonoBehaviour
                     .EmplaceTask("testfalse", t => alwaysFalse())
                     .EmplaceSelector("combat sequence")
                         .EmplaceConditional("verify", t => ai.VerifyCombatIncapable()) 
-                        .EmplaceTask("engage", t => ai.EngageDriver())
+                        .EmplaceTask("engage", t => alwaysFalse())
                     .FinishNonTask()
                 .FinishNonTask()
                 .Build();
