@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 6cb5c571edddae547914da086cbb9b03
+guid: d4ce5a0d12a922a44b33003a489f521c
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable:
   - first:
       74: -1422011007694221501
-    second: thrust
+    second: thrusto
   externalObjects: {}
   materials:
     materialImportMode: 1
@@ -38,10 +38,10 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: thrust
+      name: thrusto
       takeName: Armature|ArmatureAction.001
       internalID: 0
-      firstFrame: 8
+      firstFrame: 12
       lastFrame: 40
       wrapMode: 0
       orientationOffsetY: 0
@@ -53,10 +53,10 @@ ModelImporter:
       loopBlend: 0
       loopBlendOrientation: 1
       loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
+      loopBlendPositionXZ: 1
       keepOriginalOrientation: 1
       keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
+      keepOriginalPositionXZ: 1
       heightFromFeet: 0
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000

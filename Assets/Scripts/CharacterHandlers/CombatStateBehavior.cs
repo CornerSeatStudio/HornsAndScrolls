@@ -97,12 +97,12 @@ public class AttackState : CombatState {
         this.chosenMove = chosenMove;
     }
     public override IEnumerator OnStateEnter() { 
-
+animator.SetTrigger(Animator.StringToHash("Attacking"));
         yield return new WaitUntil(() => character.layerWeightRoutine == null);
         character.layerWeightRoutine = character.LayerWeightDriver(1, 1, 0, .3f);
         yield return character.StartCoroutine(character.layerWeightRoutine);
-        animator.applyRootMotion = true;
-        animator.SetTrigger(Animator.StringToHash("Attacking"));
+        
+        
         currAttackCoroutine = FindTargetAndDealDamage();
         yield return character.StartCoroutine(currAttackCoroutine);
         character.SetStateDriver(new DefaultCombatState(character, animator));
@@ -112,6 +112,7 @@ public class AttackState : CombatState {
     protected virtual IEnumerator FindTargetAndDealDamage(){
         CharacterHandler chosenTarget = character.FindTarget(chosenMove);
         
+        //animator.applyRootMotion = true;
         //Debug.Log(chosenMove.angle + " " + chosenMove.range);
         //if no targets in range
         if (chosenTarget == null) {
@@ -121,7 +122,6 @@ public class AttackState : CombatState {
         }
         //upon completion of finding target/at attack move setup, START listening
         yield return new WaitForSeconds(chosenMove.startup); //assumption: start up == counter window
-
 
         chosenTarget.AttackResponse(chosenMove.damage, character);
         //during the endlag phase, check again

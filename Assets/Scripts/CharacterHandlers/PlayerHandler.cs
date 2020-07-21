@@ -50,11 +50,44 @@ public class PlayerHandler : CharacterHandler {
         if(genericState is DodgeState) {
             controller.Move(dodgeDirection.normalized * dodgeSpeed *  Time.fixedDeltaTime);
         } else if (genericState is AttackState) {
-            controller.Move(transform.forward * 2f * Time.fixedDeltaTime);  //todo how much you move during an attack
+           // controller.Move(transform.forward * 2f * Time.fixedDeltaTime);  //todo how much you move during an attack
         }   else {
             controller.Move(inputVector.normalized * CurrMovementSpeed * Time.fixedDeltaTime);  
         }
     }
+
+
+    private void OnAnimatorIK(int layerIndex) {
+        
+        animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, animator.GetFloat("IKLeftFootWeight"));
+        animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, animator.GetFloat("IKLeftFootWeight"));       
+        animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, animator.GetFloat("IKRightFootWeight"));
+        animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, animator.GetFloat("IKRightFootWeight"));
+        RaycastHit hit;
+
+
+        Ray ray = new Ray(animator.GetIKPosition(AvatarIKGoal.LeftFoot) + Vector3.up, Vector3.down);
+        if (Physics.Raycast(ray, out hit, distanceToGround + 1f, ~this.gameObject.layer)) {
+            if((floor | (1 << hit.transform.gameObject.layer)) == floor) {
+                Vector3 footPosition = hit.point;
+                footPosition.y += distanceToGround;
+                animator.SetIKPosition(AvatarIKGoal.LeftFoot, footPosition);
+                animator.SetIKRotation(AvatarIKGoal.LeftFoot, Quaternion.LookRotation(transform.forward, hit.normal));
+            }
+        } 
+
+        ray = new Ray(animator.GetIKPosition(AvatarIKGoal.RightFoot) + Vector3.up, Vector3.down);
+        if (Physics.Raycast(ray, out hit, distanceToGround + 1f, ~this.gameObject.layer)) {
+            if((floor | (1 << hit.transform.gameObject.layer)) == floor) {
+                Vector3 footPosition = hit.point;
+                footPosition.y += distanceToGround;
+                animator.SetIKPosition(AvatarIKGoal.RightFoot, footPosition);
+                animator.SetIKRotation(AvatarIKGoal.RightFoot, Quaternion.LookRotation(transform.forward, hit.normal));
+            }
+        } 
+    }
+
+
     #endregion
 
     #region chieftan fish
@@ -79,7 +112,7 @@ public class PlayerHandler : CharacterHandler {
             } else {
                 HandleCombatMovement();
                 HandleInteractions();
-                FaceMouseDirection();
+                if(!(genericState is AttackState)) FaceMouseDirection();
             }
         }
     }
@@ -124,23 +157,22 @@ public class PlayerHandler : CharacterHandler {
         CalculateVelocity();
 
         //if not dodging
+        Vector3 localDir;
+        
         if(genericState is DodgeState){
-            Vector3 localDir = transform.InverseTransformDirection(dodgeDirection).normalized;
-            animator.SetFloat(Animator.StringToHash("XCombatMove"), localDir.x);
-            animator.SetFloat(Animator.StringToHash("ZCombatMove"), localDir.z);
+            localDir = transform.InverseTransformDirection(dodgeDirection).normalized;
         } else {
             if(Input.GetButtonDown("Jump") && (inputVector.x != 0 || inputVector.z != 0)) {
                 dodgeDirection = velocity;
                 SetStateDriver(new DodgeState(this, animator, dodgeDirection));                
             } 
 
-            Vector3 localDir = transform.InverseTransformDirection(velocity).normalized;
-            animator.SetFloat(Animator.StringToHash("XCombatMove"), localDir.x);
-            animator.SetFloat(Animator.StringToHash("ZCombatMove"), localDir.z);
+            localDir = transform.InverseTransformDirection(velocity).normalized;
             animator.SetBool(Animator.StringToHash("CombatWalking"), (inputVector.x != 0f) || (inputVector.z != 0f));
         }
 
-        
+        animator.SetFloat(Animator.StringToHash("XCombatMove"), localDir.x);
+        animator.SetFloat(Animator.StringToHash("ZCombatMove"), localDir.z);
     }
 
     private void HandleInteractions() {

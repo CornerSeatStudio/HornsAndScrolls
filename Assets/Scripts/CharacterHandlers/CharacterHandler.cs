@@ -18,6 +18,10 @@ public class CharacterHandler : MonoBehaviour {
     public TextMeshProUGUI debugState; 
     public float staminaRegenerationWindow = 3f;
 
+    [Header("IK")]
+    [Range (0, 5)] public float distanceToGround;
+    public LayerMask floor;
+
     //private stuff
     protected Animator animator;
     protected Vector3 velocity;
@@ -78,6 +82,7 @@ public class CharacterHandler : MonoBehaviour {
     #region core/var manipulation
 
         //LayerMasks allow for raycasts to choose what to and not to register
+    [Header("find target stuff")]
     public LayerMask targetMask;
     public LayerMask obstacleMask;
 

@@ -40,8 +40,8 @@ public class AIHandler : CharacterHandler {
         base.Start(); //all character stuff
         Detection = this.GetComponent<Detection>();
         agent = this.GetComponent<NavMeshAgent>();
-        if (patrolWaypoints.Any()) NextWaypointLocation = patrolWaypoints[0].transform.position; //set first patrol waypoint
-        SetStateDriver(new PatrolState(this, animator, agent));
+      //  if (patrolWaypoints.Any()) NextWaypointLocation = patrolWaypoints[0].transform.position; //set first patrol waypoint
+       // SetStateDriver(new PatrolState(this, animator, agent));
       //  thinkState = new DefaultAIAggroState(this, animator, agent);
         genericState = new DefaultCombatState(this, animator); //todo temp probably
        // GlobalState = GlobalState.AGGRO; // temp
