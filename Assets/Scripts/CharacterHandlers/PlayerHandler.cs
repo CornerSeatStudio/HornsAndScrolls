@@ -10,7 +10,6 @@ public class PlayerHandler : CharacterHandler {
     private bool weaponDrawn;
     public float CurrMovementSpeed {get; set; }
     
-    private Vector3 velocity;
     public float NormalMoveBlend {get; set; }
 
     [Header("Player Movement Variables")]
@@ -51,7 +50,7 @@ public class PlayerHandler : CharacterHandler {
         if(genericState is DodgeState) {
             controller.Move(dodgeDirection.normalized * dodgeSpeed *  Time.fixedDeltaTime);
         } else if (genericState is AttackState) {
-            controller.Move(transform.forward * 5f * Time.fixedDeltaTime);  //todo how much you move during an attack
+            controller.Move(transform.forward * 2f * Time.fixedDeltaTime);  //todo how much you move during an attack
         }   else {
             controller.Move(inputVector.normalized * CurrMovementSpeed * Time.fixedDeltaTime);  
         }
@@ -169,15 +168,6 @@ public class PlayerHandler : CharacterHandler {
     #endregion
 
     #region small fish
-    Vector3 oldPos;
-    Vector3 movedPos;
-    Vector3 lastPos; //math stuff
-    private void CalculateVelocity(){
-        oldPos = movedPos;
-        movedPos = Vector3.Slerp(oldPos, transform.position - lastPos, .2f); 
-        lastPos = transform.position; 
-        velocity = movedPos / Time.fixedTime;      
-    }
 
     private void DealWithGravity() {
         if(controller.isGrounded){ 

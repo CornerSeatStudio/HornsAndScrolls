@@ -7,7 +7,6 @@ public class CharacterData : ScriptableObject {
     //description
     public float maxHealth;
     public float maxStamina; 
-    [Range(0, 1)] public float blockQuota;
 
     public float staminaRegenerationRatePerS;
     //list of interactables

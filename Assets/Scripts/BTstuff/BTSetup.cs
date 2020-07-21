@@ -45,7 +45,7 @@ public class BTSetup {
         return this;
     }
 
-    public BTSetup FinishNonTask() { //used whenever you want to move back up to the parent
+    public BTSetup PopDepth() { //used whenever you want to move back up to the parent
         currParentNode = parentNodes.Pop();
         return this;
     }

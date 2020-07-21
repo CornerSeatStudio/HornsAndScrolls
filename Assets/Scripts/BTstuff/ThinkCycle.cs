@@ -23,6 +23,7 @@ public class ThinkCycle : MonoBehaviour
 
     IEnumerator RunTree(float delay) {
         while (!isDead) {
+            //Debug.Log("running");
             yield return new WaitForSeconds(delay);
             root.Evaluate(Time.deltaTime);
         }
@@ -34,11 +35,28 @@ public class ThinkCycle : MonoBehaviour
                 .EmplaceSelector("main selector")
                     //.EmplaceTask("stealth", t => ai.VerifyStealth()) 
                     .EmplaceTask("testfalse", t => alwaysFalse())
-                    .EmplaceSelector("combat sequence")
-                        .EmplaceConditional("verify", t => ai.VerifyCombatIncapable()) 
-                        .EmplaceTask("engage", t => alwaysFalse())
-                    .FinishNonTask()
-                .FinishNonTask()
+                    .EmplaceSelector("combat Selection")
+                        .EmplaceConditional("Combat Incapable", t => ai.VerifyCombatIncapable()) 
+                        .EmplaceSequencer("Stagger Selector")
+                            .EmplaceConditional("stagger check", t => ai.StaggerCheckConditional())
+                            .EmplaceTask("stagger task", t => ai.StaggerTask())
+                            .PopDepth()
+                        .EmplaceSequencer("Defense selector")
+                            .EmplaceConditional("defence conditional", t => ai.DefenceConditional())
+                            .EmplaceTask("defend", t => ai.DefenseTask())
+                            .PopDepth()
+                        .EmplaceSequencer("Close Distance")
+                            .EmplaceConditional("range check" , t => ai.CloseDistanceConditional())
+                            .EmplaceTask("close distance", t => ai.ChasingTask())
+                            .PopDepth()
+                        .EmplaceSequencer("Instant shove")
+                            .EmplaceConditional("insta shove check", t => ai.InstantShoveConditional())
+                            .EmplaceTask("insta shove",t => ai.ShovingTask())
+                            .PopDepth()
+                        .EmplaceTask("offense", t => ai.OffenseTask())
+                        .PopDepth()
+                    .EmplaceTask("kill brain", t => KillBrain())
+                    .PopDepth()
                 .Build();
 
     } 
@@ -48,6 +66,7 @@ public class ThinkCycle : MonoBehaviour
     }
 
     BTStatus KillBrain() {
+        Debug.Log("killing brain");
         isDead = true;
         return BTStatus.SUCCESS;
     }

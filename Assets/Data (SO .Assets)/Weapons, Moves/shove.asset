@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7ad2c565cd8f7f449a8b3d667dbe0ac2, type: 3}
-  m_Name: heavyAttack
+  m_Name: shove
   m_EditorClassIdentifier: 
-  startup: 0.5
-  endlag: 0.8
-  damage: 10
-  range: 10
-  angle: 120
+  startup: 0.1
+  endlag: 0.4
+  damage: 0
+  range: 5
+  angle: 60
   blockableAttack: 1
