@@ -33,8 +33,8 @@ public class ThinkCycle : MonoBehaviour
         BTSetup builder = new BTSetup();
         this.root = builder
                 .EmplaceSelector("main selector")
-                    //.EmplaceTask("stealth", t => ai.VerifyStealth()) 
-                    .EmplaceTask("testfalse", t => alwaysFalse())
+                    .EmplaceTask("stealth", t => ai.VerifyStealth()) 
+                    //.EmplaceTask("testfalse", t => alwaysFalse())
                     .EmplaceSelector("combat Selection")
                         .EmplaceConditional("Combat Incapable", t => ai.VerifyCombatIncapable()) 
                         .EmplaceSequencer("Stagger Selector")
