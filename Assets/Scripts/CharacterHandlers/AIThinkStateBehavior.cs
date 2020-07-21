@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class IdleState : AIStealthState {
+public class IdleState : AIThinkState {
     private IEnumerator idleCoroutine, LOSCoroutine;
 
     public IdleState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
@@ -35,7 +35,7 @@ public class IdleState : AIStealthState {
     }
 }
 
-public class PatrolState : AIStealthState {
+public class PatrolState : AIThinkState {
     private IEnumerator moveToLocationCoroutine, LOSCoroutine;
 
     public PatrolState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
@@ -71,7 +71,7 @@ public class PatrolState : AIStealthState {
 
 }
 
-public class InvestigationState : AIStealthState {
+public class InvestigationState : AIThinkState {
     public float CurrInvestigationTimer {get; private set;}
     private Vector3 lastSeenPlayerLocation;
     private IEnumerator timerCoroutine, investigationCoroutine;
@@ -105,8 +105,9 @@ public class InvestigationState : AIStealthState {
 
 
         //stare and face player here
+        character.transform.LookAt(character.targetPlayer.transform);
         //todo animator.SetBool("IsStaring", true);
-
+        //todo also make look at its own coroutine
         yield return new WaitUntil(() => !character.LOSOnPlayer() || CurrInvestigationTimer >= character.spotTimerThreshold); //keep incrementing until LOS is broken || caught
 
         //if condition break, stop staring animation (todo)
@@ -126,9 +127,11 @@ public class InvestigationState : AIStealthState {
                 yield break;
             }
         } else { //caught, change global state, let mono behavior handle the rest
-            animator.SetBool(Animator.StringToHash("IsAggroWalk"), true); //todo: to be put in separate class
+            animator.SetBool(Animator.StringToHash("IsGlobalAggroState"), true); //todo: to be put in separate class
+            character.layerWeightRoutine = character.LayerWeightDriver(1, 0, 1, .3f);
+            character.StartCoroutine(character.layerWeightRoutine);
             character.GlobalState = GlobalState.AGGRO;
-            character.ThrowStateToGCDriver();
+            character.SetStateDriver(new DefaultAIAggroState(character, animator, agent));
         }
 
     }
@@ -165,13 +168,13 @@ public class InvestigationState : AIStealthState {
 
     public IEnumerator MoveToLocation(Vector3 location){ //Debug.Log("enteredMove");//shouldnt be a coroutine lol, no reason for the while statemtn
         
-        animator.SetBool(Animator.StringToHash("IsAggroWalk"), true);
+        animator.SetBool(Animator.StringToHash("IsSuspiciousWalk"), true);
         
         agent.SetDestination(location);
         //character.debug(agent.stoppingDistance + " " + agent.remainingDistance);
         yield return new WaitUntil(() => !agent.pathPending && agent.stoppingDistance > agent.remainingDistance);
         //Debug.Log(agent.pathPending + " " + (agent.stoppingDistance < agent.remainingDistance));
-        animator.SetBool(Animator.StringToHash("IsAggroWalk"), false);
+        animator.SetBool(Animator.StringToHash("IsSuspiciousWalk"), false);
     }
 
     private IEnumerator InvestigationTimer() {
@@ -216,4 +219,148 @@ public class InvestigationState : AIStealthState {
         if(timerCoroutine != null) character.StopCoroutine(timerCoroutine); //stop coroutine
         yield return null;
     }
+}
+
+public class DefaultAIAggroState : AIThinkState { 
+    public DefaultAIAggroState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
+
+}
+
+public class DefenseState : AIThinkState {
+    IEnumerator defenseRoutine;
+    //default block quota
+    public DefenseState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
+    
+    public override IEnumerator OnStateEnter() {
+        defenseRoutine = Defense();
+        yield return character.StartCoroutine(defenseRoutine);
+        character.SetStateDriver(new DefaultAIAggroState(character, animator, agent));
+    }
+
+    private IEnumerator Defense() {
+        //face player, stand still todo
+        character.transform.LookAt(character.targetPlayer.transform); //ok to not be in coroutine cause its fast
+        //agent.SetDestination(character.transform.position);
+
+        character.SetStateDriver(new BlockState(character, animator));
+        yield return new WaitForSeconds(1.5f);
+        character.SetStateDriver(new DefaultCombatState(character, animator));
+        
+    }
+
+    public override IEnumerator OnStateExit() {
+        if(defenseRoutine != null) character.StopCoroutine(defenseRoutine);
+        yield break;
+    }
+}
+
+public class ChaseState : AIThinkState {
+    IEnumerator chaseRoutine;
+
+    public ChaseState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
+
+    public override IEnumerator OnStateEnter() {
+        chaseRoutine = character.ChasePlayer(7f);
+        yield return character.StartCoroutine(chaseRoutine);
+        character.SetStateDriver(new DefaultAIAggroState(character, animator, agent));
+    }
+
+    public override IEnumerator OnStateExit() {
+        //sotp guy from movin aboot
+        if(chaseRoutine != null) character.StopCoroutine(chaseRoutine);
+        agent.SetDestination(character.transform.position);
+        yield break;
+        
+    }
+}
+
+public class ShoveState : AIThinkState {
+    IEnumerator shoveRoutine;
+    MeleeMove shove;
+
+    public ShoveState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {
+        try { shove = character.MeleeAttacks["Shove"]; } catch { Debug.LogWarning("no shove attack in melee moves"); }
+    }
+
+    public override IEnumerator OnStateEnter() {
+        character.transform.LookAt(character.transform.position);
+        character.SetStateDriver(new AttackState(character, animator, shove));
+        yield return new WaitWhile(() => character.genericState is AttackState);
+        shoveRoutine = character.SpaceFromPlayer(5f);
+        yield return character.StartCoroutine(shoveRoutine);
+        character.SetStateDriver(new DefaultAIAggroState(character, animator, agent));
+    }
+
+
+}
+
+public class OffenseState : AIThinkState {
+
+    MeleeMove chosenAttack;
+    IEnumerator offenseRoutine;
+    IEnumerator subRoutine;
+    IEnumerator facePlayerRoutine;
+    public OffenseState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {
+        try { this.chosenAttack = character.MeleeAttacks["default"]; } catch { Debug.LogWarning("some cunt don't have default attack"); }
+    }
+
+    public OffenseState(AIHandler character, Animator animator, NavMeshAgent agent, MeleeMove chosenAttack) : base(character, animator, agent) {
+        this.chosenAttack = chosenAttack;
+    }
+
+    public override IEnumerator OnStateEnter() {
+        facePlayerRoutine = FacePlayer();
+        character.StartCoroutine(facePlayerRoutine);
+        offenseRoutine = Offense(chosenAttack);
+        yield return character.StartCoroutine(offenseRoutine);
+        character.SetStateDriver(new DefaultAIAggroState(character, animator, agent));
+    }
+
+    private IEnumerator FacePlayer() {
+        while (true) {
+            character.transform.LookAt(character.targetPlayer.transform);
+            yield return null;
+        }
+    }
+    private IEnumerator Offense(MeleeMove chosenAttack) {
+
+        yield return new WaitForSeconds(3f); //break between looking at player and 
+
+        subRoutine = character.ChasePlayer(chosenAttack.range);
+        yield return character.StartCoroutine(subRoutine);
+
+        //Debug.Log("AI attempting an attack...");
+        character.SetStateDriver(new AttackState(character, animator, chosenAttack));
+        
+        //once attack is finished
+        float timer = chosenAttack.endlag + chosenAttack.startup;
+        while(timer >= 0) {
+            //Debug.Log(timer);
+            if(character.genericState is StaggerState) { 
+                Debug.Log("offense interuppt"); 
+                yield break; 
+            }
+            
+            yield return new WaitForSeconds(.1f);
+            timer -= .1f;
+        }
+
+
+
+        Debug.Log("attack finished, spacing from target");
+        subRoutine = character.SpaceFromPlayer(character.tooFarFromPlayerDistance - 1f);
+        yield return character.StartCoroutine(subRoutine);
+
+
+        //Debug.Log("spacing finished");
+    }
+
+
+    public override IEnumerator OnStateExit() {
+        if(facePlayerRoutine != null) character.StopCoroutine(facePlayerRoutine);
+        if(subRoutine != null) character.StopCoroutine(subRoutine);
+        if(offenseRoutine != null) character.StopCoroutine(offenseRoutine);
+        yield break;
+    }
+
 }

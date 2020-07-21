@@ -5,7 +5,7 @@ ModelImporter:
   internalIDToNameTable:
   - first:
       74: -1422011007694221501
-    second: Armature|ArmatureAction.001
+    second: thrust
   externalObjects: {}
   materials:
     materialImportMode: 1
@@ -38,10 +38,10 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Armature|ArmatureAction.001
+      name: thrust
       takeName: Armature|ArmatureAction.001
       internalID: 0
-      firstFrame: 5
+      firstFrame: 8
       lastFrame: 40
       wrapMode: 0
       orientationOffsetY: 0
@@ -51,10 +51,10 @@ ModelImporter:
       hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
-      loopBlendOrientation: 0
+      loopBlendOrientation: 1
       loopBlendPositionY: 0
       loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
+      keepOriginalOrientation: 1
       keepOriginalPositionY: 1
       keepOriginalPositionXZ: 0
       heightFromFeet: 0

@@ -24,6 +24,8 @@ public class CameraHandler : MonoBehaviour {
         Vector3 desiredPosition = target.position + offset;
         Vector3 smoothedPosition = Vector3.Slerp(transform.position, desiredPosition, cameraSnapSpeed);
         transform.position = smoothedPosition;
+
+       // transform.LookAt(new Vector3(target.position.x, target.position.y + 10, target.position.z));
     }
 
     void Update() {

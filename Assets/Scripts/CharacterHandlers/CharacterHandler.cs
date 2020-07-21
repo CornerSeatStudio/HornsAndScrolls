@@ -20,6 +20,7 @@ public class CharacterHandler : MonoBehaviour {
 
     //private stuff
     protected Animator animator;
+    protected Vector3 velocity;
     public AudioSource AudioSource {get; private set;}
     public Dictionary<string, MeleeMove> MeleeAttacks {get; private set;} 
     public MeleeMove MeleeBlock {get; private set; }
@@ -118,7 +119,13 @@ public class CharacterHandler : MonoBehaviour {
         //     }
         // } catch {}
 
-        if(this.genericState is AttackState) { //TODO AM IN RANGE
+        if(this.genericState is MoveState) { //no sword drawn and get hit, (todo - do a different stagger)
+            TakeDamage(damage, false); 
+            result = "cunt dont have sword out ";
+
+        }
+
+        else if(this.genericState is AttackState) { //TODO AM IN RANGE
             //i am currently in an unblockable attack while being attacked
             //if enemy is simultaneously in attack
             if(attackingCharacter.genericState is AttackState){
@@ -143,7 +150,7 @@ public class CharacterHandler : MonoBehaviour {
            
             } else {
                 //drain stamina instead
-                TakeStaminaDrain(damage);
+                DealStamina(damage);
                 result = "receiver blocks, only stamina drain";
             }
 
@@ -163,7 +170,7 @@ public class CharacterHandler : MonoBehaviour {
 
         } else if (this.genericState is DodgeState) {
             result = "receiver dodged, no damage, stamina only";
-            TakeStaminaDrain(3f);
+            DealStamina(5f);
         } else if (this.genericState is StaggerState) {
             result = "receiver hit when staggered";
             TakeDamage(damage, false);
@@ -242,12 +249,46 @@ public class CharacterHandler : MonoBehaviour {
         StartCoroutine(SetState(state));
     }
 
-    protected IEnumerator SetState(GenericState state) {
+    public IEnumerator SetState(GenericState state) {
         if(genericState != null) yield return StartCoroutine(genericState.OnStateExit());
         genericState = state;
         yield return StartCoroutine(genericState.OnStateEnter());
     }
     #endregion
 
+    #region useful helper functions
 
+    protected Vector3 oldPos;
+    protected Vector3 movedPos;
+    protected Vector3 lastPos; //math stuff
+    protected void CalculateVelocity(){
+        oldPos = movedPos;
+        movedPos = Vector3.Slerp(oldPos, transform.position - lastPos, .2f); 
+        lastPos = transform.position; 
+        velocity = movedPos / Time.fixedTime;      
+    }
+
+    public IEnumerator layerWeightRoutine;
+
+    public IEnumerator LayerWeightDriver(int layeri, float startVal, float endVal, float smoothness){
+        layerWeightRoutine = LayerWeightShift(layeri, startVal, endVal, smoothness);
+        yield return StartCoroutine(layerWeightRoutine);
+    }
+
+    private IEnumerator LayerWeightShift(int layeri, float startVal, float endVal, float smoothness){
+        float temp = startVal;
+        while(! (Mathf.Abs(temp - endVal) < 0.01f)) {
+               // Debug.Log(temp);
+
+            temp = Mathf.Lerp(startVal, endVal, smoothness);
+            startVal = temp;
+            animator.SetLayerWeight(layeri, temp);
+            yield return null;
+        }
+
+        animator.SetLayerWeight(layeri, endVal);
+        layerWeightRoutine = null;
+    }
+
+    #endregion
 }
