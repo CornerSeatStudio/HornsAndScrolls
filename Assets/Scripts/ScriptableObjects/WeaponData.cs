@@ -9,7 +9,6 @@ public class WeaponData : ScriptableObject
 {
     public List<MeleeMove> Attacks;
     public MeleeMove block;
-    public MeleeMove react;
 
 }
 

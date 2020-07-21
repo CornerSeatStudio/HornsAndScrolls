@@ -90,14 +90,18 @@ public class AttackState : CombatState {
     public MeleeMove chosenMove {get; private set;}
 
     public AttackState(CharacterHandler character, Animator animator) : base(character, animator) {
-        chosenMove = character.MeleeAttacks["default"]; 
+        try {chosenMove = character.MeleeAttacks["default"]; } catch { Debug.LogWarning("some cunt don't have default attack"); }
     }
 
     public AttackState(CharacterHandler character, Animator animator, MeleeMove chosenMove) : base(character, animator) {
         this.chosenMove = chosenMove;
     }
     public override IEnumerator OnStateEnter() { 
-        animator.SetLayerWeight(1, 0); //no masking when attacking
+
+        yield return new WaitUntil(() => character.layerWeightRoutine == null);
+        character.layerWeightRoutine = character.LayerWeightDriver(1, 1, 0, .3f);
+        yield return character.StartCoroutine(character.layerWeightRoutine);
+        animator.applyRootMotion = true;
         animator.SetTrigger(Animator.StringToHash("Attacking"));
         currAttackCoroutine = FindTargetAndDealDamage();
         yield return character.StartCoroutine(currAttackCoroutine);
@@ -128,8 +132,10 @@ public class AttackState : CombatState {
 
  
     public override IEnumerator OnStateExit() {
-        animator.SetLayerWeight(1, 1); //no masking when attacking
-        //Debug.Log("exiting attacking state");
+        yield return new WaitUntil(() => character.layerWeightRoutine == null);
+        character.layerWeightRoutine = character.LayerWeightDriver(1, 0, 1, .3f);
+        animator.applyRootMotion = false;
+        yield return character.StartCoroutine(character.layerWeightRoutine);       
         if(currAttackCoroutine != null) character.StopCoroutine(currAttackCoroutine); 
         yield break;
     }
@@ -139,7 +145,7 @@ public class BlockState : CombatState {
     protected MeleeMove block;
 
     public BlockState(CharacterHandler character, Animator animator) : base(character, animator) {
-        block = character.MeleeBlock; 
+        try {block = character.MeleeBlock; } catch { Debug.LogWarning("no block in char SO"); }
     }
 
     public override IEnumerator OnStateEnter() { 
@@ -158,7 +164,7 @@ public class CounterState : CombatState {
     protected MeleeMove block;
 
     public CounterState(CharacterHandler character, Animator animator) : base(character, animator) {
-        block = character.MeleeBlock;
+        try {block = character.MeleeBlock; } catch { Debug.LogWarning("no block in char SO"); }
     }
 
     public override IEnumerator OnStateEnter() {   
@@ -186,15 +192,20 @@ public class DodgeState : CombatState {
 
 
     public override IEnumerator OnStateEnter() {
+        yield return new WaitUntil(() => character.layerWeightRoutine == null);
+        character.layerWeightRoutine = character.LayerWeightDriver(1, 1, 0, .8f);
+        yield return character.StartCoroutine(character.layerWeightRoutine);  
         animator.ResetTrigger(Animator.StringToHash("Dodging"));
         animator.SetTrigger(Animator.StringToHash("Dodging"));
         yield return new WaitForSeconds((character as PlayerHandler).dodgeTime);
         character.SetStateDriver(new DefaultCombatState(character, animator));
     }
 
-    // public override IEnumerator OnStateExit() {
-    //     yield break;
-    // }
+    public override IEnumerator OnStateExit() {
+        yield return new WaitUntil(() => character.layerWeightRoutine == null);
+        character.layerWeightRoutine = character.LayerWeightDriver(1, 0, 1, .8f);
+        yield return character.StartCoroutine(character.layerWeightRoutine);  
+    }
 
 }
 
@@ -203,8 +214,18 @@ public class StaggerState : CombatState {
 
     public override IEnumerator OnStateEnter() {  
         Array.Find(character.audioData, AudioData => AudioData.name == "stagger").Play(character.AudioSource);
+        yield return new WaitUntil(() => character.layerWeightRoutine == null);
+        character.layerWeightRoutine = character.LayerWeightDriver(1, 1, 0, .2f);
+        yield return character.StartCoroutine(character.layerWeightRoutine);       
+        animator.SetTrigger(Animator.StringToHash("Staggering"));
         yield return new WaitForSeconds(.5f); //stagger time
         character.SetStateDriver(new DefaultCombatState(character, animator));      
+    }
+
+    public override IEnumerator OnStateExit() {
+        yield return new WaitUntil(() => character.layerWeightRoutine == null);
+        character.layerWeightRoutine = character.LayerWeightDriver(1, 0, 1, .2f);
+        yield return character.StartCoroutine(character.layerWeightRoutine);       
     }
 
 
