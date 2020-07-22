@@ -13,6 +13,7 @@ public class AIHandler : CharacterHandler {
 
     [Header("AI Core Components/SOs")]
     public PlayerHandler targetPlayer; 
+    public bool startAsAggro = false;
 
     //stealth stuff
     [Header("Stealth stuff")]
@@ -22,7 +23,9 @@ public class AIHandler : CharacterHandler {
     public float AIGlobalStateCheckRange = 30f; //range ai can sense other AI and their states
 
     [Header("Combat Stuff")]
+    public GameObject weaponMesh;
     public float tooFarFromPlayerDistance;
+    public float backAwayDistance;
     public float shoveDistance;
 
     [Header("debug")]
@@ -40,13 +43,26 @@ public class AIHandler : CharacterHandler {
         base.Start(); //all character stuff
         Detection = this.GetComponent<Detection>();
         agent = this.GetComponent<NavMeshAgent>();
-      //  if (patrolWaypoints.Any()) NextWaypointLocation = patrolWaypoints[0].transform.position; //set first patrol waypoint
-       // SetStateDriver(new PatrolState(this, animator, agent));
-      //  thinkState = new DefaultAIAggroState(this, animator, agent);
+      
         genericState = new DefaultCombatState(this, animator); //todo temp probably
-       // GlobalState = GlobalState.AGGRO; // temp
+
+        StartingCondition();
+        
+        
     }  
     #endregion
+
+    private void StartingCondition(){
+        if(startAsAggro) {
+            GlobalState = GlobalState.AGGRO; // temp
+            SetStateDriver(new DefaultAIAggroState(this, animator, agent));
+
+        } else {
+            GlobalState = GlobalState.UNAGGRO; // temp
+            if (patrolWaypoints.Any()) NextWaypointLocation = patrolWaypoints[0].transform.position; //set first patrol waypoint
+            SetStateDriver(new PatrolState(this, animator, agent));
+        }
+    }
 
     protected override void Update(){
         base.Update();
@@ -149,9 +165,8 @@ public class AIHandler : CharacterHandler {
 
     public bool DefenceConditional(){       //  Debug.Log("defense condi");
 
-        return Detection.VisibleTargets.Any() //if i can see player
-        && Detection.VisibleTargets[0].GetComponent<CharacterHandler>().genericState is AttackState //player is attacking
-        && Detection.VisibleTargets[0].GetComponent<CharacterHandler>().FindTarget(((Detection.VisibleTargets[0].GetComponent<CharacterHandler>().genericState) as AttackState).chosenMove) == this //player is attacking me in particular
+        return targetPlayer.genericState is AttackState //player is attacking
+        && targetPlayer.FindTarget((targetPlayer.genericState as AttackState).chosenMove) == this //player is attacking me in particular
         && !(genericState is AttackState)
         && Stamina > 0; //im not already mid attack      
     }
@@ -162,6 +177,15 @@ public class AIHandler : CharacterHandler {
         return (targetPlayer.transform.position - transform.position).sqrMagnitude > tooFarFromPlayerDistance * tooFarFromPlayerDistance;
     }
 
+    public bool BackAwayConditional() { //if too close AND CAN back away
+        NavMeshHit hit;
+
+        return (targetPlayer.transform.position - transform.position).sqrMagnitude <= backAwayDistance * backAwayDistance
+                && NavMesh.FindClosestEdge(transform.position + (transform.position - targetPlayer.transform.position), out hit, NavMesh.AllAreas);
+
+
+    }
+
     public bool InstantShoveConditional() { //returns if player is too close
                // Debug.Log("close condi");
 
@@ -170,20 +194,27 @@ public class AIHandler : CharacterHandler {
 
     public BTStatus StaggerTask() {   
 
-      //  Debug.Log("idk what stagger");
+        //Debug.Log("idk what stagger");
         return BTStatus.RUNNING;
     }
 
-    public BTStatus DefenseTask() {// Debug.Log("defend task");
-        // if(!(thinkState is DefenseState)) { //if im not already defending
-        //     SetStateDriver(new DefenseState(this, animator, agent));
-        // }
+    public BTStatus DefenseTask() { //Debug.Log("defend task");
+        if(!(thinkState is DefenseState)) { //if im not already defending
+            SetStateDriver(new DefenseState(this, animator, agent));
+        }
         return BTStatus.RUNNING;
     }
 
-    public BTStatus ChasingTask() {// Debug.Log("chase task");
+    public BTStatus ChasingTask() { //Debug.Log("chase task");
         if(!(thinkState is ChaseState)) { 
             SetStateDriver(new ChaseState(this, animator, agent));
+        }
+        return BTStatus.RUNNING;
+    }
+
+    public BTStatus BackAwayTask() {// Debug.Log("back away");
+        if(!(thinkState is BackAwayState)) {
+            SetStateDriver(new BackAwayState(this, animator, agent));
         }
         return BTStatus.RUNNING;
     }
@@ -195,11 +226,11 @@ public class AIHandler : CharacterHandler {
         return BTStatus.RUNNING;
     }
 
-    public BTStatus OffenseTask() { //Debug.Log("offense task");
-        if(!(thinkState is OffenseState)) { 
-            SetStateDriver(new OffenseState(this, animator, agent)); //todo attack move selection
-        }
-        return BTStatus.RUNNING;
+    public BTStatus OffenseTask() {// Debug.Log("offense task");
+        // if(!(thinkState is OffenseState)) { 
+        //     SetStateDriver(new OffenseState(this, animator, agent)); //todo attack move selection
+        // }
+         return BTStatus.RUNNING;
     }
 
     
@@ -233,9 +264,16 @@ public class AIHandler : CharacterHandler {
         // Debug.Log("new pos: " + (transform.position - targetPlayer.transform.position));
 
         agent.SetDestination(hit.position);
-        yield return new WaitForSeconds(5f); //back off for this long (or until chase range kicks in?)
+        yield return new WaitWhile(() => agent.stoppingDistance < agent.remainingDistance || agent.pathPending);
         agent.SetDestination(transform.position);
         
+    }
+
+    public IEnumerator FacePlayer() {
+        while (true) {
+            transform.LookAt(targetPlayer.transform);
+            yield return null;
+        }
     }
 
     #endregion

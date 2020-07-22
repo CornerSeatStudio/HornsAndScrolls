@@ -33,8 +33,8 @@ public class ThinkCycle : MonoBehaviour
         BTSetup builder = new BTSetup();
         this.root = builder
                 .EmplaceSelector("main selector")
-                    .EmplaceTask("stealth", t => ai.VerifyStealth()) 
-                    //.EmplaceTask("testfalse", t => alwaysFalse())
+                    //.EmplaceTask("stealth", t => ai.VerifyStealth()) 
+                    .EmplaceTask("testfalse", t => alwaysFalse())
                     .EmplaceSelector("combat Selection")
                         .EmplaceConditional("Combat Incapable", t => ai.VerifyCombatIncapable()) 
                         .EmplaceSequencer("Stagger Selector")
@@ -52,6 +52,10 @@ public class ThinkCycle : MonoBehaviour
                         .EmplaceSequencer("Instant shove")
                             .EmplaceConditional("insta shove check", t => ai.InstantShoveConditional())
                             .EmplaceTask("insta shove",t => ai.ShovingTask())
+                            .PopDepth()
+                        .EmplaceSequencer("back away selector")
+                            .EmplaceConditional("back away conditional", t => ai.BackAwayConditional())
+                            .EmplaceTask("back away", t => ai.BackAwayTask())
                             .PopDepth()
                         .EmplaceTask("offense", t => ai.OffenseTask())
                         .PopDepth()

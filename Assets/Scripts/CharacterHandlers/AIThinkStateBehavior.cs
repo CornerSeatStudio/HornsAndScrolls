@@ -222,8 +222,21 @@ public class InvestigationState : AIThinkState {
 }
 
 public class DefaultAIAggroState : AIThinkState { 
-    public DefaultAIAggroState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
+    IEnumerator facePlayerRoutine;
 
+
+    public DefaultAIAggroState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
+    
+    public override IEnumerator OnStateEnter() {
+        facePlayerRoutine = character.FacePlayer();
+        character.StartCoroutine(facePlayerRoutine);
+        yield break;
+    }
+
+   public override IEnumerator OnStateExit() {
+        if(facePlayerRoutine != null) character.StopCoroutine(facePlayerRoutine);
+        yield break;
+    }
 }
 
 public class DefenseState : AIThinkState {
@@ -260,7 +273,7 @@ public class ChaseState : AIThinkState {
     public ChaseState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
 
     public override IEnumerator OnStateEnter() {
-        chaseRoutine = character.ChasePlayer(7f);
+        chaseRoutine = character.ChasePlayer(character.tooFarFromPlayerDistance-3f);
         yield return character.StartCoroutine(chaseRoutine);
         character.SetStateDriver(new DefaultAIAggroState(character, animator, agent));
     }
@@ -273,9 +286,32 @@ public class ChaseState : AIThinkState {
         
     }
 }
+public class BackAwayState : AIThinkState {
+    IEnumerator backAwayRoutine;
+    IEnumerator facePlayerRoutine;
 
+
+    public BackAwayState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) { }
+
+    public override IEnumerator OnStateEnter() {
+        facePlayerRoutine = character.FacePlayer();
+        character.StartCoroutine(facePlayerRoutine);
+        backAwayRoutine = character.SpaceFromPlayer(character.backAwayDistance);
+        yield return character.StartCoroutine(backAwayRoutine);
+        character.SetStateDriver(new DefaultAIAggroState(character, animator, agent));
+    }
+
+    public override IEnumerator OnStateExit() {
+        if(facePlayerRoutine != null) character.StopCoroutine(facePlayerRoutine);
+        if(backAwayRoutine != null) character.StopCoroutine(backAwayRoutine);
+        yield break;
+
+    }
+
+}
 public class ShoveState : AIThinkState {
     IEnumerator shoveRoutine;
+
     MeleeMove shove;
 
     public ShoveState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {
@@ -309,22 +345,16 @@ public class OffenseState : AIThinkState {
     }
 
     public override IEnumerator OnStateEnter() {
-        facePlayerRoutine = FacePlayer();
+        facePlayerRoutine = character.FacePlayer();
         character.StartCoroutine(facePlayerRoutine);
         offenseRoutine = Offense(chosenAttack);
         yield return character.StartCoroutine(offenseRoutine);
         character.SetStateDriver(new DefaultAIAggroState(character, animator, agent));
     }
 
-    private IEnumerator FacePlayer() {
-        while (true) {
-            character.transform.LookAt(character.targetPlayer.transform);
-            yield return null;
-        }
-    }
     private IEnumerator Offense(MeleeMove chosenAttack) {
 
-        yield return new WaitForSeconds(3f); //break between looking at player and 
+        yield return new WaitForSeconds(2f); //break between looking at player and 
 
         subRoutine = character.ChasePlayer(chosenAttack.range);
         yield return character.StartCoroutine(subRoutine);

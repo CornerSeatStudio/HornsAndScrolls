@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 019ec68483a153144abd114ed9f1a077
+guid: 1dc42e608fa874c4d8f6e04ada53345f
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable:
   - first:
-      74: 9128885920207887336
-    second: sheath'
+      74: 896188942311107492
+    second: block
   externalObjects: {}
   materials:
     materialImportMode: 1
@@ -35,11 +35,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: sheath'
-      takeName: Armature|Armature.002Action
+      name: block
+      takeName: Armature|Polearm_walk_agro
       internalID: 0
       firstFrame: 0
-      lastFrame: 58
+      lastFrame: 38
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -58,14 +58,7 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events:
-      - time: 0.5217391
-        functionName: ParentToSheath
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
+      events: []
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}

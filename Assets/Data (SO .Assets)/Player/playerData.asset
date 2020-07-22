@@ -9,12 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ad2c565cd8f7f449a8b3d667dbe0ac2, type: 3}
-  m_Name: default
+  m_Script: {fileID: 11500000, guid: a9556a97a9fc7b8448fe782c4ec1253b, type: 3}
+  m_Name: playerData
   m_EditorClassIdentifier: 
-  startup: 0.3
-  endlag: 0.5
-  damage: 3
-  range: 20
-  angle: 120
-  blockableAttack: 1
+  maxHealth: 30
+  maxStamina: 30
+  staminaRegenerationRatePerS: 3
+  speed: 0
+  rel_gravity: 0

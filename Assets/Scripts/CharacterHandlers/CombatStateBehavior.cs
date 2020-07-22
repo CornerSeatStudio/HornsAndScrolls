@@ -11,7 +11,7 @@ public class UnsheathingCombatState : CombatState {
     public UnsheathingCombatState(CharacterHandler character, Animator animator) : base(character, animator) {}
 
     public override IEnumerator OnStateEnter() {
-        Array.Find(character.audioData, AudioData => AudioData.name == "unsheath").Play(character.AudioSource);
+      //  try { (character as PlayerHandler).parentToHand(); } catch { Debug.LogWarning("ai shoudnt be in this state"); }
 
         sheathRoutine = Sheath();
         yield return character.StartCoroutine(sheathRoutine);
@@ -19,11 +19,18 @@ public class UnsheathingCombatState : CombatState {
     }
 
     private IEnumerator Sheath(){
+        yield return new WaitUntil(() => character.layerWeightRoutine == null);
+        character.layerWeightRoutine = character.LayerWeightDriver(1, 0, 1, .3f);
+        yield return character.StartCoroutine(character.layerWeightRoutine);
+
         animator.ResetTrigger(Animator.StringToHash("WeaponDraw"));
         animator.SetTrigger(Animator.StringToHash("WeaponDraw"));
         animator.SetBool(Animator.StringToHash("WeaponOut"), true); //if transitioning between sheathing and unsheathing, this overrides it too
-        animator.SetLayerWeight(1, 1);
-        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(1).length);
+        
+        Array.Find(character.audioData, AudioData => AudioData.name == "unsheath").Play(character.AudioSource);
+
+        yield return new WaitForSeconds(1.5f); //sheath time idk why its varied
+        //yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(1).length);
 
     }
 
@@ -40,7 +47,6 @@ public class SheathingCombatState : CombatState {
     public SheathingCombatState(CharacterHandler character, Animator animator) : base(character, animator) {}
 
     public override IEnumerator OnStateEnter() {
-        Array.Find(character.audioData, AudioData => AudioData.name == "sheath").Play(character.AudioSource);
  
         sheathRoutine = Sheath();
         yield return character.StartCoroutine(sheathRoutine);
@@ -48,17 +54,23 @@ public class SheathingCombatState : CombatState {
 
     }
 
-    private IEnumerator Sheath(){
+    private IEnumerator Sheath(){ animator.SetBool(Animator.StringToHash("WeaponOut"), false); 
         animator.ResetTrigger(Animator.StringToHash("WeaponDraw"));
         animator.SetTrigger(Animator.StringToHash("WeaponDraw"));
-        yield return new WaitForSeconds(2f); //sheath time idk why its varied
+        
+        Array.Find(character.audioData, AudioData => AudioData.name == "sheath").Play(character.AudioSource);
+
+        yield return new WaitForSeconds(1.5f); //sheath time idk why its varied
        // yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(1).length);
     }
 
     public override IEnumerator OnStateExit() { //once drawn OR INTERUPTED
+      //  try { (character as PlayerHandler).parentToSheath(); } catch { Debug.LogWarning("ai shoudnt be in this state"); }
         if(sheathRoutine != null) character.StopCoroutine(sheathRoutine);
-        animator.SetBool(Animator.StringToHash("WeaponOut"), false); 
-        animator.SetLayerWeight(1, 0);
+        
+        yield return new WaitUntil(() => character.layerWeightRoutine == null);
+        character.layerWeightRoutine = character.LayerWeightDriver(1, 1, 0, .3f);
+        yield return character.StartCoroutine(character.layerWeightRoutine);
         yield break;
     }
 
@@ -98,6 +110,7 @@ public class AttackState : CombatState {
     }
     public override IEnumerator OnStateEnter() { 
 animator.SetTrigger(Animator.StringToHash("Attacking"));
+
         yield return new WaitUntil(() => character.layerWeightRoutine == null);
         character.layerWeightRoutine = character.LayerWeightDriver(1, 1, 0, .3f);
         yield return character.StartCoroutine(character.layerWeightRoutine);
@@ -242,6 +255,10 @@ public class DeathState : CombatState {
             (character as AIHandler).GlobalState = GlobalState.DEAD;
             //stop APPROPRITE coroutines
             (character as AIHandler).Detection.IsAlive = false; //detection
+            //weapon stuff
+            (character as AIHandler).weaponMesh.transform.SetParent(null);
+            (character as AIHandler).weaponMesh.AddComponent<Rigidbody>();
+            (character as AIHandler).weaponMesh.AddComponent<BoxCollider>();
             //ragdoll 
             (character as AIHandler).GetComponent<Collider>().enabled = false;
         } catch {

@@ -268,7 +268,7 @@ public class CharacterHandler : MonoBehaviour {
     protected Vector3 lastPos; //math stuff
     protected void CalculateVelocity(){
         oldPos = movedPos;
-        movedPos = Vector3.Slerp(oldPos, transform.position - lastPos, .2f); 
+        movedPos = Vector3.Slerp(oldPos, transform.position - lastPos, .1f); 
         lastPos = transform.position; 
         velocity = movedPos / Time.fixedTime;      
     }

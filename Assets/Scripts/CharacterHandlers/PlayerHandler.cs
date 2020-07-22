@@ -10,7 +10,6 @@ public class PlayerHandler : CharacterHandler {
     private bool weaponDrawn;
     public float CurrMovementSpeed {get; set; }
     
-    public float NormalMoveBlend {get; set; }
 
     [Header("Player Movement Variables")]
     public float jogSpeed;
@@ -22,7 +21,11 @@ public class PlayerHandler : CharacterHandler {
 
     public float dodgeTime;
     public float dodgeSpeed;
-    
+
+    [Header("Weapon animation stuff")]
+    public GameObject weaponMesh;
+    public Transform sheatheTransform;
+    public Transform unsheatheTransform;
 
     #region callbacks
     protected override void Start(){
@@ -33,7 +36,9 @@ public class PlayerHandler : CharacterHandler {
 
         lastPos = transform.position;
 
-        CurrMovementSpeed = NormalMoveBlend = jogSpeed;
+        CurrMovementSpeed = jogSpeed;
+
+        
     }
 
 
@@ -55,7 +60,7 @@ public class PlayerHandler : CharacterHandler {
             controller.Move(inputVector.normalized * CurrMovementSpeed * Time.fixedDeltaTime);  
         }
     }
-
+/*
 
     private void OnAnimatorIK(int layerIndex) {
         
@@ -88,6 +93,7 @@ public class PlayerHandler : CharacterHandler {
     }
 
 
+*/
     #endregion
 
     #region chieftan fish
@@ -238,4 +244,21 @@ public class PlayerHandler : CharacterHandler {
 
     #endregion
 
+    #region sheathing stuff
+   
+
+
+    public void ParentToSheath() {
+        
+        weaponMesh.transform.parent = sheatheTransform;
+        weaponMesh.transform.localPosition = new Vector3(0.001f, 0.012f,0.0154f);
+        weaponMesh.transform.localEulerAngles = new Vector3(315f, 5.2f, 12.6f);
+    }
+
+    public void ParentToHand() {
+        weaponMesh.transform.parent = unsheatheTransform;
+        weaponMesh.transform.localPosition = new Vector3(0.0009f, 0.008f, -0.005f);
+        weaponMesh.transform.localEulerAngles = new Vector3(198f, -4.5f, 23.1f);
+    }
+    #endregion
 }

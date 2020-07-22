@@ -1,17 +1,11 @@
 fileFormatVersion: 2
-guid: f826e1f762efb614c88cb0c42c84aba2
+guid: 6a017484aa41af34985ecc0a5e0e074d
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable:
   - first:
-      74: 549305439222988800
-    second: Armature|WalkForward.003
-  - first:
       74: -6848554733567604879
-    second: side right
-  - first:
-      74: 6819954558324418965
-    second: Armature|WalkForward.005
+    second: sidestep right
   externalObjects: {}
   materials:
     materialImportMode: 1
@@ -41,18 +35,18 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: side right
+      name: sidestep right
       takeName: Armature|WalkForward.004
       internalID: 0
-      firstFrame: 0
-      lastFrame: 50
+      firstFrame: 6
+      lastFrame: 55
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 1
+      loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
