@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class CharacterHandler : MonoBehaviour {
 
@@ -114,7 +115,7 @@ public class CharacterHandler : MonoBehaviour {
 
 
     //upon contact with le weapon, this handles the appropriate response (such as tackign damage, stamina drain, counters etc)
-    public virtual void AttackResponse(float damage, CharacterHandler attackingCharacter) { 
+    public virtual void AttackResponse(float damage, CharacterHandler attacker) { 
         string result = "null";//for debug
 
         // try {
@@ -125,7 +126,7 @@ public class CharacterHandler : MonoBehaviour {
         // } catch {}
 
         if(this.genericState is MoveState) { //no sword drawn and get hit, (todo - do a different stagger)
-            TakeDamage(damage, false); 
+            TakeDamage(damage, false, attacker); 
             result = "cunt dont have sword out ";
 
         }
@@ -133,62 +134,66 @@ public class CharacterHandler : MonoBehaviour {
         else if(this.genericState is AttackState) { //TODO AM IN RANGE
             //i am currently in an unblockable attack while being attacked
             //if enemy is simultaneously in attack
-            if(attackingCharacter.genericState is AttackState){
+            if(attacker.genericState is AttackState){
                 //if my attack is unblockable
                 if(!(this.genericState as AttackState).chosenMove.blockableAttack){
                     //take damage but dont stagger
-                    TakeDamage(damage, false);
+                    TakeDamage(damage, false, attacker);
                     result = "both take damage, but reacter staggers only due to unblockable attack";
                 } else {
                     //take damage, stagger as usual
-                    TakeDamage(damage, true);
+                    TakeDamage(damage, true, attacker);
                     result = "both take damage and stagger";
                 }
             }
             
         } else if (this.genericState is BlockState){ //todo CHECK IF VALID BLOCK
             //i am blocking an unblockable attack AND if its a valid block (should be null if no target)
-            if(!(attackingCharacter.genericState as AttackState).chosenMove.blockableAttack) {
+            if(!(attacker.genericState as AttackState).chosenMove.blockableAttack) {
                 //take damage and stagger
                 result = "requester beats block with unblockable, receiver takes damage and staggers";
-                    TakeDamage(damage, true);
+                    TakeDamage(damage, true, attacker);
            
             } else {
                 //drain stamina instead
                 DealStamina(damage);
+                Array.Find(attacker.audioData, AudioData => AudioData.name == "clang").Play(attacker.AudioSource);
                 result = "receiver blocks, only stamina drain";
             }
 
 
         } else if (this.genericState is CounterState) { //todo CHECK IF VALID BLOCk
             //if i am countering an unblockable attack
-            if(!(attackingCharacter.genericState as AttackState).chosenMove.blockableAttack){
+            if(!(attacker.genericState as AttackState).chosenMove.blockableAttack){
                 //no damage, but enemy isnt staggared
                 //either a heavy attack with long endlag,
                 //OR can be instantly followed up with another swing maybe
+
                 result = "requester used unblockable attack but is countered, no effect to either";
             } else {
                 result = "receiver counters, requester staggers";
-                attackingCharacter.SetStateDriver(new StaggerState(attackingCharacter, attackingCharacter.animator));
                 //proper counter here
             }
+            Array.Find(attacker.audioData, AudioData => AudioData.name == "clang").Play(attacker.AudioSource);
+
+            attacker.SetStateDriver(new StaggerState(attacker, attacker.animator));
 
         } else if (this.genericState is DodgeState) {
             result = "receiver dodged, no damage, stamina only";
             DealStamina(5f);
         } else if (this.genericState is StaggerState) {
             result = "receiver hit when staggered";
-            TakeDamage(damage, false);
+            TakeDamage(damage, false, attacker);
             //everytime this is triggered, increment todo
             //"prevent camping when down" counter maybe
         } else { 
             result = "default situation, receiver takes damage and staggers, possible out of range";
             //take damage, stagger
-            TakeDamage(damage, true);
+            TakeDamage(damage, true, attacker);
 
         }
 
-        Debug.Log("REQUESTER: " + attackingCharacter.genericState.ToString() 
+        Debug.Log("REQUESTER: " + attacker.genericState.ToString() 
                 + ", REACTER: " + genericState.ToString()
                 + ", RESULT: " + result);
 
@@ -196,10 +201,13 @@ public class CharacterHandler : MonoBehaviour {
     }
 
     //upon taking damage
-    protected virtual void TakeDamage(float damage, bool isStaggerable){ 
+    protected virtual void TakeDamage(float damage, bool isStaggerable, CharacterHandler attacker){ 
         Health -= damage;
         heathbar.fillAmount = Health / characterdata.maxHealth;
-    
+
+        Array.Find(attacker.audioData, AudioData => AudioData.name == "flesh").Play(attacker.AudioSource);
+
+
         if (isStaggerable && Health > 0) { SetStateDriver(new StaggerState(this, animator)); }
         //if dead:
             //change CombatState to death

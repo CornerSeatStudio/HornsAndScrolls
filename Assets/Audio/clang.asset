@@ -9,12 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ad2c565cd8f7f449a8b3d667dbe0ac2, type: 3}
-  m_Name: default
+  m_Script: {fileID: 11500000, guid: e81002b08bb001a4193ecc9648804b87, type: 3}
+  m_Name: clang
   m_EditorClassIdentifier: 
-  startup: 0.1
-  endlag: 0.3
-  damage: 5
-  range: 40
-  angle: 120
-  blockableAttack: 1
+  audioClips:
+  - {fileID: 8300000, guid: 821fd9eedc1ab00469f92333ab994151, type: 3}
+  volume: 0.24
+  pitch: 1

@@ -89,8 +89,8 @@ public class AIHandler : CharacterHandler {
 
 
     }
-    protected override void TakeDamage(float damage, bool isStaggerable) {
-        base.TakeDamage(damage, isStaggerable);
+    protected override void TakeDamage(float damage, bool isStaggerable, CharacterHandler attacker) {
+        base.TakeDamage(damage, isStaggerable, attacker);
 
         //Debug.Log("taken damage");
         if(Health <= 0) { //UPON AI DEATH todo should this be in super class

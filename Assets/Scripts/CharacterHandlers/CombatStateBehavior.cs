@@ -109,7 +109,7 @@ public class AttackState : CombatState {
         this.chosenMove = chosenMove;
     }
     public override IEnumerator OnStateEnter() { 
-animator.SetTrigger(Animator.StringToHash("Attacking"));
+        animator.SetTrigger(Animator.StringToHash("Attacking"));
 
         yield return new WaitUntil(() => character.layerWeightRoutine == null);
         character.layerWeightRoutine = character.LayerWeightDriver(1, 1, 0, .3f);
@@ -129,6 +129,7 @@ animator.SetTrigger(Animator.StringToHash("Attacking"));
         //Debug.Log(chosenMove.angle + " " + chosenMove.range);
         //if no targets in range
         if (chosenTarget == null) {
+            Array.Find(character.audioData, AudioData => AudioData.name == "woosh").Play(character.AudioSource);
             yield return new WaitForSeconds(chosenMove.startup + chosenMove.endlag); //swing anyways
             character.SetStateDriver(new DefaultCombatState(character, animator));
             yield break;
