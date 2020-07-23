@@ -4,12 +4,11 @@ public class CameraHandler : MonoBehaviour {
     public Transform target; //the player
     [Range(0.01f, 1.0f)] public float cameraSnapSpeed = 0.125f; //camera snapping to player
     [Range(0.01f, 1.0f)] public float scrollZoomSmoothness = .5f;
+    public float scrollZoomSpeed = 5f;
     
     public Vector3 maxOffset;
     public Vector3 minOffset;
     
-    public float scrollZoomMultiplier = 20f;
-
     private Camera cam; 
     public Vector3 offset;
 
@@ -39,15 +38,14 @@ public class CameraHandler : MonoBehaviour {
         // } 
 
 
-        if(offset.sqrMagnitude < minOffset.sqrMagnitude){
+        if(offset.sqrMagnitude < minOffset.sqrMagnitude) {
             offset = minOffset;
-        }else if(offset.sqrMagnitude  >= minOffset.sqrMagnitude && offset.sqrMagnitude  <= maxOffset.sqrMagnitude){
-            //offset  = Vector3.Lerp(offset, offset  - , scrollZoomSmoothness);
-        }
-        if(offset.sqrMagnitude  > maxOffset.sqrMagnitude) {
+        }else if (offset.sqrMagnitude  > maxOffset.sqrMagnitude) {
             offset  = maxOffset;
-        }else if(offset.sqrMagnitude  >= minOffset.sqrMagnitude && offset.sqrMagnitude  <= maxOffset.sqrMagnitude){
-            //offset  = Vector3.Lerp(offset, offset  - , scrollZoomSmoothness);
+        }else {
+            Vector3 desiredPosition = new Vector3(0, offset.y - scrollInput * scrollZoomSpeed, offset.z + scrollInput * scrollZoomSpeed);
+            Vector3 smoothedPosition = Vector3.Slerp(offset, desiredPosition, scrollZoomSmoothness);
+            offset = smoothedPosition;
         }
 
 

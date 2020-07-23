@@ -893,9 +893,9 @@ MonoBehaviour:
   target: {fileID: 1419628486}
   cameraSnapSpeed: 0.729
   scrollZoomSmoothness: 0.5
-  maxOffset: {x: 0, y: 30, z: -25}
-  minOffset: {x: 0, y: 30, z: -25}
-  scrollZoomMultiplier: 20
+  scrollZoomSpeed: 15
+  maxOffset: {x: 0, y: 90, z: -85}
+  minOffset: {x: 0, y: 25, z: -20}
   offset: {x: 0, y: 30, z: -25}
 --- !u!81 &1323406253
 AudioListener:
