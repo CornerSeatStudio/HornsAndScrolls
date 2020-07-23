@@ -16,7 +16,14 @@ public class CameraHandler : MonoBehaviour {
 
     void Start(){
         cam = this.GetComponent<Camera>();
+
         offset = new Vector3(0, 30f, -25f);
+
+        //default settings
+     //   cam.fieldOfView = fov;
+        
+
+
     }
 
     //general rule: read data in update, handle data in fixed update
@@ -33,10 +40,30 @@ public class CameraHandler : MonoBehaviour {
         //scroll for camera movement (within bounds)
         // //probably should deal with jitter - possibly use a lerp
         float scrollInput = Input.GetAxis("Mouse ScrollWheel");
+
         // if(offset.sqrMagnitude >= minOffset.sqrMagnitude && offset.sqrMagnitude <= maxOffset.sqrMagnitude){
         //     offset.y += scrollInput;
         //     offset.z += scrollInput;
         // } 
+
+        //if(cam.fieldOfView >= fovLowerBound && cam.fieldOfView <= fovUpperBound){
+            //cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, cam.fieldOfView - (scrollInput * scrollZoomMultiplier), scrollZoomSmoothness);
+       // } else if (cam.fieldOfView < fovLowerBound) {
+         //   cam.fieldOfView = fovLowerBound;
+     //   } else if (cam.fieldOfView > fovUpperBound) {
+        //    cam.fieldOfView = fovUpperBound;
+      //  }
+        if(cam.fieldOfView < fovLowerBound){
+            cam.fieldOfView= fovLowerBound;
+        }else if(cam.fieldOfView >= fovLowerBound && cam.fieldOfView <= fovUpperBound){
+            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, cam.fieldOfView - (scrollInput * scrollZoomMultiplier), scrollZoomSmoothness);
+        }
+        if(cam.fieldOfView > fovUpperBound) {
+            cam.fieldOfView = fovUpperBound;
+        }else if(cam.fieldOfView >= fovLowerBound && cam.fieldOfView <= fovUpperBound){
+            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, cam.fieldOfView - (scrollInput * scrollZoomMultiplier), scrollZoomSmoothness);
+        }
+
 
     }
 
