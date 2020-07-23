@@ -51,7 +51,7 @@ public class PlayerHandler : CharacterHandler {
     }
 
     void FixedUpdate() {
-        DealWithGravity();
+       // DealWithGravity();
         if(genericState is DodgeState) {
             controller.Move(dodgeDirection.normalized * dodgeSpeed *  Time.fixedDeltaTime);
         } else if (genericState is AttackState) {

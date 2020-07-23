@@ -15,7 +15,7 @@ public class Finish : MonoBehaviour
 
     }   
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider col)
     {
         hasObject=true;
     }

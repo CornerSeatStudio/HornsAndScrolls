@@ -325,7 +325,7 @@ public class ShoveState : AIThinkState {
     MeleeMove shove;
 
     public ShoveState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {
-        try { shove = character.MeleeAttacks["Shove"]; } catch { Debug.LogWarning("no shove attack in melee moves"); }
+        try { shove = character.MeleeAttacks["shove"]; } catch { Debug.LogWarning("no shove attack in melee moves"); }
     }
 
     public override IEnumerator OnStateEnter() {
