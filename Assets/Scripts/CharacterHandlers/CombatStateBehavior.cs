@@ -157,6 +157,7 @@ public class AttackState : CombatState {
 
 public class BlockState : CombatState {
     protected MeleeMove block;
+    IEnumerator blockStaminaDrain;
 
     public BlockState(CharacterHandler character, Animator animator) : base(character, animator) {
         try {block = character.MeleeBlock; } catch { Debug.LogWarning("no block in char SO"); }
@@ -164,10 +165,20 @@ public class BlockState : CombatState {
 
     public override IEnumerator OnStateEnter() { 
         animator.SetBool(Animator.StringToHash("Blocking"), true);
+        // blockStaminaDrain = StaminDrainOverTime();
+        // character.StartCoroutine(blockStaminaDrain);
         yield break;
     } 
 
+    private IEnumerator StaminDrainOverTime(){
+        while(true){
+            character.DealStamina(.5f);
+            yield return new WaitForSeconds(.2f);
+        }
+    }
+
     public override IEnumerator OnStateExit() { 
+       // if(blockStaminaDrain != null) character.StopCoroutine(blockStaminaDrain);
         animator.SetBool(Animator.StringToHash("Blocking"), false);
         yield break;
     } 

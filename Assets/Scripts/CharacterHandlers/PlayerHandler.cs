@@ -186,7 +186,7 @@ public class PlayerHandler : CharacterHandler {
             if(Input.GetButtonDown("Fire1") == true) {
                // Debug.Log("Fire1'd");
                 SetStateDriver(new AttackState(this, animator));
-            } else if(Input.GetButtonDown("Fire2") == true) {
+            } else if(Stamina > 0 && Input.GetButtonDown("Fire2") == true) {
                 //Debug.Log("Fire2'd/counter trigger");
                 SetStateDriver(new CounterState(this, animator));
                 //counter event is here
@@ -194,12 +194,9 @@ public class PlayerHandler : CharacterHandler {
      
         } else if (genericState is BlockState) { //gets to here after "counter timer" runs up, aka has to wait for a bit to release block
             //if still blocking
-            if(Input.GetButton("Fire2") == true) {
-                //Debug.Log("holding blocking");
-            } else {
-                //Debug.Log("release block");
+            if(Input.GetButtonUp("Fire2") || Stamina < 0) {
                 SetStateDriver(new DefaultCombatState(this, animator));
-            }
+            } 
         }
     }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
+using UnityEngine.UI;
 using TMPro;
 
 public enum GlobalState { UNAGGRO, AGGRO, DEAD }; //determines ai state tree area
@@ -17,6 +18,7 @@ public class AIHandler : CharacterHandler {
 
     //stealth stuff
     [Header("Stealth stuff")]
+    public Image stealthBar;
     public List<PatrolWaypoint> patrolWaypoints; //where ai walks
     public float idleTimeAtWaypoint; //how long ai stays at each patrol waypoint
     public float spotTimerThreshold; //time it takes to go into aggro
@@ -122,8 +124,7 @@ public class AIHandler : CharacterHandler {
         //cast a sphere, if any AI in that sphere is Aggro, turn into aggro as well
         Collider[] aiInRange = Physics.OverlapSphere(transform.position, AIGlobalStateCheckRange, Detection.obstacleMask);
             foreach(Collider col in aiInRange) {
-            AIHandler proximateAI = col.GetComponent<AIHandler>();
-            if(proximateAI.GlobalState == GlobalState.AGGRO){
+            if(col.GetComponent<AIHandler>() && col.GetComponent<AIHandler>().GlobalState == GlobalState.AGGRO){
                 GlobalState = GlobalState.AGGRO;
                 animator.SetBool(Animator.StringToHash("IsGlobalAggroState"), true); //todo: to be put in separate class
                 
@@ -177,6 +178,11 @@ public class AIHandler : CharacterHandler {
         return (targetPlayer.transform.position - transform.position).sqrMagnitude > tooFarFromPlayerDistance * tooFarFromPlayerDistance;
     }
 
+    public bool OffenseConditional() {
+        //when ready to attack,
+        return false;
+    }
+
     public bool BackAwayConditional() { //if too close AND CAN back away
         NavMeshHit hit;
 
@@ -212,6 +218,13 @@ public class AIHandler : CharacterHandler {
         return BTStatus.RUNNING;
     }
 
+    public BTStatus OffenseTask() {// Debug.Log("offense task");
+    // if(!(thinkState is OffenseState)) { 
+    //     SetStateDriver(new OffenseState(this, animator, agent)); //todo attack move selection
+    // }
+        return BTStatus.RUNNING;
+    }
+
     public BTStatus BackAwayTask() {// Debug.Log("back away");
         if(!(thinkState is BackAwayState)) {
             SetStateDriver(new BackAwayState(this, animator, agent));
@@ -226,14 +239,9 @@ public class AIHandler : CharacterHandler {
         return BTStatus.RUNNING;
     }
 
-    public BTStatus OffenseTask() {// Debug.Log("offense task");
-        // if(!(thinkState is OffenseState)) { 
-        //     SetStateDriver(new OffenseState(this, animator, agent)); //todo attack move selection
-        // }
-         return BTStatus.RUNNING;
+    public BTStatus ShuffleTask() {
+        return BTStatus.RUNNING;
     }
-
-    
 
 
     //memthods used by think state behavior
@@ -247,25 +255,30 @@ public class AIHandler : CharacterHandler {
     }
 
     public IEnumerator SpaceFromPlayer(float distanceFromPlayer){
-        
-
         NavMeshHit hit;
-        //if i found a position away from player
-        if(NavMesh.SamplePosition(transform.position + (transform.position - targetPlayer.transform.position), out hit, distanceFromPlayer, NavMesh.AllAreas)){
-           // Debug.Log("sampled location");
-        } else if (NavMesh.FindClosestEdge(transform.position + (transform.position - targetPlayer.transform.position), out hit, NavMesh.AllAreas)){
-          //  Debug.Log("sample failed, found closest edge");
-        } else {
-           // Debug.Log("nowhere tf");
+        NavMesh.SamplePosition(transform.position + (transform.position - targetPlayer.transform.position), out hit, distanceFromPlayer, NavMesh.AllAreas);
+        agent.SetDestination(hit.position);
+
+        while((agent.stoppingDistance < agent.remainingDistance || agent.pathPending) 
+                && (
+                    (NavMesh.SamplePosition(transform.position + (transform.position - targetPlayer.transform.position), out hit, distanceFromPlayer, NavMesh.AllAreas))
+                        || (NavMesh.FindClosestEdge(transform.position + (transform.position - targetPlayer.transform.position), out hit, NavMesh.AllAreas))
+                    )
+                ) {
+            
+
+            agent.SetDestination(hit.position);
+            yield return new WaitForSeconds(.2f);
         }
         
+        agent.SetDestination(transform.position);
         // Debug.Log("ai: " + transform.position);
         // Debug.Log("pl: " + targetPlayer.transform.position);
         // Debug.Log("new pos: " + (transform.position - targetPlayer.transform.position));
 
-        agent.SetDestination(hit.position);
-        yield return new WaitWhile(() => agent.stoppingDistance < agent.remainingDistance || agent.pathPending);
-        agent.SetDestination(transform.position);
+        
+     //   yield return new WaitWhile(() => agent.stoppingDistance < agent.remainingDistance || agent.pathPending);
+        
         
     }
 
