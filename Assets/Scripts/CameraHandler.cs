@@ -32,11 +32,24 @@ public class CameraHandler : MonoBehaviour {
     void Update() {
         //scroll for camera movement (within bounds)
         // //probably should deal with jitter - possibly use a lerp
-        float scrollInput = Input.GetAxis("Mouse ScrollWheel");
+        float scrollInput = Input.GetAxisRaw("Mouse ScrollWheel");
         // if(offset.sqrMagnitude >= minOffset.sqrMagnitude && offset.sqrMagnitude <= maxOffset.sqrMagnitude){
         //     offset.y += scrollInput;
         //     offset.z += scrollInput;
         // } 
+
+
+        if(offset.sqrMagnitude < minOffset.sqrMagnitude){
+            offset = minOffset;
+        }else if(offset.sqrMagnitude  >= minOffset.sqrMagnitude && offset.sqrMagnitude  <= maxOffset.sqrMagnitude){
+            //offset  = Vector3.Lerp(offset, offset  - , scrollZoomSmoothness);
+        }
+        if(offset.sqrMagnitude  > maxOffset.sqrMagnitude) {
+            offset  = maxOffset;
+        }else if(offset.sqrMagnitude  >= minOffset.sqrMagnitude && offset.sqrMagnitude  <= maxOffset.sqrMagnitude){
+            //offset  = Vector3.Lerp(offset, offset  - , scrollZoomSmoothness);
+        }
+
 
     }
 
