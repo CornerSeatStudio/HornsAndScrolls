@@ -165,8 +165,8 @@ public class BlockState : CombatState {
 
     public override IEnumerator OnStateEnter() { 
         animator.SetBool(Animator.StringToHash("Blocking"), true);
-        blockStaminaDrain = StaminDrainOverTime();
-        character.StartCoroutine(blockStaminaDrain);
+        // blockStaminaDrain = StaminDrainOverTime();
+        // character.StartCoroutine(blockStaminaDrain);
         yield break;
     } 
 
@@ -178,7 +178,7 @@ public class BlockState : CombatState {
     }
 
     public override IEnumerator OnStateExit() { 
-        if(blockStaminaDrain != null) character.StopCoroutine(blockStaminaDrain);
+       // if(blockStaminaDrain != null) character.StopCoroutine(blockStaminaDrain);
         animator.SetBool(Animator.StringToHash("Blocking"), false);
         yield break;
     } 
