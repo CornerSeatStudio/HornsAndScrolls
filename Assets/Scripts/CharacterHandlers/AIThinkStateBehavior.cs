@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -74,7 +75,7 @@ public class PatrolState : AIThinkState {
 public class InvestigationState : AIThinkState {
     public float CurrInvestigationTimer {get; private set;}
     private Vector3 lastSeenPlayerLocation;
-    private IEnumerator timerCoroutine, investigationCoroutine;
+    private IEnumerator timerCoroutine, investigationCoroutine, lookCoroutine;
     private bool isDecreasingDetection = false;
 
     public InvestigationState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
@@ -95,6 +96,8 @@ public class InvestigationState : AIThinkState {
     private IEnumerator StareAndFacePlayer() {
         //todo: a stare animation?
 
+        Array.Find(character.audioData, AudioData => AudioData.name == "spotted").Play(character.AudioSource);
+
         agent.isStopped = true; //halt movement
         isDecreasingDetection = false; //start by increasing detection
         
@@ -105,16 +108,20 @@ public class InvestigationState : AIThinkState {
 
 
         //stare and face player here
-        character.transform.LookAt(character.targetPlayer.transform);
-        //todo animator.SetBool("IsStaring", true);
+        lookCoroutine = character.FacePlayer();
+        character.StartCoroutine(lookCoroutine);
+
+
+        animator.SetBool("IsStaring", true);
         //todo also make look at its own coroutine
         yield return new WaitUntil(() => !character.LOSOnPlayer() || CurrInvestigationTimer >= character.spotTimerThreshold); //keep incrementing until LOS is broken || caught
 
         //if condition break, stop staring animation (todo)
-        //todo animator.SetBool("IsStaring", false);
+        animator.SetBool("IsStaring", false);
 
         //3 possibilities, 
         if(!character.LOSOnPlayer()) {
+            character.StopCoroutine(lookCoroutine);
             //lost of sight before halfway
             if(character.spotTimerThreshold/2 > CurrInvestigationTimer) {
                 //reverse timer, but switch to ChainedDiscovery
@@ -180,6 +187,7 @@ public class InvestigationState : AIThinkState {
     private IEnumerator InvestigationTimer() {
         float wfsIncrement = .1f;
         while(CurrInvestigationTimer < character.spotTimerThreshold && CurrInvestigationTimer >= 0) {
+            character.stealthBar.fillAmount = CurrInvestigationTimer / character.spotTimerThreshold;
             yield return new WaitForSeconds(wfsIncrement); //space between each investigation timer tick - should be the same as think cycle
             CurrInvestigationTimer = isDecreasingDetection? CurrInvestigationTimer -= wfsIncrement : CurrInvestigationTimer += wfsIncrement;
             if(character.spotTimerThreshold/2 < CurrInvestigationTimer) {//start recording location after halfway point
@@ -211,11 +219,12 @@ public class InvestigationState : AIThinkState {
         yield break;
     }
 
-    public override IEnumerator OnStateExit() { Debug.Log("exiting investigation");
+    public override IEnumerator OnStateExit() { 
         agent.isStopped = false; //ensure movement can continue
         //disable to exit possibilites (being to aggro and to patrol)
-        //todo animator.SetBool("isStaring", false);
+        animator.SetBool(Animator.StringToHash("IsStaring"), false);
         animator.SetBool(Animator.StringToHash("IsSearching"), false);
+        if(lookCoroutine != null) character.StopCoroutine(lookCoroutine);
         if(timerCoroutine != null) character.StopCoroutine(timerCoroutine); //stop coroutine
         yield return null;
     }
@@ -268,11 +277,13 @@ public class DefenseState : AIThinkState {
 }
 
 public class ChaseState : AIThinkState {
-    IEnumerator chaseRoutine;
+    IEnumerator chaseRoutine, facePlayerRoutine;
 
     public ChaseState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
 
     public override IEnumerator OnStateEnter() {
+        facePlayerRoutine = character.FacePlayer();
+        character.StartCoroutine(facePlayerRoutine);
         chaseRoutine = character.ChasePlayer(character.tooFarFromPlayerDistance-3f);
         yield return character.StartCoroutine(chaseRoutine);
         character.SetStateDriver(new DefaultAIAggroState(character, animator, agent));
@@ -280,6 +291,7 @@ public class ChaseState : AIThinkState {
 
     public override IEnumerator OnStateExit() {
         //sotp guy from movin aboot
+        if(facePlayerRoutine != null) character.StopCoroutine(facePlayerRoutine);
         if(chaseRoutine != null) character.StopCoroutine(chaseRoutine);
         agent.SetDestination(character.transform.position);
         yield break;
@@ -287,9 +299,7 @@ public class ChaseState : AIThinkState {
     }
 }
 public class BackAwayState : AIThinkState {
-    IEnumerator backAwayRoutine;
-    IEnumerator facePlayerRoutine;
-
+    IEnumerator backAwayRoutine, facePlayerRoutine;
 
     public BackAwayState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) { }
 
@@ -302,8 +312,8 @@ public class BackAwayState : AIThinkState {
     }
 
     public override IEnumerator OnStateExit() {
-        if(facePlayerRoutine != null) character.StopCoroutine(facePlayerRoutine);
         if(backAwayRoutine != null) character.StopCoroutine(backAwayRoutine);
+        if(facePlayerRoutine != null) character.StopCoroutine(facePlayerRoutine);
         yield break;
 
     }
@@ -365,7 +375,6 @@ public class OffenseState : AIThinkState {
         //once attack is finished
         float timer = chosenAttack.endlag + chosenAttack.startup;
         while(timer >= 0) {
-            //Debug.Log(timer);
             if(character.genericState is StaggerState) { 
                 Debug.Log("offense interuppt"); 
                 yield break; 
@@ -375,14 +384,6 @@ public class OffenseState : AIThinkState {
             timer -= .1f;
         }
 
-
-
-        Debug.Log("attack finished, spacing from target");
-        subRoutine = character.SpaceFromPlayer(character.tooFarFromPlayerDistance - 1f);
-        yield return character.StartCoroutine(subRoutine);
-
-
-        //Debug.Log("spacing finished");
     }
 
 

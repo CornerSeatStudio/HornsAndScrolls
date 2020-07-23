@@ -661,6 +661,18 @@ Transform:
   m_Father: {fileID: 1871275260}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &996194904 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2307370322100467061, guid: be058e469e10e854e87801b004f8319b,
+    type: 3}
+  m_PrefabInstance: {fileID: 9075442562679303718}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1109844330 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2001937453541543216, guid: e03bb5b69c35d6b43ab8d7fe0b06ea09,
@@ -1832,6 +1844,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9075442561346592634, guid: be058e469e10e854e87801b004f8319b,
+        type: 3}
+      propertyPath: viewRadius
+      value: 28.24
+      objectReference: {fileID: 0}
     - target: {fileID: 9075442561346592637, guid: be058e469e10e854e87801b004f8319b,
         type: 3}
       propertyPath: targetPlayer
@@ -1847,6 +1864,16 @@ PrefabInstance:
       propertyPath: patrolWaypoints.Array.data[1]
       value: 
       objectReference: {fileID: 1800377108}
+    - target: {fileID: 9075442561346592637, guid: be058e469e10e854e87801b004f8319b,
+        type: 3}
+      propertyPath: startAsAggro
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9075442561346592637, guid: be058e469e10e854e87801b004f8319b,
+        type: 3}
+      propertyPath: stealthBar
+      value: 
+      objectReference: {fileID: 996194904}
     - target: {fileID: 9075442561346592639, guid: be058e469e10e854e87801b004f8319b,
         type: 3}
       propertyPath: m_Name

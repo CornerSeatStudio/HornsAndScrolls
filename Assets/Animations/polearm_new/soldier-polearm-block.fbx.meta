@@ -19,9 +19,18 @@ ModelImporter:
     optimizeGameObjects: 0
     motionNodeName: 
     rigImportErrors: 
-    rigImportWarnings: 
+    rigImportWarnings: "Copied Avatar Rig Configuration mis-match. Bone length in
+      copied configuration does not match position in animation file:\n\t'Upper_Leg.L'
+      : position error = 92.115105 mm\n\t'Lower_Leg.L' : position error = 384.763916
+      mm\n\t'Foots.L' : position error = 455.629669 mm\n\t'Upper_Leg.R' : position
+      error = 92.115105 mm\n\t'Lower_Leg.R' : position error = 384.763916 mm\n\t'Foots.R'
+      : position error = 455.629761 mm\n"
     animationImportErrors: 
-    animationImportWarnings: 
+    animationImportWarnings: "\nClip 'Armature|Polearm_walk_agro' has import animation
+      warnings that might lower retargeting quality:\nNote: Activate translation
+      DOF on avatar to improve retargeting quality.\n\t'Shoulder.L' has translation
+      animation that will be discarded.\n\t'Shoulder.R' has translation animation
+      that will be discarded.\n"
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
@@ -39,7 +48,11 @@ ModelImporter:
       takeName: Armature|Polearm_walk_agro
       internalID: 0
       firstFrame: 0
+<<<<<<< Updated upstream
       lastFrame: 38
+=======
+      lastFrame: 130
+>>>>>>> Stashed changes
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -63,7 +76,11 @@ ModelImporter:
       maskType: 3
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
+<<<<<<< Updated upstream
     isReadable: 0
+=======
+    isReadable: 1
+>>>>>>> Stashed changes
   meshes:
     lODScreenPercentages: []
     globalScale: 1
