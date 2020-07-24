@@ -47,7 +47,7 @@ public class AIHandler : CharacterHandler {
         agent = this.GetComponent<NavMeshAgent>();
       
         genericState = new DefaultCombatState(this, animator); //todo temp probably
-
+        
         StartingCondition();
         
         
@@ -68,6 +68,7 @@ public class AIHandler : CharacterHandler {
 
     protected override void Update(){
         base.Update();
+
         if(thinkState != null) AIstate.SetText(thinkState.ToString());
         //Debug.Log(GlobalState);
 

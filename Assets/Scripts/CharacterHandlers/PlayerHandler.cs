@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,7 +8,6 @@ public class PlayerHandler : CharacterHandler {
     private Vector3 inputVector;
     private CharacterController controller;
     public bool ToggledWalk {get; private set; } = false;
-    private bool weaponDrawn;
     public float CurrMovementSpeed {get; set; }
     
 
@@ -126,10 +126,17 @@ public class PlayerHandler : CharacterHandler {
             if(Input.GetKeyDown(KeyCode.X) && !(genericState is DodgeState)) { // but not dodge state
                 if(genericState is SheathingCombatState) {
                     SetStateDriver(new UnsheathingCombatState(this, animator));
-                } else{
+                } else {
                     SetStateDriver(new SheathingCombatState(this, animator));
                 }
-            } else {
+            } else if(Input.GetKeyDown(KeyCode.C) && !(genericState is SheathingCombatState)) {
+                //sheathe and crouch
+                animator.SetTrigger("WeaponDraw");
+                animator.SetBool("WeaponOut", false);
+                Array.Find(audioData, AudioData => AudioData.name == "sheath").Play(AudioSource);
+                SetStateDriver(new CrouchIdleMoveState(this, animator));
+            } 
+            else {
                 HandleCombatMovement();
                 HandleInteractions();
                 if(!(genericState is AttackState)) FaceMouseDirection();
