@@ -12,8 +12,7 @@ public class CameraHandler : MonoBehaviour {
 
     public float dist;
 
-    private OutlineController prevController;
-    private OutlineController currentController;
+ 
     private Camera cam; 
     private float scrollInput;
     public Vector3 offset;
@@ -24,7 +23,7 @@ public class CameraHandler : MonoBehaviour {
     void Start(){
         cam = this.GetComponent<Camera>();
         offset = new Vector3(0, 30f, -25f);
-        HandleLookAtRay();   
+        
 
     }
 
