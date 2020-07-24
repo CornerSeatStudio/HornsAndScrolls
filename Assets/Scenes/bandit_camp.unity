@@ -1927,7 +1927,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
-  m_Convex: 1
+  m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 2977981768884665668, guid: f1d8fc90d97d6914d8cb2b129455a09f, type: 3}
 --- !u!1001 &315255280
@@ -2213,12 +2213,12 @@ PrefabInstance:
     - target: {fileID: 5358588401481311917, guid: 1a5902bf080eddb4e895c42c3bb59874,
         type: 3}
       propertyPath: m_Height
-      value: 10
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 5358588401481311917, guid: 1a5902bf080eddb4e895c42c3bb59874,
         type: 3}
       propertyPath: m_Center.y
-      value: 10
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5358588402222969177, guid: 1a5902bf080eddb4e895c42c3bb59874,
         type: 3}

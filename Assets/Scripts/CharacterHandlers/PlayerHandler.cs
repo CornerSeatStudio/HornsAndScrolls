@@ -9,7 +9,7 @@ public class PlayerHandler : CharacterHandler {
     private CharacterController controller;
     public bool ToggledWalk {get; private set; } = false;
     public float CurrMovementSpeed {get; set; }
-    
+
 
     [Header("Player Movement Variables")]
     public float jogSpeed;
@@ -27,6 +27,10 @@ public class PlayerHandler : CharacterHandler {
     public GameObject weaponMesh;
     public Transform sheatheTransform;
     public Transform unsheatheTransform;
+
+    public delegate void InteractHandler();
+    public event InteractHandler OnInteract;
+
 
     #region callbacks
     protected override void Start(){
@@ -120,6 +124,7 @@ public class PlayerHandler : CharacterHandler {
             } else {
                 HandleNormalMovement();
                 FaceKeyPress();
+                HandleNormalInteractions();
             }
         } else if (genericState is CombatState) { 
             //check for sheathing
@@ -146,6 +151,12 @@ public class PlayerHandler : CharacterHandler {
     #endregion
 
     #region big fish
+    private void HandleNormalInteractions(){
+        if(Input.GetKeyDown(KeyCode.E)) {
+            OnInteract?.Invoke();
+        }
+    }
+
     private void HandleNormalMovement() {
         if(genericState is JogMoveState) { //if i am jogging
             if(inputVector.x == 0 && inputVector.z == 0) SetStateDriver(new IdleMoveState(this, animator)); //and stop, stop
