@@ -1,19 +1,15 @@
 ﻿using UnityEngine;
 
 public class CameraHandler : MonoBehaviour {
+
     public Transform target; //the player
     [Range(0.01f, 10.0f)] public float cameraSnapSmoothing = 2.5f; //camera snapping to player
     [Range(0.01f, 5.0f)] public float scrollZoomSmoothing = 4f;
     public float scrollZoomSpeed = 5f;
-
-
+    
     public Vector3 maxOffset;
     public Vector3 minOffset;
-
-    public float dist;
-
-    private OutlineController prevController;
-    private OutlineController currentController;
+    
     private Camera cam; 
     private float scrollInput;
     public Vector3 offset;
@@ -24,8 +20,6 @@ public class CameraHandler : MonoBehaviour {
     void Start(){
         cam = this.GetComponent<Camera>();
         offset = new Vector3(0, 30f, -25f);
-        HandleLookAtRay();   
-
     }
 
     //general rule: read data in update, handle data in fixed update
@@ -47,11 +41,6 @@ public class CameraHandler : MonoBehaviour {
         scrollInput = Input.GetAxisRaw("Mouse ScrollWheel") != 0 ? RawCast(Input.GetAxisRaw("Mouse ScrollWheel")) : 0;
       //  Debug.Log(scrollInput);
 
-
-
-
-
-
         //if WITHIN BOUNDS
         if(offset.sqrMagnitude >= minOffset.sqrMagnitude && offset.sqrMagnitude <= maxOffset.sqrMagnitude
             || offset.sqrMagnitude <= minOffset.sqrMagnitude && scrollInput < 0
@@ -68,9 +57,10 @@ public class CameraHandler : MonoBehaviour {
 
     }
 
-
     private float RawCast(float currVal){
         return currVal > 0 ? 1 : -1;
     }
 
 }
+
+
