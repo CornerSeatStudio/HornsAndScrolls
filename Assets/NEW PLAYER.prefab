@@ -363,7 +363,7 @@ GameObject:
   - component: {fileID: 5358588401481311915}
   - component: {fileID: 5358588401481311916}
   m_Layer: 10
-  m_Name: Player 1
+  m_Name: NEW PLAYER
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -448,10 +448,6 @@ MonoBehaviour:
   staminabar: {fileID: 5358588403085396429}
   debugState: {fileID: 5358588402784581353}
   staminaRegenerationWindow: 3
-  distanceToGround: 1.37
-  floor:
-    serializedVersion: 2
-    m_Bits: 4096
   targetMask:
     serializedVersion: 2
     m_Bits: 256
@@ -464,6 +460,8 @@ MonoBehaviour:
   crouchWalkSpeed: 14
   combatMoveSpeed: 15
   turnSmoothness: 0.109
+  slopeForceRayLength: 1
+  slopeForce: 3
   dodgeTime: 0.5
   dodgeSpeed: 12
   weaponMesh: {fileID: 5088203446386639267}
