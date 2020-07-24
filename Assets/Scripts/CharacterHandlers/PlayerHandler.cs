@@ -39,6 +39,7 @@ public class PlayerHandler : CharacterHandler {
 
         CurrMovementSpeed = jogSpeed;
 
+
         
     }
 
@@ -63,6 +64,17 @@ public class PlayerHandler : CharacterHandler {
         if((inputVector.x != 0 || inputVector.z != 0) && OnSlope()) {
             controller.Move(Vector3.down * controller.height / 2 * slopeForce);
         }
+
+
+        
+        // if(renderer.isVisible){
+        //     Vector3 direction = Camera.main.transform.position - transform.position;
+        //     if(Physics.Raycast(transform.position, direction, out hit)){
+        //         if(hit.collider.tag != "Main Camera"){
+                    
+        //         }
+        //     }
+        // }
     }
 
     
