@@ -7874,12 +7874,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1711385817}
-  cameraSnapSmoothing: 2.5
+  cameraSnapSmoothing: 8
   scrollZoomSmoothing: 4
   scrollZoomSpeed: 5
-  maxOffset: {x: 0, y: 0, z: 0}
-  minOffset: {x: 0, y: 0, z: 0}
-  offset: {x: 0, y: 0, z: 0}
+  maxOffset: {x: 0, y: 90, z: -85}
+  minOffset: {x: 0, y: 25, z: -20}
+  dist: 0
+  offset: {x: 0, y: 30, z: -25}
 --- !u!81 &836107391
 AudioListener:
   m_ObjectHideFlags: 0
