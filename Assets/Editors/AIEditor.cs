@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.AI;
 
 [CustomEditor (typeof (AIHandler))]
 public class AIEditor : Editor
@@ -11,6 +12,7 @@ public class AIEditor : Editor
 
         CombatZones(ai);
         PatrolRoutes(ai);
+        DrawAIPathing(ai);
     }
 
     private void CombatZones(AIHandler ai) {
@@ -18,6 +20,17 @@ public class AIEditor : Editor
         Handles.DrawWireArc(ai.transform.position, Vector3.up, Vector3.forward, 360, ai.tooFarFromPlayerDistance);
         Handles.DrawWireArc(ai.transform.position, Vector3.up, Vector3.forward, 360, ai.backAwayDistance);
         Handles.DrawWireArc(ai.transform.position, Vector3.up, Vector3.forward, 360, ai.shoveDistance);
+    }
+
+    private void DrawAIPathing(AIHandler ai) {
+        Handles.color = Color.green;
+        List<Vector3> pathCorners = new List<Vector3>();
+        if (ai.GetComponent<NavMeshAgent>().hasPath) {
+            foreach(Vector3 corner in ai.GetComponent<NavMeshAgent>().path.corners){
+                pathCorners.Add(corner);
+            }
+            Handles.DrawAAPolyLine(pathCorners.ToArray());
+        }
     }
 
     private void PatrolRoutes(AIHandler ai) {

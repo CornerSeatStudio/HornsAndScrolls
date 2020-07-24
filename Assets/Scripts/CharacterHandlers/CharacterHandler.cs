@@ -19,9 +19,9 @@ public class CharacterHandler : MonoBehaviour {
     public TextMeshProUGUI debugState; 
     public float staminaRegenerationWindow = 3f;
 
-    [Header("IK")]
-    [Range (0, 5)] public float distanceToGround;
-    public LayerMask floor;
+    // [Header("IK")]
+    // [Range (0, 5)] public float distanceToGround;
+    // public LayerMask floor;
 
     //private stuff
     protected Animator animator;

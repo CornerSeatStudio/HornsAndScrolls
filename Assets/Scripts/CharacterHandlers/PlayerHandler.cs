@@ -18,7 +18,8 @@ public class PlayerHandler : CharacterHandler {
     public float crouchWalkSpeed;
     public float combatMoveSpeed;
     [Range(0, 1)] public float turnSmoothness;
-
+    public float slopeForceRayLength;
+    public float slopeForce;
     public float dodgeTime;
     public float dodgeSpeed;
 
@@ -51,15 +52,28 @@ public class PlayerHandler : CharacterHandler {
     }
 
     void FixedUpdate() {
-       // DealWithGravity();
+        inputVector.Normalize();
+
         if(genericState is DodgeState) {
-            controller.Move(dodgeDirection.normalized * dodgeSpeed *  Time.fixedDeltaTime);
-        } else if (genericState is AttackState) {
-           // controller.Move(transform.forward * 2f * Time.fixedDeltaTime);  //todo how much you move during an attack
-        }   else {
-            controller.Move(inputVector.normalized * CurrMovementSpeed * Time.fixedDeltaTime);  
+            controller.SimpleMove(dodgeDirection.normalized * dodgeSpeed );
+        } else if (!(genericState is AttackState)) {
+            controller.SimpleMove(inputVector * CurrMovementSpeed);  
+        }
+
+        if((inputVector.x != 0 || inputVector.z != 0) && OnSlope()) {
+            controller.Move(Vector3.down * controller.height / 2 * slopeForce);
         }
     }
+
+    
+
+    private bool OnSlope(){
+        RaycastHit hit;
+        return Physics.Raycast(transform.position, Vector3.down, out hit, controller.height/2 * slopeForceRayLength) && hit.normal != Vector3.up;
+    }
+
+
+    
 /*
 
     private void OnAnimatorIK(int layerIndex) {
@@ -204,13 +218,7 @@ public class PlayerHandler : CharacterHandler {
 
     #region small fish
 
-    private void DealWithGravity() {
-        if(controller.isGrounded){ 
-            inputVector.y = 0;
-        } else {
-            inputVector.y-=10;
-        }
-    }
+    
 
     private void FaceKeyPress() {
         if (inputVector.x != 0 || inputVector.z != 0){ //independent of y
