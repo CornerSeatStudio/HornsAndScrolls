@@ -28,8 +28,8 @@ public class PlayerHandler : CharacterHandler {
     public Transform sheatheTransform;
     public Transform unsheatheTransform;
 
-    public delegate void InteractHandler();
-    public event InteractHandler OnInteract;
+    public delegate void PickupHandler();
+    public event PickupHandler OnInteract;
 
 
     #region callbacks
