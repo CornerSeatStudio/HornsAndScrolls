@@ -20,7 +20,6 @@ public class CameraHandler : MonoBehaviour {
     void Start(){
         cam = this.GetComponent<Camera>();
         offset = new Vector3(0, 30f, -25f);
-
     }
 
     //general rule: read data in update, handle data in fixed update
