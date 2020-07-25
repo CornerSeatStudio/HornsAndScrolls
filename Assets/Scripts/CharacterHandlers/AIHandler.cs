@@ -257,39 +257,30 @@ public class AIHandler : CharacterHandler {
 
     public IEnumerator SpaceFromPlayer(float distanceFromPlayer){
         NavMeshHit hit;
+
+        
         // Vector3 backAwayMainVec = (transform.position - targetPlayer.transform.position).normalized * (backAwayDistance + 15f);
         // Vector3 movePos = (transform.position + backAwayMainVec) - (transform.position + (transform.position - targetPlayer.transform.position));
-        NavMesh.SamplePosition(transform.position + (transform.position - targetPlayer.transform.position), out hit, distanceFromPlayer, NavMesh.AllAreas);
+        NavMesh.SamplePosition(transform.position + ((transform.position - targetPlayer.transform.position).normalized * (backAwayDistance + 10f - Vector3.Distance(transform.position, targetPlayer.transform.position))), out hit, distanceFromPlayer, NavMesh.AllAreas);
         agent.SetDestination(hit.position);
         
-        while((agent.stoppingDistance < agent.remainingDistance || agent.pathPending) 
-                && (
-                    (NavMesh.SamplePosition(transform.position + (transform.position - targetPlayer.transform.position), out hit, distanceFromPlayer, NavMesh.AllAreas))
-                        || (NavMesh.FindClosestEdge(transform.position + (transform.position - targetPlayer.transform.position), out hit, NavMesh.AllAreas))
-                    )
+        while(((NavMesh.SamplePosition(transform.position + ((transform.position - targetPlayer.transform.position).normalized * (backAwayDistance + 10f - Vector3.Distance(transform.position, targetPlayer.transform.position))), out hit, distanceFromPlayer, NavMesh.AllAreas))
+                || (NavMesh.FindClosestEdge(transform.position + ((transform.position - targetPlayer.transform.position).normalized * (backAwayDistance + 10f - Vector3.Distance(transform.position, targetPlayer.transform.position))), out hit, NavMesh.AllAreas))
+              ) && (agent.stoppingDistance < agent.remainingDistance || agent.pathPending) 
                 ) {
 
             agent.SetDestination(hit.position);
             // backAwayMainVec = (transform.position - targetPlayer.transform.position).normalized * (backAwayDistance + 15f);
             // movePos = (transform.position + backAwayMainVec) - (transform.position + (transform.position - targetPlayer.transform.position));
-            yield return new WaitForSeconds(.2f);
+            yield return new WaitForSeconds(.1f);
         }
 
         Debug.Log(hit.position);
-        //agent.SetDestination(transform.position);
-        // Debug.Log("ai: " + transform.position);
-        // Debug.Log("pl: " + targetPlayer.transform.position);
-        // Debug.Log("new pos: " + (transform.position - targetPlayer.transform.position));
-
-        
-     //   yield return new WaitWhile(() => agent.stoppingDistance < agent.remainingDistance || agent.pathPending);
-        
-        
     }
 
     public IEnumerator FacePlayer() {
         while (true) {
-            transform.LookAt(targetPlayer.transform);
+            transform.LookAt(new Vector3(targetPlayer.transform.position.x, this.transform.position.y, targetPlayer.transform.position.z));
             yield return null;
         }
     }

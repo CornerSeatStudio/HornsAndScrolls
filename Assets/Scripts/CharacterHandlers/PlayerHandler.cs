@@ -147,11 +147,7 @@ public class PlayerHandler : CharacterHandler {
                     SetStateDriver(new SheathingCombatState(this, animator));
                 }
             } else if(Input.GetKeyDown(KeyCode.C) && !(genericState is SheathingCombatState)) {
-                //sheathe and crouch
-                animator.SetTrigger("WeaponDraw");
-                animator.SetBool("WeaponOut", false);
-                Array.Find(audioData, AudioData => AudioData.name == "sheath").Play(AudioSource);
-                SetStateDriver(new CrouchIdleMoveState(this, animator));
+                SetStateDriver(new SheathCrouchState(this, animator));
             } 
             else {
                 HandleCombatMovement();
@@ -160,6 +156,7 @@ public class PlayerHandler : CharacterHandler {
             }
         }
     }
+
     #endregion
 
     #region big fish

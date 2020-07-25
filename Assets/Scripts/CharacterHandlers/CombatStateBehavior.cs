@@ -73,7 +73,6 @@ public class SheathingCombatState : CombatState {
         yield return character.StartCoroutine(character.layerWeightRoutine);
         yield break;
     }
-
 }
 
 public class DefaultCombatState : CombatState {
