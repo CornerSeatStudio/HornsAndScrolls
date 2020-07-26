@@ -131,7 +131,7 @@ public class PlayerHandler : CharacterHandler {
     private void DetermineInputOutcome() {
         if(genericState is MoveState) { 
             //check for sheathing
-            if(Input.GetKeyDown(KeyCode.X) || Input.GetButtonDown("Fire1")) { 
+            if(Input.GetKeyDown(KeyCode.X) || Input.GetButtonDown("Fire1") && crouchSheathCase == null) { 
                 SetStateDriver(new UnsheathingCombatState(this, animator));
             } else {
                 HandleNormalMovement();
@@ -147,7 +147,8 @@ public class PlayerHandler : CharacterHandler {
                     SetStateDriver(new SheathingCombatState(this, animator));
                 }
             } else if(Input.GetKeyDown(KeyCode.C) && !(genericState is SheathingCombatState)) {
-                SetStateDriver(new SheathCrouchState(this, animator));
+                crouchSheathCase = CrouchToSheathe();
+                StartCoroutine(crouchSheathCase);
             } 
             else {
                 HandleCombatMovement();
@@ -158,6 +159,24 @@ public class PlayerHandler : CharacterHandler {
     }
 
     #endregion
+
+    IEnumerator crouchSheathCase;
+    private IEnumerator CrouchToSheathe(){
+        animator.SetBool(Animator.StringToHash("WeaponOut"), false); 
+        animator.SetBool(Animator.StringToHash("Crouching"), true); 
+        animator.SetTrigger(Animator.StringToHash("WeaponDraw"));
+        Array.Find(audioData, AudioData => AudioData.name == "sheath").Play(AudioSource);
+
+        SetStateDriver(new CrouchIdleMoveState(this, animator));
+
+        yield return new WaitForSeconds(1.5f); //sheath time idk why its varied
+
+        yield return new WaitUntil(() => layerWeightRoutine == null);
+        layerWeightRoutine = LayerWeightDriver(1, 1, 0, .3f);
+        yield return StartCoroutine(layerWeightRoutine);
+
+        crouchSheathCase = null;
+    }
 
     #region big fish
     private void HandleNormalInteractions(){

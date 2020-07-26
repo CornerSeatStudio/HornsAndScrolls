@@ -3,42 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class SheathCrouchState : MoveState {
-    IEnumerator sheathRoutine;
-
-    public SheathCrouchState(CharacterHandler character, Animator animator) : base(character, animator) {}
-
-    public override IEnumerator OnStateEnter() {
-        sheathRoutine = Sheath();
-        yield return character.StartCoroutine(sheathRoutine);
-        character.SetStateDriver(new CrouchIdleMoveState(character, animator));
-
-    }
-
-    private IEnumerator Sheath(){ 
-        animator.SetBool(Animator.StringToHash("WeaponOut"), false); 
-        animator.ResetTrigger(Animator.StringToHash("WeaponDraw"));
-        animator.SetTrigger(Animator.StringToHash("WeaponDraw"));
-        
-        Array.Find(character.audioData, AudioData => AudioData.name == "sheath").Play(character.AudioSource);
-
-        yield return new WaitForSeconds(1.5f); //sheath time idk why its varied
-       // yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(1).length);
-    }
-
-    public override IEnumerator OnStateExit() { //once drawn OR INTERUPTED
-      //  try { (character as PlayerHandler).parentToSheath(); } catch { Debug.LogWarning("ai shoudnt be in this state"); }
-        if(sheathRoutine != null) character.StopCoroutine(sheathRoutine);
-        
-        yield return new WaitUntil(() => character.layerWeightRoutine == null);
-        character.layerWeightRoutine = character.LayerWeightDriver(1, 1, 0, .3f);
-        yield return character.StartCoroutine(character.layerWeightRoutine);
-        yield break;
-    }
-
-}
-
-
 public class IdleMoveState : MoveState {
     public IdleMoveState(CharacterHandler character, Animator animator) : base(character, animator) {}
 
