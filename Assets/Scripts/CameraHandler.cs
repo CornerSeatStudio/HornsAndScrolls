@@ -5,17 +5,17 @@ public class CameraHandler : MonoBehaviour {
     public Transform target; //the player
     [Range(0.01f, 10.0f)] public float cameraSnapSmoothing = 2.5f; //camera snapping to player
     [Range(0.01f, 5.0f)] public float scrollZoomSmoothing = 4f;
-    public float rotationSmoothness = 4f;
+    [Range(0.01f, 2.0f)] public float rotationSmoothness = .2f;
 
-    public float camRotateSpeed;
+    public float camRotateSpeed = 500f;
 
     public float scrollZoomSpeed = 5f;
 
-    public float maxDist;
-    public float minDist;
+    public float maxDist = 80f;
+    public float minDist = 20f;
 
-    public float camDist;
-    public float camAng;
+    public float camDist = 40f;
+    public float camAng = 30f;
 
 
     private Camera cam; 
@@ -26,6 +26,7 @@ public class CameraHandler : MonoBehaviour {
     private float angVel;
 
     private float angle;
+    private float tempAddAng; //for the transition between one angle to the next per x frames
 
 
     void Start(){
@@ -40,6 +41,9 @@ public class CameraHandler : MonoBehaviour {
 
         //camera zoom
         camDist = Mathf.Clamp(Mathf.SmoothDamp(camDist, (scrollInput * scrollZoomSpeed) + camDist, ref distVel, scrollZoomSmoothing * Time.deltaTime), minDist, maxDist);
+    
+        angle = Mathf.SmoothDampAngle(angle, tempAddAng, ref angVel, rotationSmoothness);
+        transform.rotation = Quaternion.Euler(camAng, angle, 0);
     }
 
     private Vector3 DirectionGivenAngle(float angle){
@@ -49,14 +53,12 @@ public class CameraHandler : MonoBehaviour {
     void Update() {
         scrollInput = Input.GetAxisRaw("Mouse ScrollWheel") != 0 ? RawCast(Input.GetAxisRaw("Mouse ScrollWheel")) : 0;
 
-        float tempAddAng = angle;
+        tempAddAng = angle;
         if (Input.GetKey(KeyCode.Q)) tempAddAng -= Time.deltaTime * camRotateSpeed;
         if (Input.GetKey(KeyCode.E)) tempAddAng += Time.deltaTime * camRotateSpeed;
 
         //get offset and camera rotation right
-        angle = Mathf.SmoothDampAngle(angle, tempAddAng, ref angVel, rotationSmoothness);
         offset = DirectionGivenAngle(angle);
-        transform.rotation = Quaternion.Euler(camAng, angle, 0);
 
     }
 

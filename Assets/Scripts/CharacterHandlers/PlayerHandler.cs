@@ -52,6 +52,8 @@ public class PlayerHandler : CharacterHandler {
         //base.Update(); 
         if(genericState != null) debugState.SetText(genericState.ToString());
         inputVector = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
+        inputVector = Camera.main.transform.TransformDirection(inputVector);
+        inputVector.y = 0f;
 
         DetermineInputOutcome();
     }
