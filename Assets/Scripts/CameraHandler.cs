@@ -43,7 +43,7 @@ public class CameraHandler : MonoBehaviour {
     }
 
     private Vector3 DirectionGivenAngle(float angle){
-        return new Vector3(camDist * Mathf.Sin(angle * Mathf.Deg2Rad), camDist, camDist * Mathf.Cos(angle*Mathf.Deg2Rad));
+        return new Vector3(-camDist * Mathf.Sin(angle * Mathf.Deg2Rad), camDist, -camDist * Mathf.Cos(angle*Mathf.Deg2Rad));
     }
 
     void Update() {
@@ -56,7 +56,7 @@ public class CameraHandler : MonoBehaviour {
         //get offset and camera rotation right
         angle = Mathf.SmoothDampAngle(angle, tempAddAng, ref angVel, rotationSmoothness);
         offset = DirectionGivenAngle(angle);
-        transform.rotation = Quaternion.Euler(camAng, angle-180, 0);
+        transform.rotation = Quaternion.Euler(camAng, angle, 0);
 
     }
 
