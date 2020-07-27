@@ -56,8 +56,7 @@ public class AIHandler : CharacterHandler {
 
     private void StartingCondition(){
         if(startAsAggro) {
-            GlobalState = GlobalState.AGGRO; // temp
-            SetStateDriver(new DefaultAIAggroState(this, animator, agent));
+            PivotToAggro();
 
         } else {
             GlobalState = GlobalState.UNAGGRO; // temp
@@ -92,15 +91,27 @@ public class AIHandler : CharacterHandler {
 
 
     }
+
     protected override void TakeDamage(float damage, bool isStaggerable, CharacterHandler attacker) {
         base.TakeDamage(damage, isStaggerable, attacker);
 
+        if(GlobalState != GlobalState.AGGRO) PivotToAggro();
+        
         //Debug.Log("taken damage");
         if(Health <= 0) { //UPON AI DEATH todo should this be in super class
             SetStateDriver(new DeathState(this, animator)); 
         }
 
     }
+
+    private void PivotToAggro() {
+        GlobalState = GlobalState.AGGRO;
+        animator.SetBool(Animator.StringToHash("IsGlobalAggroState"), true); //todo: to be put in separate class    
+        layerWeightRoutine = LayerWeightDriver(1, 0, 1, .3f);
+        StartCoroutine(layerWeightRoutine);
+        SetStateDriver(new DefaultAIAggroState(this, animator, agent));
+    }
+
     #endregion
 
     #region AIFSM
@@ -125,12 +136,8 @@ public class AIHandler : CharacterHandler {
         //cast a sphere, if any AI in that sphere is Aggro, turn into aggro as well
         Collider[] aiInRange = Physics.OverlapSphere(transform.position, AIGlobalStateCheckRange, Detection.obstacleMask);
             foreach(Collider col in aiInRange) {
-            if(col.GetComponent<AIHandler>() && col.GetComponent<AIHandler>().GlobalState == GlobalState.AGGRO){
-                GlobalState = GlobalState.AGGRO;
-                animator.SetBool(Animator.StringToHash("IsGlobalAggroState"), true); //todo: to be put in separate class
-                
-                layerWeightRoutine = LayerWeightDriver(1, 0, 1, .3f);
-                StartCoroutine(layerWeightRoutine);
+            if(col.GetComponent<AIHandler>().GlobalState == GlobalState.AGGRO){
+                PivotToAggro();
                 return BTStatus.FAILURE;
             }
         }
