@@ -16,7 +16,7 @@ public class CameraHandler : MonoBehaviour {
 
     public float camDist = 40f;
     public float camAng = 30f;
-
+    public float screenVertDisplacement = 0f;
 
     private Camera cam; 
     private float scrollInput;
@@ -42,24 +42,26 @@ public class CameraHandler : MonoBehaviour {
         //camera zoom
         camDist = Mathf.Clamp(Mathf.SmoothDamp(camDist, (scrollInput * scrollZoomSpeed) + camDist, ref distVel, scrollZoomSmoothing * Time.deltaTime), minDist, maxDist);
     
+        //angle change based on q/e
         angle = Mathf.SmoothDampAngle(angle, tempAddAng, ref angVel, rotationSmoothness);
         transform.rotation = Quaternion.Euler(camAng, angle, 0);
     }
 
     private Vector3 DirectionGivenAngle(float angle){
-        return new Vector3(-camDist * Mathf.Sin(angle * Mathf.Deg2Rad), camDist, -camDist * Mathf.Cos(angle*Mathf.Deg2Rad));
+        return new Vector3(-camDist * Mathf.Sin(angle * Mathf.Deg2Rad), camDist + screenVertDisplacement, -camDist * Mathf.Cos(angle*Mathf.Deg2Rad));
     }
 
     void Update() {
+        //scroll input for zoom
         scrollInput = Input.GetAxisRaw("Mouse ScrollWheel") != 0 ? RawCast(Input.GetAxisRaw("Mouse ScrollWheel")) : 0;
 
+        //q/e input for angle
         tempAddAng = angle;
         if (Input.GetKey(KeyCode.Q)) tempAddAng -= Time.deltaTime * camRotateSpeed;
         if (Input.GetKey(KeyCode.E)) tempAddAng += Time.deltaTime * camRotateSpeed;
 
         //get offset and camera rotation right
         offset = DirectionGivenAngle(angle);
-
     }
 
     private float RawCast(float currVal){
