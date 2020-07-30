@@ -398,7 +398,7 @@ PrefabInstance:
     - target: {fileID: 7725888319828652601, guid: b374e7b01b2f4b843902214f688e6152,
         type: 3}
       propertyPath: cameraSnapSmoothing
-      value: 8
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 7725888319828652601, guid: b374e7b01b2f4b843902214f688e6152,
         type: 3}
@@ -429,6 +429,41 @@ PrefabInstance:
         type: 3}
       propertyPath: offset.z
       value: -25
+      objectReference: {fileID: 0}
+    - target: {fileID: 7725888319828652601, guid: b374e7b01b2f4b843902214f688e6152,
+        type: 3}
+      propertyPath: rotationSmoothness
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7725888319828652601, guid: b374e7b01b2f4b843902214f688e6152,
+        type: 3}
+      propertyPath: camRotateSpeed
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 7725888319828652601, guid: b374e7b01b2f4b843902214f688e6152,
+        type: 3}
+      propertyPath: scrollZoomSpeed
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7725888319828652601, guid: b374e7b01b2f4b843902214f688e6152,
+        type: 3}
+      propertyPath: maxDist
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 7725888319828652601, guid: b374e7b01b2f4b843902214f688e6152,
+        type: 3}
+      propertyPath: minDist
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7725888319828652601, guid: b374e7b01b2f4b843902214f688e6152,
+        type: 3}
+      propertyPath: camDist
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 7725888319828652601, guid: b374e7b01b2f4b843902214f688e6152,
+        type: 3}
+      propertyPath: camAng
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 7725888319828652603, guid: b374e7b01b2f4b843902214f688e6152,
         type: 3}
@@ -933,7 +968,7 @@ PrefabInstance:
     - target: {fileID: 5358588402222969177, guid: 1a5902bf080eddb4e895c42c3bb59874,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 293.61
+      value: 282.8
       objectReference: {fileID: 0}
     - target: {fileID: 5358588402222969177, guid: 1a5902bf080eddb4e895c42c3bb59874,
         type: 3}
@@ -943,7 +978,7 @@ PrefabInstance:
     - target: {fileID: 5358588402222969177, guid: 1a5902bf080eddb4e895c42c3bb59874,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 466.47
+      value: 514.4
       objectReference: {fileID: 0}
     - target: {fileID: 5358588402222969177, guid: 1a5902bf080eddb4e895c42c3bb59874,
         type: 3}
