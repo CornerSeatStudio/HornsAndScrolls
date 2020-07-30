@@ -67,7 +67,7 @@ public class AIHandler : CharacterHandler {
     #endregion
 
     public void SpotTimerChange(float spotModify){
-        CurrSpotTimerThreshold = spotTimerThreshold / spotModify;
+        CurrSpotTimerThreshold = spotModify;
     }
 
     private void StartingCondition(){

@@ -85,15 +85,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3d4f197872df214a97650e80abe9b10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewAngle: 129
-  viewRadius: 17.7
+  viewAngle: 90
+  viewRadius: 120
   coroutineDelay: 0.2
-  targetMask:
-    serializedVersion: 2
-    m_Bits: 1024
-  obstacleMask:
-    serializedVersion: 2
-    m_Bits: 512
 --- !u!114 &9075442561346592637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -130,13 +124,14 @@ MonoBehaviour:
   patrolWaypoints:
   - {fileID: 0}
   - {fileID: 0}
-  idleTimeAtWaypoint: 5
-  spotTimerThreshold: 10
-  AIGlobalStateCheckRange: 30
+  idleTimeAtWaypoint: 10
+  spotTimerThreshold: 1
+  AIGlobalStateCheckRange: 50
   weaponMesh: {fileID: 8156893297062671393}
   tooFarFromPlayerDistance: 40
   backAwayDistance: 20
   shoveDistance: 5
+  minWaitBetweenAttacks: 5
   AIstate: {fileID: 6410186293928672014}
 --- !u!195 &9075442561346592636
 NavMeshAgent:
@@ -2034,7 +2029,7 @@ PrefabInstance:
     - target: {fileID: 3956861597880234098, guid: a225855313696f94c968887445316989,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4947284937059406057, guid: a225855313696f94c968887445316989,
         type: 3}
