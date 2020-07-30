@@ -114,7 +114,7 @@ public class InvestigationState : AIThinkState {
 
         animator.SetBool("IsStaring", true);
         //todo also make look at its own coroutine
-        yield return new WaitUntil(() => !character.LOSOnPlayer() || CurrInvestigationTimer >= character.spotTimerThreshold); //keep incrementing until LOS is broken || caught
+        yield return new WaitUntil(() => !character.LOSOnPlayer() || CurrInvestigationTimer >= character.CurrSpotTimerThreshold); //keep incrementing until LOS is broken || caught
 
         //if condition break, stop staring animation (todo)
         animator.SetBool("IsStaring", false);
@@ -123,7 +123,7 @@ public class InvestigationState : AIThinkState {
         if(!character.LOSOnPlayer()) {
             character.StopCoroutine(lookCoroutine);
             //lost of sight before halfway
-            if(character.spotTimerThreshold/2 > CurrInvestigationTimer) {
+            if(character.CurrSpotTimerThreshold/2 > CurrInvestigationTimer) {
                 //reverse timer, but switch to ChainedDiscovery
                 isDecreasingDetection = true;
                 investigationCoroutine = InPlaceSearch();
@@ -186,11 +186,11 @@ public class InvestigationState : AIThinkState {
 
     private IEnumerator InvestigationTimer() {
         float wfsIncrement = .1f;
-        while(CurrInvestigationTimer < character.spotTimerThreshold && CurrInvestigationTimer >= 0) {
-            character.stealthBar.fillAmount = CurrInvestigationTimer / character.spotTimerThreshold;
+        while(CurrInvestigationTimer < character.CurrSpotTimerThreshold && CurrInvestigationTimer >= 0) {
+            character.stealthBar.fillAmount = CurrInvestigationTimer / character.CurrSpotTimerThreshold;
             yield return new WaitForSeconds(wfsIncrement); //space between each investigation timer tick - should be the same as think cycle
             CurrInvestigationTimer = isDecreasingDetection? CurrInvestigationTimer -= wfsIncrement : CurrInvestigationTimer += wfsIncrement;
-            if(character.spotTimerThreshold/2 < CurrInvestigationTimer) {//start recording location after halfway point
+            if(character.CurrSpotTimerThreshold/2 < CurrInvestigationTimer) {//start recording location after halfway point
                 lastSeenPlayerLocation = character.targetPlayer.transform.position;
             }
         }
@@ -340,6 +340,7 @@ public class ShoveState : AIThinkState {
 
 }
 
+//approach and shank
 public class OffenseState : AIThinkState {
 
     MeleeMove chosenAttack;
@@ -363,26 +364,25 @@ public class OffenseState : AIThinkState {
     }
 
     private IEnumerator Offense(MeleeMove chosenAttack) {
-
-        yield return new WaitForSeconds(2f); //break between looking at player and 
-
         subRoutine = character.ChasePlayer(chosenAttack.range);
         yield return character.StartCoroutine(subRoutine);
 
         //Debug.Log("AI attempting an attack...");
         character.SetStateDriver(new AttackState(character, animator, chosenAttack));
         
-        //once attack is finished
+        //once attack is finished, cooldown a touch maybe
         float timer = chosenAttack.endlag + chosenAttack.startup;
         while(timer >= 0) {
             if(character.genericState is StaggerState) { 
-                Debug.Log("offense interuppt"); 
+                Debug.Log("offense interupt"); 
                 yield break; 
             }
             
             yield return new WaitForSeconds(.1f);
             timer -= .1f;
         }
+
+
 
     }
 
@@ -391,6 +391,10 @@ public class OffenseState : AIThinkState {
         if(facePlayerRoutine != null) character.StopCoroutine(facePlayerRoutine);
         if(subRoutine != null) character.StopCoroutine(subRoutine);
         if(offenseRoutine != null) character.StopCoroutine(offenseRoutine);
+        //set canOffend to false to force a recalculated value
+        character.CanOffend = false;
+        //start a cooldown between offense
+        character.StartCoroutine(character.OffenseCooldown());
         yield break;
     }
 

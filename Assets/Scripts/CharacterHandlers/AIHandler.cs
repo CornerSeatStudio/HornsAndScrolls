@@ -29,6 +29,7 @@ public class AIHandler : CharacterHandler {
     public float tooFarFromPlayerDistance;
     public float backAwayDistance;
     public float shoveDistance;
+    public float minWaitBetweenAttacks;
 
     [Header("debug")]
     public TextMeshProUGUI AIstate; 
@@ -36,9 +37,11 @@ public class AIHandler : CharacterHandler {
     //private stuff
     protected NavMeshAgent agent;
     protected AIThinkState thinkState; 
+    public float CurrSpotTimerThreshold {get; private set; }
     public Detection Detection {get; private set; }
     public GlobalState GlobalState {get; set; } = GlobalState.UNAGGRO; //spawn/start as aggro (todo unless otherwise stated)
     public Vector3 NextWaypointLocation {get; private set;} 
+    private LayerMask AIMask;
 
     #region callbacks
     protected override void Start() {
@@ -46,13 +49,26 @@ public class AIHandler : CharacterHandler {
         Detection = this.GetComponent<Detection>();
         agent = this.GetComponent<NavMeshAgent>();
       
+        AIMask = LayerMask.GetMask("Enemy");
+        if(AIMask == -1) Debug.LogWarning("AI MASK NOT SET PROPERLY");
+        if(gameObject.layer != LayerMask.NameToLayer("Enemy")) Debug.LogWarning ("layer should be set to Enemy, not " + LayerMask.LayerToName(gameObject.layer));
+
+        //AI should always be in default combat state
         genericState = new DefaultCombatState(this, animator); //todo temp probably
         
+        //event stuff
+        CurrSpotTimerThreshold = spotTimerThreshold;
+        targetPlayer.OnStanceChange += SpotTimerChange;
+
         StartingCondition();
         
         
     }  
     #endregion
+
+    public void SpotTimerChange(float spotModify){
+        CurrSpotTimerThreshold = spotTimerThreshold / spotModify;
+    }
 
     private void StartingCondition(){
         if(startAsAggro) {
@@ -109,7 +125,37 @@ public class AIHandler : CharacterHandler {
         animator.SetBool(Animator.StringToHash("IsGlobalAggroState"), true); //todo: to be put in separate class    
         layerWeightRoutine = LayerWeightDriver(1, 0, 1, .3f);
         StartCoroutine(layerWeightRoutine);
+        StartCoroutine(OffenseProbabillity());
         SetStateDriver(new DefaultAIAggroState(this, animator, agent));
+    }
+
+    //upon combat start, begin actively calculating probabillity
+    public bool CanOffend {get; set; } = false;
+    private bool offenseCooldown = false;
+    private IEnumerator OffenseProbabillity() {
+        //default offense chance
+        while (GlobalState != GlobalState.DEAD) {
+            yield return new WaitForSeconds(3f);
+            if(thinkState is OffenseState || offenseCooldown) continue;
+
+            Collider[] aiInRange = Physics.OverlapSphere(transform.position, AIGlobalStateCheckRange, AIMask);
+            int offenseAI = 0;
+            // how many other AIs are in an offense routine
+            foreach (Collider col in aiInRange) {
+                if(!(col.GetComponent<AIHandler>().thinkState is OffenseState)) ++offenseAI;
+            }
+
+          //  Debug.Log(temp);
+            //if not too many offense AI && not currently offending, do a chance
+            CanOffend = (offenseAI > 3) ? false : Random.Range(0, 1) <  Mathf.Clamp(aiInRange.Length * .1f, .1f, .3f) + ((Stamina / characterdata.maxStamina) * .15f);
+        }
+        yield break;
+    }
+
+    public IEnumerator OffenseCooldown() {
+        offenseCooldown = true;
+        yield return new WaitForSeconds(minWaitBetweenAttacks);
+        offenseCooldown = false;
     }
 
     #endregion
@@ -134,7 +180,8 @@ public class AIHandler : CharacterHandler {
         if(GlobalState != GlobalState.UNAGGRO) return BTStatus.FAILURE; 
 
         //cast a sphere, if any AI in that sphere is Aggro, turn into aggro as well
-        Collider[] aiInRange = Physics.OverlapSphere(transform.position, AIGlobalStateCheckRange, Detection.obstacleMask);
+        //require targetMask
+        Collider[] aiInRange = Physics.OverlapSphere(transform.position, AIGlobalStateCheckRange, AIMask);
             foreach(Collider col in aiInRange) {
             if(col.GetComponent<AIHandler>().GlobalState == GlobalState.AGGRO){
                 PivotToAggro();
@@ -160,11 +207,11 @@ public class AIHandler : CharacterHandler {
     
     #region combatstuff
     //deals with AI BT if combat is still a viable option
-    public bool VerifyCombatIncapable() { 
+    public bool VerifyCombatCapable() { 
         //if not combat capable (either dead or pu55y), fail
         //otherwise, run OVERRIDE method from child class
      //   Debug.Log("combat condi");
-        return GlobalState == GlobalState.DEAD;
+        return GlobalState != GlobalState.DEAD;
 
     }
 
@@ -176,8 +223,8 @@ public class AIHandler : CharacterHandler {
 
         return targetPlayer.genericState is AttackState //player is attacking
         && targetPlayer.FindTarget((targetPlayer.genericState as AttackState).chosenMove) == this //player is attacking me in particular
-        && !(genericState is AttackState)
-        && Stamina > 0; //im not already mid attack      
+        && !(genericState is AttackState) //im not already mid attack  
+        && Stamina > 0;     
     }
 
     public bool CloseDistanceConditional() { //returns if player is too far
@@ -186,9 +233,8 @@ public class AIHandler : CharacterHandler {
         return (targetPlayer.transform.position - transform.position).sqrMagnitude > tooFarFromPlayerDistance * tooFarFromPlayerDistance;
     }
 
-    public bool OffenseConditional() {
-        //when ready to attack,
-        return false;
+    public bool OffenseConditional() { //canOffend initiates it, thinkState check ensures it goes through
+        return CanOffend || thinkState is OffenseState;
     }
 
     public bool BackAwayConditional() { //if too close AND CAN back away
@@ -227,15 +273,25 @@ public class AIHandler : CharacterHandler {
     }
 
     public BTStatus OffenseTask() {// Debug.Log("offense task");
-    // if(!(thinkState is OffenseState)) { 
-    //     SetStateDriver(new OffenseState(this, animator, agent)); //todo attack move selection
-    // }
+
+        //begin an attack if neccesary
+        if(!(thinkState is OffenseState)) { 
+            SetStateDriver(new OffenseState(this, animator, agent)); //todo attack move selection
+        }
+
         return BTStatus.RUNNING;
     }
 
     public BTStatus BackAwayTask() {// Debug.Log("back away");
+  
+        //implication: cannot be in offense state if this area is reached
         if(!(thinkState is BackAwayState)) {
-            SetStateDriver(new BackAwayState(this, animator, agent));
+            //if im NOT in an offense cooldown AND I can offend (via probabillity check)
+            if(!offenseCooldown && CanOffend) {
+                SetStateDriver(new OffenseState(this, animator, agent));
+            } else {
+                SetStateDriver(new BackAwayState(this, animator, agent));
+            }
         }
         return BTStatus.RUNNING;
     }
@@ -282,7 +338,7 @@ public class AIHandler : CharacterHandler {
             yield return new WaitForSeconds(.1f);
         }
 
-        Debug.Log(hit.position);
+      //  Debug.Log(hit.position);
     }
 
     public IEnumerator FacePlayer() {

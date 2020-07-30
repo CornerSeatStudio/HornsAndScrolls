@@ -11,6 +11,8 @@ public class UnsheathingCombatState : CombatState {
     public UnsheathingCombatState(CharacterHandler character, Animator animator) : base(character, animator) {}
 
     public override IEnumerator OnStateEnter() {
+        (character as PlayerHandler).ChangeStanceTimer(1f);
+
       //  try { (character as PlayerHandler).parentToHand(); } catch { Debug.LogWarning("ai shoudnt be in this state"); }
 
         sheathRoutine = Sheath();
@@ -47,7 +49,7 @@ public class SheathingCombatState : CombatState {
     public SheathingCombatState(CharacterHandler character, Animator animator) : base(character, animator) {}
 
     public override IEnumerator OnStateEnter() {
- 
+        (character as PlayerHandler).ChangeStanceTimer(1f);
         sheathRoutine = Sheath();
         yield return character.StartCoroutine(sheathRoutine);
         character.SetStateDriver(new IdleMoveState(character, animator));
@@ -128,7 +130,7 @@ public class AttackState : CombatState {
         //Debug.Log(chosenMove.angle + " " + chosenMove.range);
         //if no targets in range
         if (chosenTarget == null) {
-            Array.Find(character.audioData, AudioData => AudioData.name == "woosh").Play(character.AudioSource);
+            try { Array.Find(character.audioData, AudioData => AudioData.name == "woosh").Play(character.AudioSource); } catch {} //temp todo
             yield return new WaitForSeconds(chosenMove.startup + chosenMove.endlag); //swing anyways
             character.SetStateDriver(new DefaultCombatState(character, animator));
             yield break;

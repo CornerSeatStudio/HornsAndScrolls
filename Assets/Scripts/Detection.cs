@@ -1,18 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+ 
 public class Detection : MonoBehaviour
 {
     [Range(0, 360)] public float viewAngle = 30;
     public float viewRadius = 10;
     public float coroutineDelay = .2f;
 
-    //LayerMasks allow for raycasts to choose what to and not to register
-    public LayerMask targetMask;
-    public LayerMask obstacleMask;
+    private float currViewAngle;
+    private float currViewRadius;
 
-    
+    //LayerMasks allow for raycasts to choose what to and not to register
+    private LayerMask targetMask;
+    private LayerMask obstacleMask;
+
     public List<Transform> VisibleTargets {get; } = new List<Transform>();
 
     public bool IsAlive {get; set; }= true;
@@ -20,13 +22,18 @@ public class Detection : MonoBehaviour
     //public MeshFilter viewMeshFilter; 
     //Mesh viewMesh; 
 
-    //ON DEATH -> STOP COROUTINE
- 
     void Awake() {
         //viewMesh = new Mesh(); //has to be called before start
     }
  
-    void Start() {
+    void Start() { 
+        currViewAngle = viewAngle;
+        currViewRadius = viewRadius;
+        //ESSENSIAL
+        targetMask = LayerMask.GetMask("Player");
+        obstacleMask = LayerMask.GetMask("Obstacle");
+
+        if(targetMask == -1 || obstacleMask == -1) Debug.LogWarning("LAYERMASKS NOT SET PROPERLY ON AI");
         //viewMesh.name = "View Visualization";
         StartCoroutine("FindTargetsWithDelay", coroutineDelay);
         //viewMeshFilter.mesh = viewMesh;

@@ -38,8 +38,13 @@ public class ObjectiveItem : Objective
 
     public void OnPickup() {
         Debug.Log("picked up");
+
+        //remove from listener
+        player.OnInteract -= OnPickup;
+
         //remove it from the scene and parent it to the player (temporary for horn)
         GetComponent<Collider>().enabled = false;
+    
 
         if(itemAttachTransform != null) {
             gameObject.transform.parent = itemAttachTransform;

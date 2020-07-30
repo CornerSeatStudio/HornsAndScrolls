@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerHandler : CharacterHandler {
 
@@ -31,6 +32,7 @@ public class PlayerHandler : CharacterHandler {
     public delegate void PickupHandler();
     public event PickupHandler OnInteract;
 
+    public event Action<float> OnStanceChange; 
 
     #region callbacks
     protected override void Start(){
@@ -43,6 +45,7 @@ public class PlayerHandler : CharacterHandler {
 
         CurrMovementSpeed = jogSpeed;
 
+        if(gameObject.layer != LayerMask.NameToLayer("Player")) Debug.LogWarning ("layer should be set to Player, not " + LayerMask.LayerToName(gameObject.layer));
 
         
     }
@@ -83,14 +86,14 @@ public class PlayerHandler : CharacterHandler {
         // }
     }
 
-    
-
     private bool OnSlope(){
         RaycastHit hit;
         return Physics.Raycast(transform.position, Vector3.down, out hit, controller.height/2 * slopeForceRayLength) && hit.normal != Vector3.up;
     }
 
-
+    public void ChangeStanceTimer(float stanceModifier){
+        OnStanceChange?.Invoke(stanceModifier);
+    }
     
 /*
 

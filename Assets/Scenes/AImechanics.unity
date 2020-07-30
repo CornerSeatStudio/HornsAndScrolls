@@ -702,7 +702,7 @@ PrefabInstance:
     - target: {fileID: 5358588402772341713, guid: 1a5902bf080eddb4e895c42c3bb59874,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5358588402772341718, guid: 1a5902bf080eddb4e895c42c3bb59874,
         type: 3}
@@ -2161,13 +2161,13 @@ PrefabInstance:
     - target: {fileID: 2345683588448102739, guid: be058e469e10e854e87801b004f8319b,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5966243744191711688, guid: be058e469e10e854e87801b004f8319b,
         type: 3}
       propertyPath: m_Camera
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 7725888320320936624}
     - target: {fileID: 9075442561346592633, guid: be058e469e10e854e87801b004f8319b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2228,6 +2228,16 @@ PrefabInstance:
       propertyPath: viewRadius
       value: 28.24
       objectReference: {fileID: 0}
+    - target: {fileID: 9075442561346592634, guid: be058e469e10e854e87801b004f8319b,
+        type: 3}
+      propertyPath: targetMask.m_Bits
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9075442561346592634, guid: be058e469e10e854e87801b004f8319b,
+        type: 3}
+      propertyPath: obstacleMask.m_Bits
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9075442561346592637, guid: be058e469e10e854e87801b004f8319b,
         type: 3}
       propertyPath: targetPlayer
@@ -2253,6 +2263,16 @@ PrefabInstance:
       propertyPath: stealthBar
       value: 
       objectReference: {fileID: 996194904}
+    - target: {fileID: 9075442561346592637, guid: be058e469e10e854e87801b004f8319b,
+        type: 3}
+      propertyPath: AIMask.m_Bits
+      value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: 9075442561346592637, guid: be058e469e10e854e87801b004f8319b,
+        type: 3}
+      propertyPath: minWaitBetweenAttacks
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 9075442561346592639, guid: be058e469e10e854e87801b004f8319b,
         type: 3}
       propertyPath: m_Name
@@ -2261,7 +2281,7 @@ PrefabInstance:
     - target: {fileID: 9075442561346592639, guid: be058e469e10e854e87801b004f8319b,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: be058e469e10e854e87801b004f8319b, type: 3}
