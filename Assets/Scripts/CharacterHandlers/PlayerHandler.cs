@@ -193,7 +193,7 @@ public class PlayerHandler : CharacterHandler {
 
     #region big fish
     private void HandleNormalInteractions(){
-        if(Input.GetKeyDown(KeyCode.E)) {
+        if(Input.GetKeyDown(KeyCode.F)) {
             OnInteract?.Invoke();
         }
     }
@@ -201,7 +201,7 @@ public class PlayerHandler : CharacterHandler {
     private void HandleNormalMovement() {
         if(genericState is JogMoveState) { //if i am jogging
             if(inputVector.x == 0 && inputVector.z == 0) SetStateDriver(new IdleMoveState(this, animator)); //and stop, stop
-            else if(Input.GetKeyDown(KeyCode.LeftShift)) SetStateDriver(new SprintMoveState(this, animator)); //and shift, sprint
+            else if(Input.GetKeyDown(KeyCode.LeftShift) && Stamina > 0) SetStateDriver(new SprintMoveState(this, animator)); //and shift, sprint
             else if(Input.GetKeyDown(KeyCode.CapsLock)) {SetStateDriver(new WalkMoveState(this, animator)); ToggledWalk = true;} //and toggle caps, walk
             else if(Input.GetKeyDown(KeyCode.C)) SetStateDriver(new CrouchWalkMoveState(this, animator)); //and toggle C, crouch walk
         } else if (genericState is SprintMoveState) { //if i am sprinting

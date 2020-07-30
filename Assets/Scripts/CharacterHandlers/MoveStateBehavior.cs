@@ -40,16 +40,29 @@ public class JogMoveState : MoveState {
 }
 
 public class SprintMoveState : MoveState {
+    IEnumerator StaminaDrain;
+
     public SprintMoveState(CharacterHandler character, Animator animator) : base(character, animator) {}
     
     public override IEnumerator OnStateEnter() {
         (character as PlayerHandler).ChangeStanceTimer(.5f);
         animator.SetBool(Animator.StringToHash("Sprinting"), true);
         (character as PlayerHandler).CurrMovementSpeed = (character as PlayerHandler).sprintSpeed;
-        yield break;    
+        StaminaDrain = DrainStaminaOverTime();
+        character.StartCoroutine(StaminaDrain);
+        yield return new WaitUntil(()=>character.Stamina <= 0);
+        character.SetStateDriver(new JogMoveState(character, animator));
+    }
+
+    private IEnumerator DrainStaminaOverTime() {
+        while (character.Stamina > 0) {
+            character.DealStamina(.4f);
+            yield return new WaitForSeconds(.1f);
+        }
     }
 
     public override IEnumerator OnStateExit() {
+        if(StaminaDrain != null) character.StopCoroutine(StaminaDrain);
         animator.SetBool(Animator.StringToHash("Sprinting"), false);
         yield break;    
     }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 
 public abstract class Objective : MonoBehaviour
@@ -36,17 +37,21 @@ public abstract class Objective : MonoBehaviour
     }
 
     public virtual IEnumerator OnObjectiveStart() {
-        Debug.Log("default objective start");
+        //Debug.Log("default objective start");
+        Array.Find(objectiveHandler.audioData, AudioData => AudioData.name == "win").Play(objectiveHandler.AudioSource);
+
         yield break;
     }
 
     public virtual IEnumerator OnObjectiveCompletion() {
-        Debug.Log("default objective completion");
+        //Debug.Log("default objective completion");
+        Array.Find(objectiveHandler.audioData, AudioData => AudioData.name == "win").Play(objectiveHandler.AudioSource);
+
         yield break;
     }
 
     public virtual IEnumerator OnObjectiveFailure() {
-        Debug.Log("default objective failure");
+        //Debug.Log("default objective failure");
         yield break;
     }
 
