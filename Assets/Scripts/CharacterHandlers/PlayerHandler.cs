@@ -165,6 +165,14 @@ public class PlayerHandler : CharacterHandler {
 
     #endregion
 
+    protected override void TakeDamage(float damage, bool isStaggerable, CharacterHandler attacker){
+        base.TakeDamage(damage, isStaggerable, attacker);
+
+        if(Health <= 0) { //UPON AI DEATH todo should this be in super class
+            this.gameObject.SetActive(false);
+        }
+    }
+
     IEnumerator crouchSheathCase;
     private IEnumerator CrouchToSheathe(){
         animator.SetBool(Animator.StringToHash("WeaponOut"), false); 
