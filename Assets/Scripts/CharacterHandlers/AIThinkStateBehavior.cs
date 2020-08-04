@@ -364,7 +364,7 @@ public class OffenseState : AIThinkState {
     }
 
     private IEnumerator Offense(MeleeMove chosenAttack) {
-        subRoutine = character.ChasePlayer(chosenAttack.range);
+        subRoutine = character.ChasePlayer(chosenAttack.range - 3f);
         yield return character.StartCoroutine(subRoutine);
 
         //Debug.Log("AI attempting an attack...");
@@ -382,19 +382,74 @@ public class OffenseState : AIThinkState {
             timer -= .1f;
         }
 
-
-
     }
-
 
     public override IEnumerator OnStateExit() {
         if(facePlayerRoutine != null) character.StopCoroutine(facePlayerRoutine);
         if(subRoutine != null) character.StopCoroutine(subRoutine);
         if(offenseRoutine != null) character.StopCoroutine(offenseRoutine);
-        //set canOffend to false to force a recalculated value
-        character.CanOffend = false;
-        //start a cooldown between offense
-        character.StartCoroutine(character.OffenseCooldown());
+        agent.SetDestination(character.transform.position);
+        yield break;
+    }
+
+}
+
+public class SpacingState : AIThinkState {
+    IEnumerator facePlayerRoutine;
+    IEnumerator spacingRoutine;
+
+    public SpacingState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
+
+    public override IEnumerator OnStateEnter() {
+        facePlayerRoutine = character.FacePlayer();
+        character.StartCoroutine(facePlayerRoutine);
+        spacingRoutine = SpaceFromAI();
+        yield return character.StartCoroutine(spacingRoutine);
+        character.SetStateDriver(new DefaultAIAggroState(character, animator, agent));
+    }
+
+    private IEnumerator SpaceFromAI(){
+        NavMeshHit hit;
+        Vector3 movePoint = FindMostViablePosition();
+        if(NavMesh.SamplePosition(movePoint, out hit, character.backAwayDistance + 5f, NavMesh.AllAreas)
+            || NavMesh.FindClosestEdge(movePoint, out hit, NavMesh.AllAreas)) {
+            agent.SetDestination(hit.position);
+        }
+
+        yield return new WaitWhile(() => agent.stoppingDistance < agent.remainingDistance || agent.pathPending);
+
+        character.SetStateDriver(new DefaultAIAggroState(character, animator, agent));
+    }
+
+    private Vector3 FindMostViablePosition() {
+        //cast a circle around the player AND spacing ai of radiusbackAwayDistance
+        float circDistance = Vector3.Distance(character.transform.position, character.targetPlayer.transform.position);
+        float selfToMid = (circDistance * circDistance) / (2 * circDistance);
+        float midToEdge = (5 + character.backAwayDistance) * (5 + character.backAwayDistance) - (selfToMid * selfToMid);
+
+        //find all RADIUS intersections between those circles
+        Vector3 intersectionPoint = character.transform.position + selfToMid * (character.targetPlayer.transform.position - character.transform.position) / circDistance;
+        Vector3 pointCheck1 = new Vector3(intersectionPoint.x + midToEdge * (character.targetPlayer.transform.position.z - character.transform.position.z) / circDistance, character.currProximateAIPosition.y, intersectionPoint.z - midToEdge * (character.targetPlayer.transform.position.x - character.transform.position.x) / circDistance);
+        Vector3 pointCheck2 = new Vector3(intersectionPoint.x - midToEdge * (character.targetPlayer.transform.position.z - character.transform.position.z) / circDistance, character.currProximateAIPosition.y, intersectionPoint.z + midToEdge * (character.targetPlayer.transform.position.x - character.transform.position.x) / circDistance);
+
+        //pick the intersection FURTHEST from the AI being spaced from
+        return (pointCheck1 - character.currProximateAIPosition).sqrMagnitude > (pointCheck2 - character.currProximateAIPosition).sqrMagnitude ? pointCheck1 : pointCheck2;
+        //store this point as closestPoint;
+
+        //cast another circle around the player  AND spacing of chase distance (within ucnertainty)
+        //find all RADIUS intersections between those circles
+        //pick the intersection FURTHEST from the AI being spaced from
+        //store this point as furthestPoint;
+
+        //create a line between closestPoint and furthestPoint, 
+        //then return a random point on it
+
+    }    
+
+    public override IEnumerator OnStateExit() {
+        agent.SetDestination(character.transform.position);
+        if(facePlayerRoutine != null) character.StopCoroutine(facePlayerRoutine);
+        if(spacingRoutine != null) character.StopCoroutine(spacingRoutine);
         yield break;
     }
 

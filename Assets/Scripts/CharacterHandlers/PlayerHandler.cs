@@ -267,7 +267,7 @@ public class PlayerHandler : CharacterHandler {
      
         } else if (genericState is BlockState) { //gets to here after "counter timer" runs up, aka has to wait for a bit to release block
             //if still blocking
-            if(Input.GetButtonUp("Fire2") || Stamina < 0) {
+            if(!Input.GetButton("Fire2") || Stamina < 0) {
                 SetStateDriver(new DefaultCombatState(this, animator));
             } 
         }

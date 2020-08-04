@@ -16,7 +16,8 @@ public class CameraHandler : MonoBehaviour {
 
     public float camDist = 40f;
     public float camAng = 30f;
-    public float screenVertDisplacement = 0f;
+
+    public float camDisp = -10f;
 
     private Camera cam; 
     private float scrollInput;
@@ -37,7 +38,7 @@ public class CameraHandler : MonoBehaviour {
     //more here: https://www.youtube.com/watch?v=MfIsp28TYAQ
     void FixedUpdate() { 
         //move camera relative to player
-        transform.position = Vector3.SmoothDamp(transform.position, target.position + offset, ref moveVel, cameraSnapSmoothing * Time.fixedDeltaTime);
+        transform.position = Vector3.SmoothDamp(transform.position, target.position + OffsetAngleCalc(camDisp) + offset, ref moveVel, cameraSnapSmoothing * Time.fixedDeltaTime);
 
         //camera zoom
         camDist = Mathf.Clamp(Mathf.SmoothDamp(camDist, (scrollInput * scrollZoomSpeed) + camDist, ref distVel, scrollZoomSmoothing * Time.deltaTime), minDist, maxDist);
@@ -48,7 +49,11 @@ public class CameraHandler : MonoBehaviour {
     }
 
     private Vector3 DirectionGivenAngle(float angle){
-        return new Vector3(-camDist * Mathf.Sin(angle * Mathf.Deg2Rad), camDist + screenVertDisplacement, -camDist * Mathf.Cos(angle*Mathf.Deg2Rad));
+        return new Vector3(-camDist * Mathf.Sin(angle * Mathf.Deg2Rad), camDist, -camDist * Mathf.Cos(angle*Mathf.Deg2Rad));
+    }
+
+    private Vector3 OffsetAngleCalc(float offset){
+        return new Vector3(offset * Mathf.Sin(angle * Mathf.Deg2Rad), 0, offset * Mathf.Cos(angle*Mathf.Deg2Rad));
     }
 
     void Update() {

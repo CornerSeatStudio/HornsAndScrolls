@@ -36,9 +36,11 @@ public class AIEditor : Editor
     private void PatrolRoutes(AIHandler ai) {
         Handles.color = Color.white;
         List<Vector3> waypoints = new List<Vector3>();
-        foreach(PatrolWaypoint p in ai.patrolWaypoints){
-            waypoints.Add(p.transform.position);
+        if(waypoints.Count != 0){
+            foreach(PatrolWaypoint p in ai.patrolWaypoints){
+                waypoints.Add(p.transform.position);
+            }
+            Handles.DrawAAPolyLine(waypoints.ToArray());
         }
-        Handles.DrawAAPolyLine(waypoints.ToArray());
     }
 }

@@ -38,7 +38,7 @@ public abstract class Objective : MonoBehaviour
 
     public virtual IEnumerator OnObjectiveStart() {
         //Debug.Log("default objective start");
-        Array.Find(objectiveHandler.audioData, AudioData => AudioData.name == "win").Play(objectiveHandler.AudioSource);
+        try{Array.Find(objectiveHandler.audioData, AudioData => AudioData.name == "win").Play(objectiveHandler.AudioSource);}catch{}
 
         yield break;
     }
