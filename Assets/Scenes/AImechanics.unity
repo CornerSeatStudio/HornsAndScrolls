@@ -322,7 +322,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 452fc389f993e6a40a58a09c2476904e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -443,7 +443,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 670224309865224971, guid: 6f1bc18865a56cb4fa5446cf237d368d, type: 3}
+  - {fileID: 2100000, guid: 452fc389f993e6a40a58a09c2476904e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -689,6 +689,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: NEW BRAIN IS (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9075442561346592639, guid: be058e469e10e854e87801b004f8319b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: be058e469e10e854e87801b004f8319b, type: 3}
@@ -941,6 +946,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: NEW BRAIN IS (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 9075442561346592639, guid: be058e469e10e854e87801b004f8319b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: be058e469e10e854e87801b004f8319b, type: 3}
 --- !u!4 &834453509 stripped
@@ -1016,7 +1026,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 452fc389f993e6a40a58a09c2476904e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1095,7 +1105,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bbfe571778156ca4b844f2cd9d07538c, type: 2}
+  - {fileID: 2100000, guid: 452fc389f993e6a40a58a09c2476904e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1116,6 +1126,25 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!1 &1008805303 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 385426018765691611, guid: 852504cbb1a4dd24b87074a2f2d560f2,
+    type: 3}
+  m_PrefabInstance: {fileID: 7957456550172901520}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1008805304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1008805303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac8bf194bbff9d841b383ed0082088ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: 452fc389f993e6a40a58a09c2476904e, type: 2}
 --- !u!4 &1109844330 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2001937453541543216, guid: e03bb5b69c35d6b43ab8d7fe0b06ea09,
@@ -1198,6 +1227,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: NEW BRAIN IS
+      objectReference: {fileID: 0}
+    - target: {fileID: 9075442561346592639, guid: be058e469e10e854e87801b004f8319b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: be058e469e10e854e87801b004f8319b, type: 3}
@@ -1652,7 +1686,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 452fc389f993e6a40a58a09c2476904e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1779,7 +1813,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 452fc389f993e6a40a58a09c2476904e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1943,7 +1977,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 452fc389f993e6a40a58a09c2476904e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2501,17 +2535,17 @@ PrefabInstance:
     - target: {fileID: 385426018765691425, guid: 852504cbb1a4dd24b87074a2f2d560f2,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 16.439436
+      value: -52
       objectReference: {fileID: 0}
     - target: {fileID: 385426018765691425, guid: 852504cbb1a4dd24b87074a2f2d560f2,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 31.86
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 385426018765691425, guid: 852504cbb1a4dd24b87074a2f2d560f2,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -23.909418
+      value: -94.2
       objectReference: {fileID: 0}
     - target: {fileID: 385426018765691425, guid: 852504cbb1a4dd24b87074a2f2d560f2,
         type: 3}
@@ -2715,7 +2749,7 @@ PrefabInstance:
     - target: {fileID: 9075442561346592639, guid: be058e469e10e854e87801b004f8319b,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: be058e469e10e854e87801b004f8319b, type: 3}
