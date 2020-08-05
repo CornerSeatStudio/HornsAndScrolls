@@ -267,7 +267,7 @@ public class PlayerHandler : CharacterHandler {
      
         } else if (genericState is BlockState) { //gets to here after "counter timer" runs up, aka has to wait for a bit to release block
             //if still blocking
-            if(Input.GetButtonUp("Fire2") || Stamina < 0) {
+            if(!Input.GetButton("Fire2") || Stamina < 0) {
                 SetStateDriver(new DefaultCombatState(this, animator));
             } 
         }
@@ -315,8 +315,8 @@ public class PlayerHandler : CharacterHandler {
     public void ParentToSheath() {
         
         weaponMesh.transform.parent = sheatheTransform;
-        weaponMesh.transform.localPosition = new Vector3(0.001f, 0.012f,0.0154f);
-        weaponMesh.transform.localEulerAngles = new Vector3(315f, 5.2f, 12.6f);
+        weaponMesh.transform.localPosition = new Vector3(0.001f, 0.02f,0.01f);
+        weaponMesh.transform.localEulerAngles = new Vector3(295f, 5.2f, 12.6f);
     }
 
     public void ParentToHand() {

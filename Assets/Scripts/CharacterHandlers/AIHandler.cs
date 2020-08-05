@@ -125,37 +125,37 @@ public class AIHandler : CharacterHandler {
         animator.SetBool(Animator.StringToHash("IsGlobalAggroState"), true); //todo: to be put in separate class    
         layerWeightRoutine = LayerWeightDriver(1, 0, 1, .3f);
         StartCoroutine(layerWeightRoutine);
-        StartCoroutine(OffenseProbabillity());
+        StartCoroutine(OffenseScheduler());
         SetStateDriver(new DefaultAIAggroState(this, animator, agent));
     }
 
     //upon combat start, begin actively calculating probabillity
     public bool CanOffend {get; set; } = false;
-    private bool offenseCooldown = false;
-    private IEnumerator OffenseProbabillity() {
+    //private bool offenseCooldown = false;
+    private IEnumerator OffenseScheduler() {
         //default offense chance
         while (GlobalState != GlobalState.DEAD) {
-            yield return new WaitForSeconds(3f);
-            if(thinkState is OffenseState || offenseCooldown) continue;
+            CanOffend = false;
+            //cooldown between each attack
+            yield return new WaitForSeconds(Random.Range(minWaitBetweenAttacks-1f, minWaitBetweenAttacks+1f));
 
-            Collider[] aiInRange = Physics.OverlapSphere(transform.position, AIGlobalStateCheckRange, AIMask);
             int offenseAI = 0;
-            // how many other AIs are in an offense routine
-            foreach (Collider col in aiInRange) {
-                if(!(col.GetComponent<AIHandler>().thinkState is OffenseState)) ++offenseAI;
+            Collider[] aiInRange = Physics.OverlapSphere(transform.position, AIGlobalStateCheckRange, AIMask);
+            foreach (Collider col in aiInRange) if(col.GetComponent<AIHandler>().thinkState is OffenseState) ++offenseAI;
+            
+            while (offenseAI > 3) {
+                aiInRange = Physics.OverlapSphere(transform.position, AIGlobalStateCheckRange, AIMask);
+                foreach (Collider col in aiInRange) if(!(col.GetComponent<AIHandler>().thinkState is OffenseState)) ++offenseAI;
+                yield return new WaitForSeconds(1f); //wait between each check until an attack is available
             }
+           //as of this point the ai is allowed to attack
+           CanOffend = true;
+           //wait until the offense begins, and then once it does, wait till it finishes
+           yield return new WaitUntil(() => thinkState is OffenseState);
+           yield return new WaitWhile(() => thinkState is OffenseState);
 
-          //  Debug.Log(temp);
-            //if not too many offense AI && not currently offending, do a chance
-            CanOffend = (offenseAI > 3) ? false : Random.Range(0, 1) <  Mathf.Clamp(aiInRange.Length * .1f, .1f, .3f) + ((Stamina / characterdata.maxStamina) * .15f);
         }
         yield break;
-    }
-
-    public IEnumerator OffenseCooldown() {
-        offenseCooldown = true;
-        yield return new WaitForSeconds(minWaitBetweenAttacks);
-        offenseCooldown = false;
     }
 
     #endregion
@@ -233,6 +233,29 @@ public class AIHandler : CharacterHandler {
         return (targetPlayer.transform.position - transform.position).sqrMagnitude > tooFarFromPlayerDistance * tooFarFromPlayerDistance;
     }
 
+    public Vector3 currProximateAIPosition {get; private set;}
+    public bool SpacingConditional() {
+        //if i am currently spacing
+        if(thinkState is SpacingState) return true;
+
+        //first check if i am too close to another AI, 
+         Collider[] aiInRange = Physics.OverlapSphere(transform.position, AIGlobalStateCheckRange, AIMask);
+            foreach(Collider col in aiInRange) {
+                if(col.GetComponent<AIHandler>() != this 
+                    && (col.transform.position - transform.position).sqrMagnitude < backAwayDistance * backAwayDistance 
+                    && (col.transform.position - targetPlayer.transform.position).sqrMagnitude > (transform.position - targetPlayer.transform.position).sqrMagnitude) {// and of the two, i am closer to the player, proceed with a spacing method
+                    
+                    currProximateAIPosition = col.transform.position;
+                    return true;
+                }
+                
+            }
+
+        currProximateAIPosition = transform.position; //temp reset
+        return false;
+        
+    }
+
     public bool OffenseConditional() { //canOffend initiates it, thinkState check ensures it goes through
         return CanOffend || thinkState is OffenseState;
     }
@@ -287,7 +310,7 @@ public class AIHandler : CharacterHandler {
         //implication: cannot be in offense state if this area is reached
         if(!(thinkState is BackAwayState)) {
             //if im NOT in an offense cooldown AND I can offend (via probabillity check)
-            if(!offenseCooldown && CanOffend) {
+            if(CanOffend) {
                 SetStateDriver(new OffenseState(this, animator, agent));
             } else {
                 SetStateDriver(new BackAwayState(this, animator, agent));
@@ -303,7 +326,10 @@ public class AIHandler : CharacterHandler {
         return BTStatus.RUNNING;
     }
 
-    public BTStatus ShuffleTask() {
+    public BTStatus SpacingTask() {
+        if(!(thinkState is SpacingState)) { 
+            SetStateDriver(new SpacingState(this, animator, agent));
+        }
         return BTStatus.RUNNING;
     }
 

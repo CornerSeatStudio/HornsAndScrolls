@@ -45,10 +45,10 @@ public class ThinkCycle : MonoBehaviour
                                 .EmplaceConditional("range check" , t => ai.CloseDistanceConditional())
                                 .EmplaceTask("close distance", t => ai.ChasingTask())
                                 .PopDepth()
-                            .EmplaceSequencer("offense selector")
-                                .EmplaceConditional("offense conditional", t => ai.OffenseConditional())
-                                .EmplaceTask("offense task", t => ai.OffenseTask())
-                                .PopDepth()
+                            // .EmplaceSequencer("offense selector")
+                            //     .EmplaceConditional("offense conditional", t => ai.OffenseConditional())
+                            //     .EmplaceTask("offense task", t => ai.OffenseTask())
+                            //     .PopDepth()
                             .EmplaceSequencer("Instant shove")
                                 .EmplaceConditional("insta shove check", t => ai.InstantShoveConditional())
                                 .EmplaceTask("insta shove",t => ai.ShovingTask())
@@ -57,7 +57,11 @@ public class ThinkCycle : MonoBehaviour
                                 .EmplaceConditional("back away conditional", t => ai.BackAwayConditional())
                                 .EmplaceTask("back away", t => ai.BackAwayTask())
                                 .PopDepth()
-                            .EmplaceTask("Shuffle about", t => ai.ShuffleTask())
+                            .EmplaceSequencer("spacing selector")
+                                .EmplaceConditional("spacing conditional", t => ai.SpacingConditional())
+                                .EmplaceTask("spacing task", t => ai.SpacingTask())
+                                .PopDepth()
+                            .EmplaceTask("idle about", t => alwaysRunning())
                             .PopDepth()
                         .PopDepth()
                     .EmplaceTask("kill brain", t => KillBrain())
@@ -65,6 +69,10 @@ public class ThinkCycle : MonoBehaviour
                 .Build();
 
     } 
+
+    BTStatus alwaysRunning() {
+        return BTStatus.RUNNING;
+    }
 
     BTStatus alwaysFalse() {
         return BTStatus.FAILURE;
