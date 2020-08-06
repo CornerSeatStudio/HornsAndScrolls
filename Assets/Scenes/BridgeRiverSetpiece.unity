@@ -120,7 +120,7 @@ NavMeshSettings:
     accuratePlacement: 0
     debug:
       m_Flags: 0
-  m_NavMeshData: {fileID: 0}
+  m_NavMeshData: {fileID: 23800000, guid: 15101faf020374941a4c9bcb969d0c72, type: 2}
 --- !u!1 &7781419 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: b56a7c941dd00524ba65f929bb8d0a1d,
@@ -819,6 +819,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: stacked boxes (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: d9bfe79e54e024246a9e415b062b7284,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: d9bfe79e54e024246a9e415b062b7284,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d9bfe79e54e024246a9e415b062b7284, type: 3}
 --- !u!4 &52172881 stripped
@@ -908,6 +918,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_fence (18)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ee64c9211949da4db1f671ba59ddedb, type: 3}
@@ -1419,6 +1439,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_shack_2 (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 22c41a503e42bde4fba58e7ec3dc904b,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 22c41a503e42bde4fba58e7ec3dc904b,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 22c41a503e42bde4fba58e7ec3dc904b, type: 3}
 --- !u!4 &113394611 stripped
@@ -1513,6 +1543,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: barrel (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: e192bece9dcdf2842ad0df8e6446c433,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3316992658331686828, guid: e192bece9dcdf2842ad0df8e6446c433,
         type: 3}
@@ -2337,6 +2372,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_fence (19)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ee64c9211949da4db1f671ba59ddedb, type: 3}
 --- !u!4 &165423141 stripped
@@ -2517,6 +2562,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_house_5
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4fba2c36b2a58dd42afa2082b53c614d,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4fba2c36b2a58dd42afa2082b53c614d,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4fba2c36b2a58dd42afa2082b53c614d, type: 3}
 --- !u!4 &175516087 stripped
@@ -2606,6 +2661,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_shack_1 (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2cabb9794d151e64f8986d3052168db0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2cabb9794d151e64f8986d3052168db0,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2cabb9794d151e64f8986d3052168db0, type: 3}
@@ -2806,6 +2871,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: fence_3 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 411d24a09bdc49e4d89e872268839752,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 411d24a09bdc49e4d89e872268839752,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 411d24a09bdc49e4d89e872268839752, type: 3}
@@ -3026,6 +3101,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_fence (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ee64c9211949da4db1f671ba59ddedb, type: 3}
@@ -4065,6 +4150,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: barrel
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: e192bece9dcdf2842ad0df8e6446c433,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3316992658331686828, guid: e192bece9dcdf2842ad0df8e6446c433,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4159,6 +4249,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: fence_2 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 90ec2746216330e4f821f25b20e84116,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 90ec2746216330e4f821f25b20e84116,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 90ec2746216330e4f821f25b20e84116, type: 3}
@@ -4450,6 +4550,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_shack_1 (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2cabb9794d151e64f8986d3052168db0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2cabb9794d151e64f8986d3052168db0,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2cabb9794d151e64f8986d3052168db0, type: 3}
 --- !u!4 &347329054 stripped
@@ -4678,6 +4788,36 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 382379619}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &389823665
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 389823666}
+  m_Layer: 0
+  m_Name: Villager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &389823666
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 389823665}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 326.46848, y: 43.50293, z: -109.48689}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &402077400 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
@@ -4779,6 +4919,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_shack_2 (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 22c41a503e42bde4fba58e7ec3dc904b,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 22c41a503e42bde4fba58e7ec3dc904b,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 22c41a503e42bde4fba58e7ec3dc904b, type: 3}
@@ -4959,6 +5109,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_fence (27)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ee64c9211949da4db1f671ba59ddedb, type: 3}
@@ -5164,6 +5324,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_fence (30)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ee64c9211949da4db1f671ba59ddedb, type: 3}
 --- !u!4 &428358690 stripped
@@ -5273,6 +5443,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_fence (34)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ee64c9211949da4db1f671ba59ddedb, type: 3}
@@ -5848,6 +6028,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_fence (36)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ee64c9211949da4db1f671ba59ddedb, type: 3}
 --- !u!4 &515749074 stripped
@@ -6232,6 +6422,36 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -5053925668127403250, guid: 4ee64c9211949da4db1f671ba59ddedb, type: 3}
+--- !u!1 &635788294
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 635788295}
+  m_Layer: 0
+  m_Name: Villager WP1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &635788295
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 635788294}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 326.46848, y: 43.50293, z: -109.48689}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &658105254
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6828,6 +7048,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: barrel (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: e192bece9dcdf2842ad0df8e6446c433,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e192bece9dcdf2842ad0df8e6446c433, type: 3}
 --- !u!4 &686255573 stripped
@@ -7027,6 +7252,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: fence_2 (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 90ec2746216330e4f821f25b20e84116,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 90ec2746216330e4f821f25b20e84116,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 90ec2746216330e4f821f25b20e84116, type: 3}
@@ -7424,6 +7659,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_shack_1 (10)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2cabb9794d151e64f8986d3052168db0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2cabb9794d151e64f8986d3052168db0,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2cabb9794d151e64f8986d3052168db0, type: 3}
@@ -7851,6 +8096,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: tutorial
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: b56a7c941dd00524ba65f929bb8d0a1d,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b56a7c941dd00524ba65f929bb8d0a1d, type: 3}
 --- !u!1 &806279405 stripped
@@ -8044,6 +8294,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_shack_1 (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2cabb9794d151e64f8986d3052168db0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2cabb9794d151e64f8986d3052168db0,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2cabb9794d151e64f8986d3052168db0, type: 3}
@@ -8680,6 +8940,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_shack_2 (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 22c41a503e42bde4fba58e7ec3dc904b,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 22c41a503e42bde4fba58e7ec3dc904b,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 22c41a503e42bde4fba58e7ec3dc904b, type: 3}
 --- !u!4 &897289581 stripped
@@ -8969,6 +9239,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_fence (17)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ee64c9211949da4db1f671ba59ddedb, type: 3}
@@ -9320,6 +9600,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_fence (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ee64c9211949da4db1f671ba59ddedb, type: 3}
 --- !u!4 &976393513 stripped
@@ -9429,6 +9719,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_house_8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 33af099b40b10fd4f800564c85974489,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 33af099b40b10fd4f800564c85974489,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 33af099b40b10fd4f800564c85974489, type: 3}
@@ -9810,6 +10110,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_shack_1 (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2cabb9794d151e64f8986d3052168db0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2cabb9794d151e64f8986d3052168db0,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2cabb9794d151e64f8986d3052168db0, type: 3}
 --- !u!4 &1014345500 stripped
@@ -10114,6 +10424,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_fence (14)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ee64c9211949da4db1f671ba59ddedb, type: 3}
 --- !u!4 &1069681567 stripped
@@ -10339,6 +10659,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_house_6 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1f0328cf0f3203f43af403f12d2b36e0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1f0328cf0f3203f43af403f12d2b36e0,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1f0328cf0f3203f43af403f12d2b36e0, type: 3}
@@ -10585,6 +10915,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_house_6
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1f0328cf0f3203f43af403f12d2b36e0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1f0328cf0f3203f43af403f12d2b36e0,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1f0328cf0f3203f43af403f12d2b36e0, type: 3}
@@ -11106,6 +11446,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_shack_2 (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 22c41a503e42bde4fba58e7ec3dc904b,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 22c41a503e42bde4fba58e7ec3dc904b,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 22c41a503e42bde4fba58e7ec3dc904b, type: 3}
 --- !u!4 &1206585174 stripped
@@ -11285,6 +11635,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_fence (12)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ee64c9211949da4db1f671ba59ddedb, type: 3}
@@ -11705,6 +12065,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_fence (28)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ee64c9211949da4db1f671ba59ddedb, type: 3}
 --- !u!4 &1254961462 stripped
@@ -11925,6 +12295,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_shack_2 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 22c41a503e42bde4fba58e7ec3dc904b,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 22c41a503e42bde4fba58e7ec3dc904b,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 22c41a503e42bde4fba58e7ec3dc904b, type: 3}
 --- !u!4 &1266068274 stripped
@@ -12014,6 +12394,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_fence (35)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ee64c9211949da4db1f671ba59ddedb, type: 3}
@@ -12234,6 +12624,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_house_7
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1863262850381fc42a80722a7f5836c2,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1863262850381fc42a80722a7f5836c2,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1863262850381fc42a80722a7f5836c2, type: 3}
@@ -12525,6 +12925,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_shack_2 (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 22c41a503e42bde4fba58e7ec3dc904b,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 22c41a503e42bde4fba58e7ec3dc904b,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 22c41a503e42bde4fba58e7ec3dc904b, type: 3}
 --- !u!4 &1312472066 stripped
@@ -12725,6 +13135,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_shack_2 (9)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 22c41a503e42bde4fba58e7ec3dc904b,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 22c41a503e42bde4fba58e7ec3dc904b,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 22c41a503e42bde4fba58e7ec3dc904b, type: 3}
 --- !u!4 &1337110842 stripped
@@ -12814,6 +13234,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_fence (13)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ee64c9211949da4db1f671ba59ddedb, type: 3}
@@ -13145,6 +13575,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_house_7 (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1863262850381fc42a80722a7f5836c2,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1863262850381fc42a80722a7f5836c2,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1863262850381fc42a80722a7f5836c2, type: 3}
 --- !u!4 &1376679967 stripped
@@ -13415,6 +13855,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_fence (11)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ee64c9211949da4db1f671ba59ddedb, type: 3}
 --- !u!4 &1409901578 stripped
@@ -13595,6 +14045,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_fence (16)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ee64c9211949da4db1f671ba59ddedb, type: 3}
 --- !u!4 &1421813856 stripped
@@ -13774,6 +14234,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: fence_3 (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 411d24a09bdc49e4d89e872268839752,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 411d24a09bdc49e4d89e872268839752,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 411d24a09bdc49e4d89e872268839752, type: 3}
@@ -14444,6 +14914,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_shack_2 (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 22c41a503e42bde4fba58e7ec3dc904b,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 22c41a503e42bde4fba58e7ec3dc904b,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 22c41a503e42bde4fba58e7ec3dc904b, type: 3}
@@ -15456,6 +15936,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: barrel (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: e192bece9dcdf2842ad0df8e6446c433,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e192bece9dcdf2842ad0df8e6446c433, type: 3}
 --- !u!4 &1663989403 stripped
@@ -15836,6 +16321,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_fence (15)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ee64c9211949da4db1f671ba59ddedb, type: 3}
 --- !u!4 &1714543195 stripped
@@ -16106,6 +16601,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wheelbarrow (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: e734ab23d49c0be47997390f06e24e4b,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: e734ab23d49c0be47997390f06e24e4b,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e734ab23d49c0be47997390f06e24e4b, type: 3}
 --- !u!4 &1742758794 stripped
@@ -16195,6 +16700,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_shack_1
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2cabb9794d151e64f8986d3052168db0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2cabb9794d151e64f8986d3052168db0,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2cabb9794d151e64f8986d3052168db0, type: 3}
@@ -16416,6 +16931,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_shack_1 (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2cabb9794d151e64f8986d3052168db0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2cabb9794d151e64f8986d3052168db0,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2cabb9794d151e64f8986d3052168db0, type: 3}
 --- !u!4 &1835755865 stripped
@@ -16595,6 +17120,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_shack_1 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2cabb9794d151e64f8986d3052168db0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2cabb9794d151e64f8986d3052168db0,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2cabb9794d151e64f8986d3052168db0, type: 3}
@@ -17380,6 +17915,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_shack_1 (11)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2cabb9794d151e64f8986d3052168db0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2cabb9794d151e64f8986d3052168db0,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2cabb9794d151e64f8986d3052168db0, type: 3}
 --- !u!4 &1956888908 stripped
@@ -17489,6 +18034,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_fence (10)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ee64c9211949da4db1f671ba59ddedb, type: 3}
@@ -17780,6 +18335,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_fence (29)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ee64c9211949da4db1f671ba59ddedb, type: 3}
 --- !u!4 &1978953282 stripped
@@ -17890,6 +18455,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: fence_3
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 411d24a09bdc49e4d89e872268839752,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 411d24a09bdc49e4d89e872268839752,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 411d24a09bdc49e4d89e872268839752, type: 3}
 --- !u!4 &1986905262 stripped
@@ -17979,6 +18554,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_shack_2
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 22c41a503e42bde4fba58e7ec3dc904b,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 22c41a503e42bde4fba58e7ec3dc904b,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 22c41a503e42bde4fba58e7ec3dc904b, type: 3}
@@ -18350,6 +18935,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_fence (31)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ee64c9211949da4db1f671ba59ddedb, type: 3}
 --- !u!4 &2043045444 stripped
@@ -18459,6 +19054,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_shack_1 (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2cabb9794d151e64f8986d3052168db0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2cabb9794d151e64f8986d3052168db0,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2cabb9794d151e64f8986d3052168db0, type: 3}
@@ -18590,6 +19195,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle_town_shack_1 (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2cabb9794d151e64f8986d3052168db0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2cabb9794d151e64f8986d3052168db0,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2cabb9794d151e64f8986d3052168db0, type: 3}
 --- !u!4 &2088654545 stripped
@@ -18679,6 +19294,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: castle_town_fence (8)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ee64c9211949da4db1f671ba59ddedb,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ee64c9211949da4db1f671ba59ddedb, type: 3}
@@ -18949,6 +19574,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: fence_2 (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 90ec2746216330e4f821f25b20e84116,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 90ec2746216330e4f821f25b20e84116,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 90ec2746216330e4f821f25b20e84116, type: 3}
