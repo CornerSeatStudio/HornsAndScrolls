@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 public static class Saving
 {
-
+    /**
     public static void SavePlayer (Player player){
         BinaryFormatter formatter = new BinaryFormatter();
         string path = Application.persistentDataPath + "/player.fun";
@@ -29,5 +29,5 @@ public static class Saving
             return null;
         }
     }
-
+    **/
 }
