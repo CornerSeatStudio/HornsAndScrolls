@@ -3,9 +3,13 @@
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+        grassHeight ("Grass height", float) = 3
 		windMove ("Wind Move Freq", Float) = 1
         windDensity ("Wind Grouping Weight", Float) = 1
         windStrength ("Wind Strength (max displace)", Float) = 1
+        yDisplace ("idk how to do math so do vert displace manually lol", Float) = .3
+        walkAura ("Walk Aura idk why no runtime ", Float) = 10
+        stepForce ("Step force", Float) = .03
 
     }
     SubShader
@@ -15,6 +19,7 @@
         Pass
         {
             CGPROGRAM
+
             #pragma vertex vert
             #pragma fragment frag
 
@@ -33,7 +38,7 @@
                 float2 uv : TEXCOORD0;
                 float3 worldPos : TEXCOORD1;
                 float dispWeight : TEXCOORD2;
-                float dispDebug : TEXCOORD3;
+              //  float4 vertex : TEXCOORD3;
                 float4 clipPos : SV_POSITION;
                 
             };
@@ -43,8 +48,13 @@
             uniform float windMove;
             uniform float windDensity;
             uniform float windStrength;
-            uniform float3 globalPlayerPos;
-
+            uniform float walkAura;
+            uniform float stepForce;
+            uniform float grassHeight;
+            uniform float yDisplace;
+            //maximum of 4 interactable characters
+            uniform float2 characterPositions[10];
+            uniform float characterCount;
 
             float2 unity_gradientNoise_dir(float2 p) {
                 p = p % 289;
@@ -69,52 +79,76 @@
                 Out = unity_gradientNoise(UV * Scale) + 0.5;
             }
 
+            float homemadeSmoothStep(float x)
+            {
+                //return saturate((x - 1) * (x - 1) * (x - 1) + 1);
+                return saturate((.8*x-1) * (.8*x-1) * (.8*x-1) + 1);
+                //return saturate(x/2);
+            }
+
+            float hyp(float a, float b) {
+                return sqrt(a * a + b * b);
+            }
+
             vertexOutput vert (vertexInput v)
             {
                 vertexOutput o;
-
-                float3 currWorldPos = mul(unity_ObjectToWorld, v.vertex); //via matrices, get the world pos given the local vertex and unity shit
-                //weight based on distance from bottom 
-                o.dispWeight = smoothstep(0, 1, v.vertex.y);
-
-                //for "pseudo wind"
-                //get an input of two dimensions based on time causes stetching
-                //tempoerarily just shove the y value in instead
-                float2 input2 = float2(currWorldPos.y, currWorldPos.y);
-                input2 *= (_Time[1] * windMove);
-                // //feed into noise in outputting a displacement
-                float noiseVal;
-                Unity_GradientNoise_float(input2, windDensity, noiseVal);
-                float windDisp = (noiseVal - .5) * windStrength;
-
-                //for player interaction
-                //displace the vertex AWAY from the position of the player
-                // float xDisp = v.vertex.x - (currWorldPos.x - globalPlayerPos.x);
-                // float zDisp = v.vertex.z - (currWorldPos.z - globalPlayerPos.z);
-                // float playerDisp = saturate(v.vertex)
-
-                //by combining both calculations, displace the vertex respectively
-                o.dispDebug = windDisp;
-                v.vertex.x += o.dispDebug * o.dispWeight;
-                // //v.vertex.y = smoothstep(0, 1, 1 - v.vertex.x * v.vertex);
-                v.vertex.z += o.dispDebug * o.dispWeight;
-               // v.vertex.y = smoothstep(-v.vertex.y, v.vertex.y, -v.vertex.y);
-
-
-                //set the actual world pos, set DEFAULT TEXTURE
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 o.worldPos = mul(unity_ObjectToWorld, v.vertex); //via matrices, get the world pos given the local vertex and unity shit
+                //float3 currWorldPos = mul(unity_ObjectToWorld, v.vertex); //via matrices, get the world pos given the local vertex and unity shit
+                o.dispWeight = homemadeSmoothStep(v.vertex.y); //weight based on distance from bottom 
+                //o.dispWeight = smoothstep(0, 1, v.vertex.y); // default alternative
+
+                //"pseudo wind"
+                //get an input of two dimensions based on time causes stetching
+                //all this shit here is random so literally you can throw any 
+                //math operation here and try to make it look more like grass
+                float2 inputX = float2(o.worldPos.x, o.worldPos.z);
+                float2 inputZ = float2(o.worldPos.z, o.worldPos.x);
+                inputX *= (_SinTime[1] * windMove); //sintime vs time? one feels more uniform idk
+                inputZ *= (_SinTime[1] * windMove);
+                // //feed into noise in outputting a displacement
+                //axis independence is a choice, not poor programming
+                float xNoiseVal, zNoiseVal;
+                Unity_GradientNoise_float(inputX, windDensity, xNoiseVal);
+                Unity_GradientNoise_float(inputZ, windDensity, zNoiseVal);
+                
+                 //add to breeze displacement
+                v.vertex.x += xNoiseVal * windStrength * o.dispWeight;
+                v.vertex.z += zNoiseVal * windStrength * o.dispWeight;
+                v.vertex.y -= hyp(xNoiseVal, xNoiseVal) * yDisplace * o.dispWeight;
+
+                //character interaction
+                //for each character (up to 4 only)
+
+
+                for(int i = 0; i < characterCount; ++i) {
+                    //compare its (global) position to the global vertex positions
+                    float dist = distance(characterPositions[i], o.worldPos.xz);
+                    float stepWeight = 1 - saturate(dist / walkAura);
+                    
+                    float2 sphereDisp = o.worldPos.xz - characterPositions[i];
+                    sphereDisp *= stepWeight;
+
+                    v.vertex.x -= sphereDisp.y *  stepForce * o.dispWeight; //idk why scales be off
+                    v.vertex.z += sphereDisp.x *  stepForce * .1 * o.dispWeight; 
+                    v.vertex.y -= hyp(sphereDisp.x, sphereDisp.y) * .4 * clamp(o.dispWeight, .3, 1);
+
+                }
+                //set the actual world pos, set DEFAULT TEXTURE
+               // o.vertex = v.vertex;
+                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 o.clipPos = UnityObjectToClipPos(v.vertex); 
 
                 return o;
             }
 
             float4 frag (vertexOutput o) : SV_Target {
+               
+             //   float aura = o.worldPos.x - characterPositions[0].x;
+             //   return float4(o.worldPos.x - characterPositions[0].x, 1, o.worldPos.z - characterPositions[0].y, 1);
+                //return float4(o.vertex.yyy, 1);
                 float4 col = tex2D(_MainTex, o.uv);
-                return col;
-                
-               // return float4(o.dispDebug, o.dispDebug, o.dispDebug, 1);
-                
+                return col;                
             }
 
             ENDCG
