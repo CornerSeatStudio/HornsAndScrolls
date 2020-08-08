@@ -1,4 +1,4 @@
-﻿Shader "Outlined/Uniform"
+﻿Shader "Custom/Character Glow"
 {
 	Properties
 	{

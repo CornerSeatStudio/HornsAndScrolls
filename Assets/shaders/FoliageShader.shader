@@ -1,4 +1,4 @@
-﻿Shader "Custom/grass"
+﻿Shader "Custom/Foliage"
 {
     Properties
     {
@@ -24,7 +24,6 @@
             #pragma fragment frag
 
             #include "UnityCG.cginc"
-            #include "Lighting.cginc"
 
             struct vertexInput
             {
@@ -38,7 +37,6 @@
                 float2 uv : TEXCOORD0;
                 float3 worldPos : TEXCOORD1;
                 float dispWeight : TEXCOORD2;
-              //  float4 vertex : TEXCOORD3;
                 float4 clipPos : SV_POSITION;
                 
             };
@@ -52,7 +50,6 @@
             uniform float stepForce;
             uniform float grassHeight;
             uniform float yDisplace;
-            //maximum of 4 interactable characters
             uniform float2 characterPositions[10];
             uniform float characterCount;
 
@@ -82,12 +79,19 @@
             float homemadeSmoothStep(float x)
             {
                 //return saturate((x - 1) * (x - 1) * (x - 1) + 1);
-                return saturate((.8*x-1) * (.8*x-1) * (.8*x-1) + 1);
+                //return saturate((.8*x-1) * (.8*x-1) * (.8*x-1) + 1);
                 //return saturate(x/2);
             }
 
-            float hyp(float a, float b) {
-                return sqrt(a * a + b * b);
+            float mid(float a, float b) {
+                //return b + .428 * a * a/b;
+                return 7/8 * a + b/2;
+               // return (a+b)/2;
+                //return sqrt(a * a + b * b);
+            }
+
+            float sqrMagnitude(float2 a, float2 b) {
+                return dot(a - b, a - b);
             }
 
             vertexOutput vert (vertexInput v)
@@ -95,7 +99,7 @@
                 vertexOutput o;
                 o.worldPos = mul(unity_ObjectToWorld, v.vertex); //via matrices, get the world pos given the local vertex and unity shit
                 //float3 currWorldPos = mul(unity_ObjectToWorld, v.vertex); //via matrices, get the world pos given the local vertex and unity shit
-                o.dispWeight = homemadeSmoothStep(v.vertex.y); //weight based on distance from bottom 
+                o.dispWeight = smoothstep(-.2, 1, v.vertex.y); //weight based on distance from bottom 
                 //o.dispWeight = smoothstep(0, 1, v.vertex.y); // default alternative
 
                 //"pseudo wind"
@@ -115,7 +119,7 @@
                  //add to breeze displacement
                 v.vertex.x += xNoiseVal * windStrength * o.dispWeight;
                 v.vertex.z += zNoiseVal * windStrength * o.dispWeight;
-                v.vertex.y -= hyp(xNoiseVal, xNoiseVal) * yDisplace * o.dispWeight;
+                v.vertex.y -= mid(xNoiseVal, xNoiseVal) * yDisplace * o.dispWeight;
 
                 //character interaction
                 //for each character (up to 4 only)
@@ -123,15 +127,11 @@
 
                 for(int i = 0; i < characterCount; ++i) {
                     //compare its (global) position to the global vertex positions
-                    float dist = distance(characterPositions[i], o.worldPos.xz);
-                    float stepWeight = 1 - saturate(dist / walkAura);
-                    
-                    float2 sphereDisp = o.worldPos.xz - characterPositions[i];
-                    sphereDisp *= stepWeight;
+                    float2 sphereDisp = (o.worldPos.xz - characterPositions[i])  * (1 - saturate(sqrMagnitude(characterPositions[i], o.worldPos.xz) / walkAura));
 
                     v.vertex.x -= sphereDisp.y *  stepForce * o.dispWeight; //idk why scales be off
                     v.vertex.z += sphereDisp.x *  stepForce * .1 * o.dispWeight; 
-                    v.vertex.y -= hyp(sphereDisp.x, sphereDisp.y) * .4 * clamp(o.dispWeight, .3, 1);
+                    v.vertex.y -= mid(sphereDisp.x, sphereDisp.y)  * clamp(o.dispWeight, .3, 1);
 
                 }
                 //set the actual world pos, set DEFAULT TEXTURE
@@ -156,3 +156,4 @@
 
     }
 }
+
