@@ -30,7 +30,12 @@ public class CameraHandler : MonoBehaviour {
     private float tempAddAng; //for the transition between one angle to the next per x frames
 
 
-    void Start(){
+    void Start() {
+        try {
+            target = FindObjectOfType<PlayerHandler>().transform; 
+        } catch {
+            Debug.LogWarning("WHERE THE PLAYER AT FOOL");
+        }
         cam = this.GetComponent<Camera>();
     }
 
