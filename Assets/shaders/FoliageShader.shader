@@ -3,11 +3,13 @@
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+        ambientLight ("Ambient light col", Color) = (0,0,0,1) 
+        gloss ("Gloss", float) = 1
         grassHeight ("Grass height", float) = 3
 		windMove ("Wind Move Freq", Float) = 1
         windDensity ("Wind Grouping Weight", Float) = 1
         windStrength ("Wind Strength (max displace)", Float) = 1
-        yDisplace ("idk how to do math so do vert displace manually lol", Float) = .3
+        yDisplace ("Vert displace manually lol", Float) = .3
         walkAura ("Walk Aura idk why no runtime ", Float) = 10
         stepForce ("Step force", Float) = .03
 
@@ -19,15 +21,16 @@
         Pass
         {
             CGPROGRAM
-
             #pragma vertex vert
             #pragma fragment frag
 
             #include "UnityCG.cginc"
+            #include "UnityLightingCommon.cginc"
 
             struct vertexInput
             {
                 float4 vertex : POSITION;
+                float3 normal : NORMAL;
                 float2 uv : TEXCOORD0;
 
             };
@@ -37,12 +40,15 @@
                 float2 uv : TEXCOORD0;
                 float3 worldPos : TEXCOORD1;
                 float dispWeight : TEXCOORD2;
+                float3 normal : TEXCOORD3;
                 float4 clipPos : SV_POSITION;
                 
             };
 
             sampler2D _MainTex;            
             float4 _MainTex_ST;
+            uniform float gloss;
+            uniform float4 ambientLight;
             uniform float windMove;
             uniform float windDensity;
             uniform float windStrength;
@@ -138,22 +144,42 @@
                // o.vertex = v.vertex;
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 o.clipPos = UnityObjectToClipPos(v.vertex); 
+                //o.worldPos = mul(unity_ObjectToWorld, v.vertex); //via matrices, get the world pos given the local vertex and unity shit
 
+                o.normal = v.normal;
                 return o;
             }
 
             float4 frag (vertexOutput o) : SV_Target {
                
-             //   float aura = o.worldPos.x - characterPositions[0].x;
-             //   return float4(o.worldPos.x - characterPositions[0].x, 1, o.worldPos.z - characterPositions[0].y, 1);
-                //return float4(o.vertex.yyy, 1);
+                float3 normal = normalize(o.normal);
+                float3 lightDir = _WorldSpaceLightPos0.xyz;
+                float3 lightColor = _LightColor0.rgb;
+
+                //difuse
+                float lightFalloff = saturate(dot(lightDir, normal));
+                float3 diffuseLight = lightColor * lightFalloff;
+
+                //specular
+                float3 fragToCam = _WorldSpaceCameraPos - o.worldPos;
+                float3 viewDir = normalize(fragToCam);
+                float3 viewReflection = reflect(-viewDir, normal);
+                float specularFalloff = max(0, dot(viewReflection, lightDir));
+                specularFalloff = pow(specularFalloff, gloss);
+                float3 directSpecular = specularFalloff * lightColor;
+
+                //combine all
+                float3 totalLight = (ambientLight + diffuseLight)*lightColor + directSpecular;
+
+
+
+
                 float4 col = tex2D(_MainTex, o.uv);
-                return col;                
+                return col * float4(totalLight, 1);                
             }
 
             ENDCG
         }
-
     }
 }
 
