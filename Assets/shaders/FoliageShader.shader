@@ -17,7 +17,7 @@
     }
     SubShader
     {
-        Tags { "RenderType" = "Opaque"}
+        Tags { "RenderType" = "Opaque" "LightMode"="ForwardBase"}
 
         Pass
         {
@@ -42,6 +42,7 @@
                 float3 worldPos : TEXCOORD1;
                 float dispWeight : TEXCOORD2;
                 float3 normal : TEXCOORD3;
+                float3 worldNormal :TEXCOORD4;
                 //float4 vertex : TEXCOORD4;
                 float4 clipPos : SV_POSITION;
                 
@@ -85,14 +86,6 @@
                 Out = unity_gradientNoise(UV * Scale) + 0.5;
             }
 
-            float homemadeSmoothStep(float x)
-            {
-               // return (x-1) / (1);
-              //  return clamp((x - 1) * (x - 1) * (x - 1) + 1, 0, 1);
-                //return saturate((.8*x-1) * (.8*x-1) * (.8*x-1) + 1);
-                //return saturate(x/2);
-            }
-
             float mid(float a, float b) {
                 //return b + .428 * a * a/b;
                 return 7/8 * a + b/2;
@@ -108,9 +101,8 @@
             {
                 vertexOutput o;
                 o.worldPos = mul(unity_ObjectToWorld, v.vertex); //via matrices, get the world pos given the local vertex and unity shit
-                //float3 currWorldPos = mul(unity_ObjectToWorld, v.vertex); //via matrices, get the world pos given the local vertex and unity shit
-                //o.dispWeight = smoothstep(0, 1, clamp(v.vertex.y, .2, 1)); //weight based on distance from bottom 
-               // o.dispWeight = .9;
+    
+                //weigh each branch for accurate wind tilt
                 o.dispWeight = smoothstep(0, 1, lerp(0, grassHeight, v.vertex.y)); // default alternative
 
                 //"pseudo wind"
@@ -132,10 +124,7 @@
                 v.vertex.z += zNoiseVal * windStrength * o.dispWeight;
                 v.vertex.y -= mid(xNoiseVal, xNoiseVal) * yDisplace * o.dispWeight;
 
-                //character interaction
-                //for each character (up to 4 only)
-
-
+                //character interaction for each character
                 for(int i = 0; i < characterCount; ++i) {
                     //compare its (global) position to the global vertex positions
                     float2 sphereDisp = (o.worldPos.xz - characterPositions[i])  * (1 - saturate(sqrMagnitude(characterPositions[i], o.worldPos.xz) / walkAura));
@@ -155,9 +144,8 @@
                 //set the actual world pos, set DEFAULT TEXTURE
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 o.clipPos = UnityObjectToClipPos(v.vertex); 
-                //o.worldPos = mul(unity_ObjectToWorld, v.vertex); //via matrices, get the world pos given the local vertex and unity shit
-
                 o.normal = v.normal;
+                o.worldNormal = UnityObjectToWorldNormal(v.normal);
                 return o;
             }
 
@@ -171,8 +159,7 @@
                 float3 diffuseLight = lightColor * lightFalloff;
 
                 //specular
-                float3 fragToCam = _WorldSpaceCameraPos - o.worldPos;
-                float3 viewDir = normalize(fragToCam);
+                float3 viewDir = normalize(_WorldSpaceCameraPos - o.worldPos);
                 float3 viewReflection = reflect(-viewDir, normal);
                 float specularFalloff = max(0, dot(viewReflection, lightDir));
                 specularFalloff = pow(specularFalloff, gloss);
@@ -188,6 +175,34 @@
                 return col * float4(totalLight, 1);                
             }
 
+            ENDCG
+        }
+
+        Pass
+        {
+            Tags {"LightMode"="ShadowCaster"}
+
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            #pragma multi_compile_shadowcaster
+            #include "UnityCG.cginc"
+
+            struct v2f { 
+                V2F_SHADOW_CASTER;
+            };
+
+            v2f vert(appdata_base v)
+            {
+                v2f o;
+                TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
+                return o;
+            }
+
+            float4 frag(v2f i) : SV_Target
+            {
+                SHADOW_CASTER_FRAGMENT(i)
+            }
             ENDCG
         }
     }

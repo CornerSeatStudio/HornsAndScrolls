@@ -8,7 +8,7 @@
         // _AmbientLight ("Ambient light col", Color) = (0,0,0,1) 
         // _Gloss ("Gloss", float) = 1
         _WaterColor ("Color", Color) = (0, 0, .2)
-        _RefreactNoiseScale ("refraction Noise Scale",Float) = 1
+        _RefractNoiseScale ("refraction Noise Scale",Float) = 1
         _RefractNoiseDisp ("refraction Noise displacement", Float) = 1
         _WaterAmp ("water max amplitude", Float) = 5
         _Choppiness ("chop penis", Float) = .01
@@ -34,6 +34,7 @@
             {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
+                float3 normal : NORMAL;
             };
 
             struct vertexOutput
@@ -41,6 +42,7 @@
                 float2 uv : TEXCOORD0;
                 float3 worldPos : TEXCOORD1;
                 float4 grabPos : TEXCOORD2;
+                float3 normal :TEXCOORD3;
                 float4 clipPos : SV_POSITION;
                 float depth : DEPTH;
             };
@@ -75,7 +77,7 @@
             float _Gloss;
             float4 _AmbientLight;
             float4 _WaterColor;
-            float _RefreactNoiseScale;
+            float _RefractNoiseScale;
             float _RefractNoiseDisp;
             float _Choppiness;
             float _WaterAmp;
@@ -84,7 +86,7 @@
             {
                 vertexOutput o;
                 o.uv = v.uv;
-
+                o.normal = v.normal;
                 v.vertex.y += sin( (o.uv.x + o.uv.y + _Time[1]) * _Choppiness ) * _WaterAmp;
                 //v.vertex.x += 10;
 
@@ -114,12 +116,16 @@
                 // //color dependent on distance from camera
                 // float4 waterColor = lerp(_ShallowColor, _DeepColor, waterWeight);
 
-                
+                //incident vector (dir between cam and object)
+                float3 incidentFromCam = normalize(_WorldSpaceCameraPos - o.worldPos);
+                float3 reflected = reflect(incidentFromCam, o.normal);
 
+               // return float4(reflected, 1);
 
                 float noise;
-                Unity_GradientNoise_float(o.uv * _Time[1], _RefreactNoiseScale, noise);
+                Unity_GradientNoise_float(o.uv * _Time[1], _RefractNoiseScale, noise);
                 o.grabPos += noise * _RefractNoiseDisp; //refraction
+                
                 float4 screenColorDistort = tex2Dproj(_BackgroundTexture, o.grabPos);
                 
                 //combination
