@@ -74,11 +74,11 @@ Material:
     - _ZWrite: 1
     - gloss: 0.1
     - grassHeight: 0.4
-    - stepForce: 0.6
-    - walkAura: 10
-    - windDensity: 0.006
+    - stepForce: 15
+    - walkAura: 15
+    - windDensity: 0.02
     - windMove: 5
-    - windStrength: 0.03
+    - windStrength: 4
     - yDisplace: 0.3
     m_Colors:
     - _Color: {r: 0.8, g: 0.8, b: 0.8, a: 1}

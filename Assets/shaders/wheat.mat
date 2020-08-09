@@ -73,15 +73,15 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     - gloss: 0.1
-    - grassHeight: 10
-    - stepForce: 0.5
-    - walkAura: 10
-    - windDensity: 1
-    - windMove: 0.1
-    - windStrength: 0.5
-    - yDisplace: 0.3
+    - grassHeight: 0.01
+    - stepForce: 13
+    - walkAura: 20
+    - windDensity: 0.1
+    - windMove: 1
+    - windStrength: 15
+    - yDisplace: 23
     m_Colors:
     - _Color: {r: 0.8, g: 0.8, b: 0.8, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - ambientLight: {r: 0.4528302, g: 0.43435258, b: 0, a: 1}
-    - lightColor: {r: 0.9, g: 0.8, b: 0.7, a: 1}
+    - ambientLight: {r: 0.23584908, g: 0, b: 0, a: 1}
+    - lightColor: {r: 1, g: 1, b: 1, a: 1}
