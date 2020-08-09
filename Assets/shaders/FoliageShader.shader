@@ -3,7 +3,8 @@
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        ambientLight ("Ambient light col", Color) = (0,0,0,1) 
+        ambientLight ("Ambient Emission", Color) = (0,0,0,1) 
+        lightColor("main light color", Color) = (0,0,0,1)
         gloss ("Gloss", float) = 1
         grassHeight ("Grass height", float) = 3
 		windMove ("Wind Move Freq", Float) = 1
@@ -41,6 +42,7 @@
                 float3 worldPos : TEXCOORD1;
                 float dispWeight : TEXCOORD2;
                 float3 normal : TEXCOORD3;
+                //float4 vertex : TEXCOORD4;
                 float4 clipPos : SV_POSITION;
                 
             };
@@ -48,6 +50,7 @@
             sampler2D _MainTex;            
             float4 _MainTex_ST;
             uniform float gloss;
+            float3 lightColor;
             uniform float4 ambientLight;
             uniform float windMove;
             uniform float windDensity;
@@ -84,7 +87,8 @@
 
             float homemadeSmoothStep(float x)
             {
-                //return saturate((x - 1) * (x - 1) * (x - 1) + 1);
+               // return (x-1) / (1);
+              //  return clamp((x - 1) * (x - 1) * (x - 1) + 1, 0, 1);
                 //return saturate((.8*x-1) * (.8*x-1) * (.8*x-1) + 1);
                 //return saturate(x/2);
             }
@@ -105,8 +109,9 @@
                 vertexOutput o;
                 o.worldPos = mul(unity_ObjectToWorld, v.vertex); //via matrices, get the world pos given the local vertex and unity shit
                 //float3 currWorldPos = mul(unity_ObjectToWorld, v.vertex); //via matrices, get the world pos given the local vertex and unity shit
-                o.dispWeight = smoothstep(-.2, 1, v.vertex.y); //weight based on distance from bottom 
-                //o.dispWeight = smoothstep(0, 1, v.vertex.y); // default alternative
+                //o.dispWeight = smoothstep(0, 1, clamp(v.vertex.y, .2, 1)); //weight based on distance from bottom 
+               // o.dispWeight = .9;
+                o.dispWeight = smoothstep(0, 1, lerp(0, grassHeight, v.vertex.y)); // default alternative
 
                 //"pseudo wind"
                 //get an input of two dimensions based on time causes stetching
@@ -135,13 +140,19 @@
                     //compare its (global) position to the global vertex positions
                     float2 sphereDisp = (o.worldPos.xz - characterPositions[i])  * (1 - saturate(sqrMagnitude(characterPositions[i], o.worldPos.xz) / walkAura));
 
-                    v.vertex.x -= sphereDisp.y *  stepForce * o.dispWeight; //idk why scales be off
-                    v.vertex.z += sphereDisp.x *  stepForce * .1 * o.dispWeight; 
-                    v.vertex.y -= mid(sphereDisp.x, sphereDisp.y)  * clamp(o.dispWeight, .3, 1);
+                    v.vertex.x += sphereDisp.x *  stepForce * o.dispWeight; //idk why scales be off
+                    v.vertex.z += sphereDisp.y *  stepForce * o.dispWeight; 
+                    v.vertex.y -= mid(sphereDisp.x, sphereDisp.y) * clamp(o.dispWeight, .4, 1);
+                    //v.vertex.y -= mid(sphereDisp.x, sphereDisp.y);
+                    // float2 sphereDisp = (o.worldPos.xz - characterPositions[i])  * (1 - saturate(sqrMagnitude(characterPositions[i], o.worldPos.xz) / walkAura));
+
+                    // v.vertex.x -= sphereDisp.y *  stepForce * o.dispWeight; //idk why scales be off
+                    // v.vertex.z += sphereDisp.x *  stepForce * .1 * o.dispWeight; 
+                    // v.vertex.y -= mid(sphereDisp.x, sphereDisp.y)  * clamp(o.dispWeight, .3, 1);
+
 
                 }
                 //set the actual world pos, set DEFAULT TEXTURE
-               // o.vertex = v.vertex;
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 o.clipPos = UnityObjectToClipPos(v.vertex); 
                 //o.worldPos = mul(unity_ObjectToWorld, v.vertex); //via matrices, get the world pos given the local vertex and unity shit
@@ -154,7 +165,6 @@
                
                 float3 normal = normalize(o.normal);
                 float3 lightDir = _WorldSpaceLightPos0.xyz;
-                float3 lightColor = _LightColor0.rgb;
 
                 //difuse
                 float lightFalloff = saturate(dot(lightDir, normal));
@@ -173,7 +183,7 @@
 
 
 
-
+                //return float4(o.uv.xxx, 1);
                 float4 col = tex2D(_MainTex, o.uv);
                 return col * float4(totalLight, 1);                
             }
