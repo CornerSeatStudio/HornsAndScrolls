@@ -100,15 +100,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scrollInputSmoothness: 0.1
   cameraSnapSmoothing: 2.5
-  scrollZoomSmoothing: 1.5
-  scrollMagnitude: 120
-  camDist: 90
+  scrollZoomSmoothing: 1
+  scrollMagnitude: 500
+  camDist: 130
   camAng: 60
-  camDisp: 40
-  distRange: {x: 20, y: 90}
-  fovRange: {x: 60, y: 10}
+  camDisp: 65
+  distRange: {x: 30, y: 130}
+  fovRange: {x: 60, y: 40}
   angleRange: {x: 40, y: 60}
-  camDispRange: {x: 0, y: 40}
+  camDispRange: {x: 5, y: 65}
   rotationSmoothness: 0.2
   camRotateSpeed: 500
 --- !u!114 &3988180773981568690
@@ -146,7 +146,7 @@ MonoBehaviour:
     m_Bits: 2048
   stopNaNPropagation: 1
   finalBlitToCameraTarget: 0
-  antialiasingMode: 0
+  antialiasingMode: 1
   temporalAntialiasing:
     jitterSpread: 0.75
     sharpness: 0.25
