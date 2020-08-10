@@ -3,6 +3,7 @@
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+        _BumpMap ("Normal Map (don't touch for now", 2D) = "bump" {}
      //   _Distance ("Distance", Float) = 1
       //  _DeepColor ("Deep Color", Color) = (0, 1, 1)
         // _AmbientLight ("Ambient light col", Color) = (0,0,0,1) 
@@ -23,6 +24,10 @@
 
         Pass
         {
+            Cull Back
+            ZWrite Off
+            Blend Off
+
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -35,6 +40,7 @@
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
                 float3 normal : NORMAL;
+               // float4 tangent : TANGENT;
             };
 
             struct vertexOutput
@@ -43,8 +49,10 @@
                 float3 worldPos : TEXCOORD1;
                 float4 grabPos : TEXCOORD2;
                 float3 normal :TEXCOORD3;
+                float3 worldNormal : TEXCOORD4;
+
                 float4 clipPos : SV_POSITION;
-                float depth : DEPTH;
+          //      float depth : DEPTH;
             };
 
             float2 unity_gradientNoise_dir(float2 p) {
@@ -72,6 +80,7 @@
 
             sampler2D _MainTex;
             sampler2D _BackgroundTexture;
+            sampler2D _BumpMap;
             uniform sampler2D_float _CameraDepthTexture;
             //uniform float _Distance;
             float _Gloss;
@@ -90,13 +99,18 @@
                 v.vertex.y += sin( (o.uv.x + o.uv.y + _Time[1]) * _Choppiness ) * _WaterAmp;
                 //v.vertex.x += 10;
 
-
                 o.clipPos = UnityObjectToClipPos(v.vertex);
                 //object depth
-                o.depth = -UnityObjectToViewPos(v.vertex).z * _ProjectionParams.w;
+               // o.depth = -UnityObjectToViewPos(v.vertex).z * _ProjectionParams.w;
                 o.grabPos = ComputeGrabScreenPos(o.clipPos);
                 o.worldPos = mul(unity_ObjectToWorld, v.vertex); //via matrices, get the world pos given the local vertex and unity shit
-                
+                o.worldNormal = UnityObjectToWorldNormal(v.normal);
+                // float3 worldTangent = UnityObjectToWorldDir(v.tangent.xyz);
+                // float3 wBitangent = cross(worldNormal, worldTangent) * (v.tangent.w * unity_WorldTransformParams.w);
+                // o.tspace0 = float3(worldTangent.x, wBitangent.x, worldNormal.x);
+                // o.tspace1 = float3(worldTangent.y, wBitangent.y, worldNormal.y);
+                // o.tspace2 = float3(worldTangent.z, wBitangent.z, worldNormal.z);
+                //o.worldRefl = reflect(-normalize(UnityWorldSpaceViewDir(o.worldPos)), o.worldNormal);
                
                 return o;
             }
@@ -104,7 +118,8 @@
 
             float4 frag (vertexOutput o) : SV_Target
             {
-                //scene depth
+
+                 //scene depth
                // o.uv = 1 - o.uv; //shits upside down idk
                 // float sceneDepth = UNITY_SAMPLE_DEPTH(tex2D(_CameraDepthTexture, o.uv));
                 // sceneDepth = Linear01Depth(sceneDepth);
@@ -116,29 +131,46 @@
                 // //color dependent on distance from camera
                 // float4 waterColor = lerp(_ShallowColor, _DeepColor, waterWeight);
 
-                //incident vector (dir between cam and object)
-                float3 incidentFromCam = normalize(_WorldSpaceCameraPos - o.worldPos);
-                float3 reflected = reflect(incidentFromCam, o.normal);
+                //reflection - based on angle of incidence (being the camera angle)
+               // float4 tnormal = normalize(float4(UnpackNormal(tex2D(_BumpMap, o.uv)), 0));
 
-               // return float4(reflected, 1);
 
-                float noise;
-                Unity_GradientNoise_float(o.uv * _Time[1], _RefractNoiseScale, noise);
-                o.grabPos += noise * _RefractNoiseDisp; //refraction
+        
                 
-                float4 screenColorDistort = tex2Dproj(_BackgroundTexture, o.grabPos);
                 
-                //combination
-                float4 finCol = lerp(screenColorDistort, _WaterColor, _WaterColor.w);
+               // float4 screenColorDistort = tex2Dproj(_BackgroundTexture, o.grabPos);
+                
+                
+//                float3 worldNormal;
+                // worldNormal.x = dot(o.tspace0, tnormal);
+                // worldNormal.y = dot(o.tspace1, tnormal);
+                // worldNormal.z = dot(o.tspace2, tnormal);
 
-               // return float4(o.grabPos.zzz,1);
+                // //return float4(worldNormal, 1);
+                // float3 worldViewDir = normalize(UnityWorldSpaceViewDir(o.worldPos));
+                // float3 worldRefl = reflect(-worldViewDir, worldNormal);
+                    //float4 skyData = UNITY_SAMPLE_TEXCUBE(unity_SpecCube0, worldRefl);
+                // float3 skyColor = DecodeHDR(skyData, unity_SpecCube0_HDR);
+                // float3 worldViewDir = normalize(UnityWorldSpaceViewDir(o.worldPos)); //Direction of ray from the camera towards the object surface
+                // float3 reflection = reflect(-worldViewDir, o.worldNormal); // Direction of ray after hitting the surface of object
+                // /*If Roughness feature is not needed : UNITY_SAMPLE_TEXCUBE(unity_SpecCube0, reflection) can be used instead.
+                // It chooses the correct LOD value based on camera distance*/
+                // float4 skyData = UNITY_SAMPLE_TEXCUBE_LOD(unity_SpecCube0, reflection, 0); //UNITY_SAMPLE_TEXCUBE_LOD('cubemap', 'sample coordinate', 'map-map level')
+                // float3 skyColor = DecodeHDR (skyData, unity_SpecCube0_HDR); // This is done because the cubemap is stored HDR
+                // return float4(skyData.xyz, 1.0);
+               //return float4(unity_SpecCube0);
 
-               // return waterWeight;
-               return finCol;
-             //  return finCol * allLighting(o);
-              // return float4(allLighting(o).xyz, 0);
-              // return (screenColorDistort/1.2);
-               // return finCol;
+                //refraction - only below surface
+                float noise; Unity_GradientNoise_float(o.uv * _Time[1], _RefractNoiseScale, noise);
+                float distortion = noise * _RefractNoiseDisp;
+
+                float4 refraction = tex2Dproj(_BackgroundTexture, o.grabPos + distortion);
+                float4 noRefraction = tex2Dproj(_BackgroundTexture, o.grabPos);
+
+                if(LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, o.grabPos + distortion))) < o.grabPos.w)  refraction = noRefraction;
+
+                return lerp(refraction, _WaterColor, _WaterColor.w);
+
 
             }
             ENDCG
