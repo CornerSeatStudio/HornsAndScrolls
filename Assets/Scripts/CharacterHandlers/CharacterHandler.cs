@@ -49,7 +49,6 @@ public class CharacterHandler : MonoBehaviour {
         PopulateMeleeMoves();
 
         foliageMask = LayerMask.GetMask("Foliage");
-        Renderer rend = GameObject.FindGameObjectsWithTag("Foliage").First().GetComponent<Renderer>();
         StartCoroutine(GrassHandle()); 
         
     }
