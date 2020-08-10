@@ -98,17 +98,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b9a61826f36e554184f4b7bb513a0bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
+  scrollInputSmoothness: 0.1
   cameraSnapSmoothing: 2.5
-  scrollZoomSmoothing: 4
+  scrollZoomSmoothing: 1.5
+  scrollMagnitude: 120
+  camDist: 90
+  camAng: 60
+  camDisp: 40
+  distRange: {x: 20, y: 90}
+  fovRange: {x: 60, y: 10}
+  angleRange: {x: 40, y: 60}
+  camDispRange: {x: 0, y: 40}
   rotationSmoothness: 0.2
   camRotateSpeed: 500
-  scrollZoomSpeed: 15
-  maxDist: 90
-  minDist: 20
-  camDist: 40
-  camAng: 40
-  screenVertDisplacement: 5
 --- !u!114 &3988180773981568690
 MonoBehaviour:
   m_ObjectHideFlags: 0

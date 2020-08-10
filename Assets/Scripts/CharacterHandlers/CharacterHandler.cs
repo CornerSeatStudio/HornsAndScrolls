@@ -48,6 +48,7 @@ public class CharacterHandler : MonoBehaviour {
         DisableRagdoll(); //NECCESARY to a. disable ragdoll and b. not fuck up attack script
         PopulateMeleeMoves();
 
+        //foliage stuff
         foliageMask = LayerMask.GetMask("Foliage");
         StartCoroutine(GrassHandle()); 
         
