@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 public class ObjectiveHandler : MonoBehaviour
 {
     
@@ -23,6 +24,8 @@ public class ObjectiveHandler : MonoBehaviour
     public void OnGameFinish() {
         Debug.Log("game end");
         winScreen.gameObject.SetActive(true);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+
 
     }
 
