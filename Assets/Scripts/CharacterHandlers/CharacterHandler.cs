@@ -27,7 +27,6 @@ public class CharacterHandler : MonoBehaviour {
 
     //private stuff
     protected Animator animator;
-    protected Vector3 velocity;
     public AudioSource AudioSource {get; private set;}
     public Dictionary<string, MeleeMove> MeleeAttacks {get; private set;} 
     public MeleeMove MeleeBlock {get; private set; }
@@ -278,16 +277,6 @@ public class CharacterHandler : MonoBehaviour {
     #endregion
 
     #region useful helper functions
-
-    protected Vector3 oldPos;
-    protected Vector3 movedPos;
-    protected Vector3 lastPos; //math stuff
-    protected void CalculateVelocity(){
-        oldPos = movedPos;
-        movedPos = Vector3.Slerp(oldPos, transform.position - lastPos, .1f); 
-        lastPos = transform.position; 
-        velocity = movedPos / Time.fixedTime;      
-    }
 
     public IEnumerator layerWeightRoutine;
 

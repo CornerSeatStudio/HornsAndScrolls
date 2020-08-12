@@ -14,7 +14,9 @@ public class UnsheathingCombatState : CombatState {
         (character as PlayerHandler).ChangeStanceTimer(1f);
 
       //  try { (character as PlayerHandler).parentToHand(); } catch { Debug.LogWarning("ai shoudnt be in this state"); }
-
+        animator.SetBool(Animator.StringToHash("Combat"), true);
+        animator.SetBool(Animator.StringToHash("Crouching"), false);
+        
         sheathRoutine = Sheath();
         yield return character.StartCoroutine(sheathRoutine);
         character.SetStateDriver(new DefaultCombatState(character, animator));
@@ -49,6 +51,8 @@ public class SheathingCombatState : CombatState {
     public SheathingCombatState(CharacterHandler character, Animator animator) : base(character, animator) {}
 
     public override IEnumerator OnStateEnter() {
+        animator.SetBool(Animator.StringToHash("Combat"), false);
+
         (character as PlayerHandler).ChangeStanceTimer(1f);
         sheathRoutine = Sheath();
         yield return character.StartCoroutine(sheathRoutine);
@@ -86,15 +90,10 @@ public class DefaultCombatState : CombatState {
         } catch {
             //Debug.Log("not a player");
         }
+
+
         yield break;
     }
-
-    // public override IEnumerator OnStateExit() {
-    //  //   animator.SetBool(Animator.StringToHash("IsAggro"], false);
-    //     animator.SetBool(Animator.StringToHash("WeaponOut"], false);
-    //     //Debug.Log("exiting default combat state");
-    //     yield break;
-    // }
 
 }
 
@@ -221,8 +220,8 @@ public class DodgeState : CombatState {
         yield return new WaitUntil(() => character.layerWeightRoutine == null);
         character.layerWeightRoutine = character.LayerWeightDriver(1, 1, 0, .8f);
         yield return character.StartCoroutine(character.layerWeightRoutine);  
-        animator.ResetTrigger(Animator.StringToHash("Dodging"));
-        animator.SetTrigger(Animator.StringToHash("Dodging"));
+        animator.ResetTrigger(Animator.StringToHash("Dodge"));
+        animator.SetTrigger(Animator.StringToHash("Dodge"));
         yield return new WaitForSeconds((character as PlayerHandler).dodgeTime);
         character.SetStateDriver(new DefaultCombatState(character, animator));
     }

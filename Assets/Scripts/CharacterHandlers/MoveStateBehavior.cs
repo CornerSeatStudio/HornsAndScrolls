@@ -12,12 +12,14 @@ public class IdleMoveState : MoveState {
 
     public override IEnumerator OnStateEnter() {
         (character as PlayerHandler).ChangeStanceTimer(1f);
-        animator.SetBool(Animator.StringToHash("Idle"), true);
+        animator.SetBool(Animator.StringToHash("Crouching"), false);
+
+   //     animator.SetBool(Animator.StringToHash("Idle"), true);
         yield break;
     }
 
     public override IEnumerator OnStateExit() {
-        animator.SetBool(Animator.StringToHash("Idle"), false);
+       // animator.SetBool(Animator.StringToHash("Idle"), false);
         yield break;    
     }
 }
@@ -27,14 +29,16 @@ public class JogMoveState : MoveState {
     
     public override IEnumerator OnStateEnter() {
         (character as PlayerHandler).ChangeStanceTimer(.5f);
-        animator.SetBool(Animator.StringToHash("Jogging"), true);
+        animator.SetBool(Animator.StringToHash("Crouching"), false);
+
+       // animator.SetBool(Animator.StringToHash("Jogging"), true);
         (character as PlayerHandler).CurrMovementSpeed = (character as PlayerHandler).jogSpeed;
         yield break;    
     
     }
 
     public override IEnumerator OnStateExit() {
-        animator.SetBool(Animator.StringToHash("Jogging"), false);
+        //animator.SetBool(Animator.StringToHash("Jogging"), false);
         yield break;    
     }
 }
@@ -46,7 +50,8 @@ public class SprintMoveState : MoveState {
     
     public override IEnumerator OnStateEnter() {
         (character as PlayerHandler).ChangeStanceTimer(.5f);
-        animator.SetBool(Animator.StringToHash("Sprinting"), true);
+        animator.SetBool(Animator.StringToHash("Crouching"), false);
+       // animator.SetBool(Animator.StringToHash("Sprinting"), true);
         (character as PlayerHandler).CurrMovementSpeed = (character as PlayerHandler).sprintSpeed;
         StaminaDrain = DrainStaminaOverTime();
         character.StartCoroutine(StaminaDrain);
@@ -63,7 +68,7 @@ public class SprintMoveState : MoveState {
 
     public override IEnumerator OnStateExit() {
         if(StaminaDrain != null) character.StopCoroutine(StaminaDrain);
-        animator.SetBool(Animator.StringToHash("Sprinting"), false);
+        //animator.SetBool(Animator.StringToHash("Sprinting"), false);
         yield break;    
     }
 }
@@ -73,13 +78,15 @@ public class WalkMoveState : MoveState {
     
     public override IEnumerator OnStateEnter() {
         (character as PlayerHandler).ChangeStanceTimer(1f);
-        animator.SetBool(Animator.StringToHash("Walking"), true);
+        animator.SetBool(Animator.StringToHash("Crouching"), false);
+
+       // animator.SetBool(Animator.StringToHash("Walking"), true);
         (character as PlayerHandler).CurrMovementSpeed = (character as PlayerHandler).walkSpeed;
         yield break;    
     }
 
     public override IEnumerator OnStateExit() {
-        animator.SetBool(Animator.StringToHash("Walking"), false);
+       // animator.SetBool(Animator.StringToHash("Walking"), false);
         yield break;    
     }
 }
@@ -94,7 +101,7 @@ public class CrouchIdleMoveState : MoveState {
     }
 
     public override IEnumerator OnStateExit() {
-        animator.SetBool(Animator.StringToHash("Crouching"), false);
+      //  animator.SetBool(Animator.StringToHash("Crouching"), false);
 
         yield break;    
     }
@@ -105,13 +112,13 @@ public class CrouchWalkMoveState : MoveState {
     
     public override IEnumerator OnStateEnter() {
         (character as PlayerHandler).ChangeStanceTimer(3f);
-        animator.SetBool(Animator.StringToHash("CrouchWalking"), true);
+        animator.SetBool(Animator.StringToHash("Crouching"), true);
         (character as PlayerHandler).CurrMovementSpeed = (character as PlayerHandler).crouchWalkSpeed;        
         yield break;    
     }
 
     public override IEnumerator OnStateExit() {
-        animator.SetBool(Animator.StringToHash("CrouchWalking"), false);
+       // animator.SetBool(Animator.StringToHash("CrouchWalking"), false);
         yield break;    
     }
 }

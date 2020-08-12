@@ -96,11 +96,11 @@ public class AIHandler : CharacterHandler {
     #region core
 
     private void HandleCombatMovementAnim() {
-        CalculateVelocity();
+        //CalculateVelocity();
 
        // Debug.Log(velocity);
-
-        Vector3 localDir = transform.InverseTransformDirection(velocity).normalized;
+        //TODODODODODODO
+        Vector3 localDir = transform.InverseTransformDirection(Vector3.zero).normalized;
         animator.SetFloat(Animator.StringToHash("XCombatMove"), localDir.x);
         animator.SetFloat(Animator.StringToHash("ZCombatMove"), localDir.z);
         animator.SetBool(Animator.StringToHash("CombatWalking"), (Mathf.Abs(localDir.x) > 0.1f) || (Mathf.Abs(localDir.z) > 0.1f));
