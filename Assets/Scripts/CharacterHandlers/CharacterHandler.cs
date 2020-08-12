@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
+using System.Linq;
 using UnityEngine.UI;
 using TMPro;
 using System;
@@ -18,7 +18,9 @@ public class CharacterHandler : MonoBehaviour {
     public Image staminabar;
     public TextMeshProUGUI debugState; 
     public float staminaRegenerationWindow = 3f;
-
+    
+    [Header ("Foliage Handling")]
+    public Material[] materials;
     // [Header("IK")]
     // [Range (0, 5)] public float distanceToGround;
     // public LayerMask floor;
@@ -32,6 +34,8 @@ public class CharacterHandler : MonoBehaviour {
     public float Health {get; private set; }
     public float Stamina {get; private set; }
     public GenericState genericState {get; protected set;}
+    private LayerMask foliageMask;
+    
 
     #region Callbacks
     protected virtual void Start() {
@@ -42,7 +46,11 @@ public class CharacterHandler : MonoBehaviour {
 
         
         DisableRagdoll(); //NECCESARY to a. disable ragdoll and b. not fuck up attack script
-        PopulateMeleeMoves(); 
+        PopulateMeleeMoves();
+
+        //foliage stuff
+        foliageMask = LayerMask.GetMask("Foliage");
+        StartCoroutine(GrassHandle()); 
         
     }
 
@@ -303,5 +311,22 @@ public class CharacterHandler : MonoBehaviour {
         layerWeightRoutine = null;
     }
 
+    #endregion
+
+    #region foliage
+    IEnumerator GrassHandle(){
+        while (true){
+            //Collider[] foliageInView = Physics.OverlapSphere(transform.position, radius+2f, foliageMask);
+            if(Physics.OverlapSphere(transform.position, 4, foliageMask).Length > 0) {
+                foreach(Material mat in materials) {
+                    mat.SetVector(Shader.PropertyToID("characterPositions"), new Vector2(transform.position.x, transform.position.z));
+                   // Debug.Log(mat.name);
+                }
+                Shader.SetGlobalFloat(Shader.PropertyToID("characterCount"), 10); //temp idk
+            } 
+            //Debug.Log(foliageInView.Length);
+            yield return new WaitForSeconds(Time.fixedDeltaTime);
+        }
+    }
     #endregion
 }
