@@ -1,5 +1,18 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!65 &6866468502108227982
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8156893297062671393}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.7786538, y: 7.736452, z: 2.3761296}
+  m_Center: {x: -1.4566312, y: 16.093943, z: 0.64677405}
 --- !u!1 &9075442561346592639
 GameObject:
   m_ObjectHideFlags: 0
@@ -108,10 +121,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c7e65726c7fabad4eab8410afa4347e4, type: 2}
   - {fileID: 11400000, guid: ad7002989c3e3f44cb1124be95026886, type: 2}
   - {fileID: 11400000, guid: 9ce87626a3ab3314bb8457bf503bef24, type: 2}
+  weaponHitbox: {fileID: 6866468502108227982}
   heathbar: {fileID: 8074898591226400479}
   staminabar: {fileID: 5645395180898940197}
   debugState: {fileID: 4068547277862800058}
-  staminaRegenerationWindow: 3
+  materials: []
   targetMask:
     serializedVersion: 2
     m_Bits: 1024

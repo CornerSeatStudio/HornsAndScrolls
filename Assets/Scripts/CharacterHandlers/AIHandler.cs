@@ -241,7 +241,7 @@ public class AIHandler : CharacterHandler {
         //first check if i am too close to another AI, 
          Collider[] aiInRange = Physics.OverlapSphere(transform.position, AIGlobalStateCheckRange, AIMask);
             foreach(Collider col in aiInRange) {
-                if(col.GetComponent<AIHandler>() != this 
+                if(col != this 
                     && (col.transform.position - transform.position).sqrMagnitude < backAwayDistance * backAwayDistance 
                     && (col.transform.position - targetPlayer.transform.position).sqrMagnitude > (transform.position - targetPlayer.transform.position).sqrMagnitude) {// and of the two, i am closer to the player, proceed with a spacing method
                     

@@ -13,16 +13,9 @@ public class PlayerHandler : CharacterHandler {
 
 
     [Header("Player Movement Variables")]
-    public float jogSpeed;
-    public float sprintSpeed;
-    public float walkSpeed;
-    public float crouchWalkSpeed;
-    public float combatMoveSpeed;
     [Range(0, 1)] public float turnSmoothness;
     public float slopeForceRayLength;
     public float slopeForce;
-    public float dodgeTime;
-    public float dodgeSpeed;
 
     [Header("Weapon animation stuff")]
     public GameObject weaponMesh;
@@ -41,7 +34,7 @@ public class PlayerHandler : CharacterHandler {
         
         SetStateDriver(new IdleMoveState(this, animator)); //player starts unaggro move state
 
-        CurrMovementSpeed = jogSpeed;
+        CurrMovementSpeed = (characterdata as PlayerData).jogSpeed;
 
         if(gameObject.layer != LayerMask.NameToLayer("Player")) Debug.LogWarning ("layer should be set to Player, not " + LayerMask.LayerToName(gameObject.layer));
 
@@ -69,7 +62,7 @@ public class PlayerHandler : CharacterHandler {
         inputVector.Normalize();
 
         if(genericState is DodgeState) {
-            controller.SimpleMove(dodgeDirection.normalized * dodgeSpeed );
+            controller.SimpleMove(dodgeDirection.normalized * (characterdata as PlayerData).dodgeSpeed );
         } else if (!(genericState is AttackState)) {
             controller.SimpleMove(inputVector * CurrMovementSpeed);  
         }
@@ -109,30 +102,31 @@ public class PlayerHandler : CharacterHandler {
     #region chieftan fish
     //master if statement
     private void DetermineInputOutcome() {
-        if(genericState is MoveState) { 
+         if(genericState is MoveState) { 
             //check for sheathing
-            if(Input.GetKeyDown(KeyCode.X) || Input.GetButtonDown("Fire1") && crouchSheathCase == null) { 
-                SetStateDriver(new UnsheathingCombatState(this, animator));
+            if(Input.GetKeyDown(KeyCode.X) || Input.GetButtonDown("Fire1")) { 
+                SetStateDriver(new SheathingCombatState(this, animator));
             } else {
-                HandleNormalMovement();
-                FaceKeyPress();
-                HandleNormalInteractions();
-            }
-        } else if (genericState is DefaultCombatState) { 
-            //check for sheathing
-            if(Input.GetKeyDown(KeyCode.X)) { // but not dodge state
-                if(genericState is SheathingCombatState) {
-                    SetStateDriver(new UnsheathingCombatState(this, animator));
-                } else {
-                    SetStateDriver(new SheathingCombatState(this, animator));
+                if(!(genericState is SheathingCrouchState)) {
+                    HandleNormalMovement();
+                    HandleNormalInteractions();
                 }
-            } else if(Input.GetKeyDown(KeyCode.C) && !(genericState is SheathingCombatState)) {
-                crouchSheathCase = CrouchToSheathe();
-                StartCoroutine(crouchSheathCase);
-            } 
-            else {
-                HandleCombatMovement();
-                HandleInteractions();
+                FaceKeyPress();
+            }
+        } else {  //combat state (implied already) but not dodge state
+            //check for sheathing  
+            if(Input.GetKeyDown(KeyCode.X)) {
+                if(genericState is SheathingCombatState) {
+                    (genericState as SheathingCombatState).ToggleAnim();
+                } else {
+                    SetStateDriver(new SheathingCombatState(this, animator, true));
+                }
+
+            } else if(Input.GetKeyDown(KeyCode.C)) {
+                SetStateDriver(new SheathingCrouchState(this, animator));
+            } else if (!(genericState is DodgeState)) {
+                HandleCombatMovement(); //dodging & direction info
+                HandleInteractions(); //clicking
                 if(!(genericState is AttackState)) FaceMouseDirection();
             }
         }
@@ -148,23 +142,6 @@ public class PlayerHandler : CharacterHandler {
         }
     }
 
-    IEnumerator crouchSheathCase;
-    private IEnumerator CrouchToSheathe(){
-        animator.SetBool(Animator.StringToHash("WeaponOut"), false); 
-        animator.SetBool(Animator.StringToHash("Crouching"), true); 
-        animator.SetTrigger(Animator.StringToHash("WeaponDraw"));
-        Array.Find(audioData, AudioData => AudioData.name == "sheath").Play(AudioSource);
-
-        SetStateDriver(new CrouchIdleMoveState(this, animator));
-
-        yield return new WaitForSeconds(1.5f); //sheath time idk why its varied
-
-        yield return new WaitUntil(() => layerWeightRoutine == null);
-        layerWeightRoutine = LayerWeightDriver(1, 1, 0, .3f);
-        yield return StartCoroutine(layerWeightRoutine);
-
-        crouchSheathCase = null;
-    }
 
     #region big fish
     private void HandleNormalInteractions(){
@@ -226,11 +203,11 @@ public class PlayerHandler : CharacterHandler {
         }
 
         //finally set the floats for movement directions
-        float weight = Mathf.InverseLerp(0, combatMoveSpeed, currVelocity.magnitude);
+        float weight = Mathf.InverseLerp(0, (characterdata as PlayerData).combatMoveSpeed, currVelocity.magnitude);
         animator.SetFloat(Animator.StringToHash("XMove"), localDir.x * weight);
         animator.SetFloat(Animator.StringToHash("ZMove"), localDir.z * weight);
     
-        Debug.Log(currVelocity);
+       // Debug.Log(currVelocity);
     }
 
     private void HandleInteractions() {

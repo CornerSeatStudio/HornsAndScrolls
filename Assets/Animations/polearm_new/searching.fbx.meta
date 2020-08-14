@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: d65b840381e3a1c4ba880513e3b1e537
+guid: e4cd018ee8c72ec4089e77118a711b61
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable:
   - first:
       74: 5975651412602298226
-    second: Armature|WalkForward.002
+    second: polearm searching
   externalObjects: {}
   materials:
     materialImportMode: 1
@@ -21,7 +21,11 @@ ModelImporter:
     rigImportErrors: 
     rigImportWarnings: 
     animationImportErrors: 
-    animationImportWarnings: 
+    animationImportWarnings: "\nClip 'Armature|WalkForward.002' has import animation
+      warnings that might lower retargeting quality:\nNote: Activate translation
+      DOF on avatar to improve retargeting quality.\n\t'Shoulder.L' has translation
+      animation that will be discarded.\n\t'Shoulder.R' has translation animation
+      that will be discarded.\n"
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
@@ -35,11 +39,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Armature|WalkForward.002
+      name: polearm searching
       takeName: Armature|WalkForward.002
       internalID: 0
-      firstFrame: 0
-      lastFrame: 188
+      firstFrame: 6
+      lastFrame: 130
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -48,10 +52,10 @@ ModelImporter:
       hasAdditiveReferencePose: 0
       loopTime: 1
       loopBlend: 0
-      loopBlendOrientation: 0
+      loopBlendOrientation: 1
       loopBlendPositionY: 0
       loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
+      keepOriginalOrientation: 1
       keepOriginalPositionY: 1
       keepOriginalPositionXZ: 0
       heightFromFeet: 0

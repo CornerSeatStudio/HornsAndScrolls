@@ -13,6 +13,8 @@ public class IdleMoveState : MoveState {
     public override IEnumerator OnStateEnter() {
         (character as PlayerHandler).ChangeStanceTimer(1f);
         animator.SetBool(Animator.StringToHash("Crouching"), false);
+        animator.SetBool(Animator.StringToHash("Combat"), false);
+        animator.SetBool(Animator.StringToHash("midDraw"), false); //drawing is finished
 
    //     animator.SetBool(Animator.StringToHash("Idle"), true);
         yield break;
@@ -32,7 +34,7 @@ public class JogMoveState : MoveState {
         animator.SetBool(Animator.StringToHash("Crouching"), false);
 
        // animator.SetBool(Animator.StringToHash("Jogging"), true);
-        (character as PlayerHandler).CurrMovementSpeed = (character as PlayerHandler).jogSpeed;
+        (character as PlayerHandler).CurrMovementSpeed = (character.characterdata as PlayerData).jogSpeed;
         yield break;    
     
     }
@@ -52,7 +54,7 @@ public class SprintMoveState : MoveState {
         (character as PlayerHandler).ChangeStanceTimer(.5f);
         animator.SetBool(Animator.StringToHash("Crouching"), false);
        // animator.SetBool(Animator.StringToHash("Sprinting"), true);
-        (character as PlayerHandler).CurrMovementSpeed = (character as PlayerHandler).sprintSpeed;
+        (character as PlayerHandler).CurrMovementSpeed = (character.characterdata as PlayerData).sprintSpeed;
         StaminaDrain = DrainStaminaOverTime();
         character.StartCoroutine(StaminaDrain);
         yield return new WaitUntil(()=>character.Stamina <= 0);
@@ -81,7 +83,7 @@ public class WalkMoveState : MoveState {
         animator.SetBool(Animator.StringToHash("Crouching"), false);
 
        // animator.SetBool(Animator.StringToHash("Walking"), true);
-        (character as PlayerHandler).CurrMovementSpeed = (character as PlayerHandler).walkSpeed;
+        (character as PlayerHandler).CurrMovementSpeed = (character.characterdata as PlayerData).walkSpeed;
         yield break;    
     }
 
@@ -97,6 +99,7 @@ public class CrouchIdleMoveState : MoveState {
     public override IEnumerator OnStateEnter() {
         (character as PlayerHandler).ChangeStanceTimer(3f);
         animator.SetBool(Animator.StringToHash("Crouching"), true);
+        animator.SetBool(Animator.StringToHash("midDraw"), false); //drawing is finished        
         yield break;    
     }
 
@@ -113,7 +116,7 @@ public class CrouchWalkMoveState : MoveState {
     public override IEnumerator OnStateEnter() {
         (character as PlayerHandler).ChangeStanceTimer(3f);
         animator.SetBool(Animator.StringToHash("Crouching"), true);
-        (character as PlayerHandler).CurrMovementSpeed = (character as PlayerHandler).crouchWalkSpeed;        
+        (character as PlayerHandler).CurrMovementSpeed = (character.characterdata as PlayerData).crouchWalkSpeed;        
         yield break;    
     }
 

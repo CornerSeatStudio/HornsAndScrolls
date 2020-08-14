@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 4791b53669bb08f40a9aa79829e0c406
+guid: d65b840381e3a1c4ba880513e3b1e537
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable:
   - first:
-      74: 896188942311107492
-    second: Armature|Polearm_walk_agro
+      74: 5975651412602298226
+    second: polearm idle
   externalObjects: {}
   materials:
     materialImportMode: 1
@@ -21,11 +21,7 @@ ModelImporter:
     rigImportErrors: 
     rigImportWarnings: 
     animationImportErrors: 
-    animationImportWarnings: "\nClip 'Armature|Polearm_walk_agro' has import animation
-      warnings that might lower retargeting quality:\nNote: Activate translation
-      DOF on avatar to improve retargeting quality.\n\t'Shoulder.L' has translation
-      animation that will be discarded.\n\t'Shoulder.R' has translation animation
-      that will be discarded.\n"
+    animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
@@ -39,11 +35,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Armature|Polearm_walk_agro
-      takeName: Armature|Polearm_walk_agro
+      name: polearm idle
+      takeName: Armature|WalkForward.002
       internalID: 0
-      firstFrame: 12
-      lastFrame: 89
+      firstFrame: 0
+      lastFrame: 188
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -52,10 +48,10 @@ ModelImporter:
       hasAdditiveReferencePose: 0
       loopTime: 1
       loopBlend: 0
-      loopBlendOrientation: 1
+      loopBlendOrientation: 0
       loopBlendPositionY: 0
       loopBlendPositionXZ: 0
-      keepOriginalOrientation: 1
+      keepOriginalOrientation: 0
       keepOriginalPositionY: 1
       keepOriginalPositionXZ: 0
       heightFromFeet: 0

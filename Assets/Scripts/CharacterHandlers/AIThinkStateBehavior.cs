@@ -135,8 +135,8 @@ public class InvestigationState : AIThinkState {
             }
         } else { //caught, change global state, let mono behavior handle the rest
             animator.SetBool(Animator.StringToHash("IsGlobalAggroState"), true); //todo: to be put in separate class
-            character.layerWeightRoutine = character.LayerWeightDriver(1, 0, 1, .3f);
-            character.StartCoroutine(character.layerWeightRoutine);
+            // character.layerWeightRoutine = character.LayerWeightDriver(1, 0, 1, .3f);
+            // character.StartCoroutine(character.layerWeightRoutine);
             character.GlobalState = GlobalState.AGGRO;
             character.SetStateDriver(new DefaultAIAggroState(character, animator, agent));
         }
