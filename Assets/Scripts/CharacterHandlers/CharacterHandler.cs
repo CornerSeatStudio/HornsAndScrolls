@@ -287,7 +287,7 @@ public class CharacterHandler : MonoBehaviour {
                 Shader.SetGlobalFloat(Shader.PropertyToID("characterCount"), 10); //temp idk
             } 
             //Debug.Log(foliageInView.Length);
-            yield return new WaitForSeconds(Time.fixedDeltaTime);
+            yield return new WaitForFixedUpdate();
         }
     }
     #endregion

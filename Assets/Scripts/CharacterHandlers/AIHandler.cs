@@ -21,7 +21,7 @@ public class AIHandler : CharacterHandler {
     public Image stealthBar;
     public List<PatrolWaypoint> patrolWaypoints; //where ai walks
     public float idleTimeAtWaypoint; //how long ai stays at each patrol waypoint
-    public float spotTimerThreshold; //time it takes to go into aggro
+    public float startSpotTimerThreshold; //time it takes to go into aggro
     public float AIGlobalStateCheckRange = 30f; //range ai can sense other AI and their states
 
     [Header("Combat Stuff")]
@@ -57,7 +57,7 @@ public class AIHandler : CharacterHandler {
         genericState = new DefaultCombatState(this, animator); //todo temp probably
         
         //event stuff
-        CurrSpotTimerThreshold = spotTimerThreshold;
+        CurrSpotTimerThreshold = startSpotTimerThreshold;
         targetPlayer.OnStanceChange += SpotTimerChange;
 
         StartingCondition();

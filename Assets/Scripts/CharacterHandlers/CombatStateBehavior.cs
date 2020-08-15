@@ -23,9 +23,9 @@ public class SheathingCombatState : CombatState {
         // yield return character.StartCoroutine(layerRoutine);
         //fuck it just set layer - if it cucks up in the future use above
         animator.SetLayerWeight(1, 1);
+        
 
-
-        (character as PlayerHandler).ChangeStanceTimer(1f); //stealth stuff
+        (character as PlayerHandler).ChangeStanceTimer((character.characterdata as PlayerData).detectionTime); //stealth stuff
 
         animator.SetBool(Animator.StringToHash("Combat"), true); //for facing mouse animation
         animator.SetBool(Animator.StringToHash("midDraw"), true);//determines when to actually transition out
@@ -115,7 +115,7 @@ public class SheathingCombatState : CombatState {
         currWeight = 1;
         timeVal = 0;
         while(Mathf.Abs(currWeight) > 0.01f && !(character.genericState is SheathingCrouchState)) { //stop if state has changed to crouch sheath
-            currWeight = Mathf.Lerp(1, 0, timeVal);
+            currWeight = Mathf.Lerp(1, 0, timeVal*3);
             animator.SetLayerWeight(1, currWeight);
             timeVal += Time.fixedDeltaTime;
             yield return new WaitForFixedUpdate();
@@ -139,13 +139,14 @@ public class SheathingCrouchState : MoveState {
     float animTime = 1.2f; //sheath time
     float currAnimTime = 0f;
     float currAudioTime = 0f;
+
     public SheathingCrouchState(CharacterHandler character, Animator animator) : base(character, animator) {}
 
     public override IEnumerator OnStateEnter() {
         animator.SetLayerWeight(1, 1);
 
 
-        (character as PlayerHandler).ChangeStanceTimer(1.5f); //stealth stuff
+        (character as PlayerHandler).ChangeStanceTimer((character.characterdata as PlayerData).detectionTime * 1.5f); //stealth stuff
 
         animator.SetBool(Animator.StringToHash("Combat"), false); //for crouch case
         animator.SetBool(Animator.StringToHash("Crouching"), true); //for crouch case
@@ -182,7 +183,7 @@ public class SheathingCrouchState : MoveState {
         currWeight = 1;
         timeVal = 0;
         while(Mathf.Abs(currWeight) > 0.01f && !(character.genericState is SheathingCombatState)) {
-            currWeight = Mathf.Lerp(1, 0, timeVal);
+            currWeight = Mathf.Lerp(1, 0, timeVal*3);
             animator.SetLayerWeight(1, currWeight);
             timeVal += Time.fixedDeltaTime;
             yield return new WaitForFixedUpdate();
@@ -195,7 +196,7 @@ public class SheathingCrouchState : MoveState {
         if(sheath != null) character.StopCoroutine(sheath);
 
         layerRoutine = LayerDown();
-        character.StartCoroutine(layerRoutine);
+        character.StartCoroutine(layerRoutine); //TODO THIS SHOULD BE STOPPED IF DONE IN AGAIN
 
         // character.layerWeightRoutine = character.LayerWeightDriver(1, 1, 0, .3f);
         // yield return character.StartCoroutine(character.layerWeightRoutine);
