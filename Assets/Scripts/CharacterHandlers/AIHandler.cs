@@ -88,22 +88,27 @@ public class AIHandler : CharacterHandler {
         //Debug.Log(GlobalState);
 
 
-        animator.SetBool(Animator.StringToHash("IsGlobalAggroState"), GlobalState == GlobalState.AGGRO);
-        if(GlobalState == GlobalState.AGGRO) HandleCombatMovementAnim();
+        animator.SetBool(Animator.StringToHash("Combat"), GlobalState == GlobalState.AGGRO);
         
     }
 
+    void LateUpdate() {
+        HandleMovementAnim();
+    }
+
     #region core
+    Vector3 preVelocity, velVel, currVelocity;
+    private void HandleMovementAnim() {
+        currVelocity = Vector3.SmoothDamp(preVelocity, agent.velocity, ref velVel, .12f);
+        preVelocity = currVelocity;
 
-    private void HandleCombatMovementAnim() {
-        //CalculateVelocity();
+        Vector3 localDir = transform.InverseTransformDirection(currVelocity).normalized;
 
-       // Debug.Log(velocity);
-        //TODODODODODODO
-        Vector3 localDir = transform.InverseTransformDirection(Vector3.zero).normalized;
-        animator.SetFloat(Animator.StringToHash("XCombatMove"), localDir.x);
-        animator.SetFloat(Animator.StringToHash("ZCombatMove"), localDir.z);
-        animator.SetBool(Animator.StringToHash("CombatWalking"), (Mathf.Abs(localDir.x) > 0.1f) || (Mathf.Abs(localDir.z) > 0.1f));
+        float weight = Mathf.InverseLerp(0, agent.speed, currVelocity.magnitude);
+        animator.SetFloat(Animator.StringToHash("XMove"), localDir.x * weight);
+        animator.SetFloat(Animator.StringToHash("ZMove"), localDir.z * weight);
+        animator.SetFloat(Animator.StringToHash("Speed"), weight);
+
 
 
     }
@@ -122,9 +127,9 @@ public class AIHandler : CharacterHandler {
 
     private void PivotToAggro() {
         GlobalState = GlobalState.AGGRO;
-        animator.SetBool(Animator.StringToHash("IsGlobalAggroState"), true); //todo: to be put in separate class    
-        layerWeightRoutine = LayerWeightDriver(1, 0, 1, .3f);
-        StartCoroutine(layerWeightRoutine);
+        animator.SetBool(Animator.StringToHash("Combat"), true); //todo: to be put in separate class    
+        // layerWeightRoutine = LayerWeightDriver(1, 0, 1, .3f);
+        // StartCoroutine(layerWeightRoutine);
         StartCoroutine(OffenseScheduler());
         SetStateDriver(new DefaultAIAggroState(this, animator, agent));
     }

@@ -44,7 +44,6 @@ public class PatrolState : AIThinkState {
     public override IEnumerator OnStateEnter() { //Debug.Log("enteredPatrol");
         if(character.NextWaypointLocation == null) { Debug.LogWarning("no waypoints on some cunt"); character.SetStateDriver(new IdleState(character, animator, agent)); };
         
-        animator.SetBool(Animator.StringToHash("IsPatrol"), true);
         moveToLocationCoroutine = MoveToLocation(character.NextWaypointLocation);
         yield return character.StartCoroutine(moveToLocationCoroutine);
     }    
@@ -65,7 +64,6 @@ public class PatrolState : AIThinkState {
 
     public override IEnumerator OnStateExit() { //Debug.Log("exitedPatrol");
         if(LOSCoroutine != null) character.StopCoroutine(LOSCoroutine);        
-        animator.SetBool(Animator.StringToHash("IsPatrol"), false);
         if(moveToLocationCoroutine != null) character.StopCoroutine(moveToLocationCoroutine); //stop coroutine
         yield return null;
     }
@@ -98,7 +96,7 @@ public class InvestigationState : AIThinkState {
 
         Array.Find(character.audioData, AudioData => AudioData.name == "spotted").Play(character.AudioSource);
 
-        agent.isStopped = true; //halt movement
+        agent.SetDestination(character.transform.position); //halt movement
         isDecreasingDetection = false; //start by increasing detection
         
         if(timerCoroutine == null) { //start timer each first time only
@@ -112,19 +110,17 @@ public class InvestigationState : AIThinkState {
         character.StartCoroutine(lookCoroutine);
 
 
-        animator.SetBool("IsStaring", true);
+        animator.SetTrigger(Animator.StringToHash("Spotted"));
         //todo also make look at its own coroutine
         yield return new WaitUntil(() => !character.LOSOnPlayer() || CurrInvestigationTimer >= character.CurrSpotTimerThreshold); //keep incrementing until LOS is broken || caught
-
-        //if condition break, stop staring animation (todo)
-        animator.SetBool("IsStaring", false);
+        
 
         //3 possibilities, 
         if(!character.LOSOnPlayer()) {
             character.StopCoroutine(lookCoroutine);
             //lost of sight before halfway
             if(character.CurrSpotTimerThreshold/2 > CurrInvestigationTimer) {
-                //reverse timer, but switch to ChainedDiscovery
+                //reverse timer, in place search
                 isDecreasingDetection = true;
                 investigationCoroutine = InPlaceSearch();
                 character.StartCoroutine(investigationCoroutine);
@@ -134,7 +130,7 @@ public class InvestigationState : AIThinkState {
                 yield break;
             }
         } else { //caught, change global state, let mono behavior handle the rest
-            animator.SetBool(Animator.StringToHash("IsGlobalAggroState"), true); //todo: to be put in separate class
+            animator.SetBool(Animator.StringToHash("Combat"), true); //todo: to be put in separate class
             // character.layerWeightRoutine = character.LayerWeightDriver(1, 0, 1, .3f);
             // character.StartCoroutine(character.layerWeightRoutine);
             character.GlobalState = GlobalState.AGGRO;
@@ -144,8 +140,8 @@ public class InvestigationState : AIThinkState {
     }
 
     private IEnumerator InPlaceSearch() {
-        animator.SetBool(Animator.StringToHash("IsSearching"), true);
-        agent.isStopped = true; //halt movement
+        animator.SetTrigger(Animator.StringToHash("BrokeLOS"));
+        agent.SetDestination(character.transform.position); //halt movement
         isDecreasingDetection = true; //start by DECREASING detection
         
         if(timerCoroutine == null) { //start timer each first time only
@@ -157,8 +153,6 @@ public class InvestigationState : AIThinkState {
 
         yield return new WaitUntil(() => character.LOSOnPlayer() || CurrInvestigationTimer <= 0); //keep decrementing until LOS is regained || lost
 
-        animator.SetBool(Animator.StringToHash("IsSearching"), false);
-
         //two situations
         if(character.LOSOnPlayer()) { //if sight regained, back to staring
             isDecreasingDetection = false; //reverse timer
@@ -166,22 +160,11 @@ public class InvestigationState : AIThinkState {
             character.StartCoroutine(investigationCoroutine);
             yield break;
         } else { //otherwise, back to patrolling
-            agent.isStopped = false; //resume movement
+            animator.SetTrigger(Animator.StringToHash("Normal"));
             character.SetStateDriver(new PatrolState(character, animator, agent));
             yield break;
         }
 
-    }
-
-    public IEnumerator MoveToLocation(Vector3 location){ //Debug.Log("enteredMove");//shouldnt be a coroutine lol, no reason for the while statemtn
-        
-        animator.SetBool(Animator.StringToHash("IsSuspiciousWalk"), true);
-        
-        agent.SetDestination(location);
-        //character.debug(agent.stoppingDistance + " " + agent.remainingDistance);
-        yield return new WaitUntil(() => !agent.pathPending && agent.stoppingDistance > agent.remainingDistance);
-        //Debug.Log(agent.pathPending + " " + (agent.stoppingDistance < agent.remainingDistance));
-        animator.SetBool(Animator.StringToHash("IsSuspiciousWalk"), false);
     }
 
     private IEnumerator InvestigationTimer() {
@@ -197,18 +180,36 @@ public class InvestigationState : AIThinkState {
 
     }
 
+    private IEnumerator LOSOnPlayerCheck() { //once spotted, go to investigate
+        //Debug.Log("checking for player");
+        yield return new WaitUntil(() => character.LOSOnPlayer());
+    }
+
+    public IEnumerator MoveToLocation(Vector3 location){ //Debug.Log("enteredMove");//shouldnt be a coroutine lol, no reason for the while statemtn
+        animator.SetTrigger(Animator.StringToHash("InvestigateWalk"));
+        agent.SetDestination(location);
+        //character.debug(agent.stoppingDistance + " " + agent.remainingDistance);
+        yield return new WaitUntil(() => (!agent.pathPending && agent.stoppingDistance > agent.remainingDistance));
+
+        //if spotted again, 
+    }
+
+    IEnumerator LOScheck;
     private IEnumerator ChainedDiscovery() { //move to last seen location AND investigate
         //Debug.Log("chain discovering");
+        LOScheck = LOSOnPlayerCheck();
+        character.StartCoroutine(LOScheck);
+
         character.StopCoroutine(timerCoroutine); //stop the timer
         timerCoroutine = null;
-        animator.SetBool(Animator.StringToHash("IsSearching"), true);
+        animator.SetBool(Animator.StringToHash("Investigating"), true);
+
 
         //"in place search" variation - as grace period
         yield return new WaitForSeconds(3f);
 
-        animator.SetBool(Animator.StringToHash("IsSearching"), false);
 
-        agent.isStopped = false; //allow character to move after grace period
+
         //move to last seen location
         investigationCoroutine = MoveToLocation(lastSeenPlayerLocation);
         yield return character.StartCoroutine(investigationCoroutine);
@@ -220,12 +221,10 @@ public class InvestigationState : AIThinkState {
     }
 
     public override IEnumerator OnStateExit() { 
-        agent.isStopped = false; //ensure movement can continue
         //disable to exit possibilites (being to aggro and to patrol)
-        animator.SetBool(Animator.StringToHash("IsStaring"), false);
-        animator.SetBool(Animator.StringToHash("IsSearching"), false);
         if(lookCoroutine != null) character.StopCoroutine(lookCoroutine);
-        if(timerCoroutine != null) character.StopCoroutine(timerCoroutine); //stop coroutine
+        if(timerCoroutine != null) character.StopCoroutine(timerCoroutine); 
+        if(LOScheck != null) character.StopCoroutine(LOScheck);
         yield return null;
     }
 }

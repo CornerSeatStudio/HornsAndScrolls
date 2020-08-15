@@ -274,32 +274,6 @@ public class CharacterHandler : MonoBehaviour {
     }
     #endregion
 
-    #region useful helper functions
-
-    public IEnumerator layerWeightRoutine;
-
-    public IEnumerator LayerWeightDriver(int layeri, float startVal, float endVal, float smoothness){
-        yield return new WaitUntil(() => layerWeightRoutine == null);
-        layerWeightRoutine = LayerWeightShift(layeri, startVal, endVal, smoothness);
-        yield return StartCoroutine(layerWeightRoutine);
-    }
-
-    private IEnumerator LayerWeightShift(int layeri, float startVal, float endVal, float smoothness){
-        float temp = startVal;
-        while(! (Mathf.Abs(temp - endVal) < 0.01f)) {
-               // Debug.Log(temp);
-
-            temp = Mathf.Lerp(startVal, endVal, smoothness);
-            startVal = temp;
-            animator.SetLayerWeight(layeri, temp);
-            yield return null;
-        }
-
-        animator.SetLayerWeight(layeri, endVal);
-        layerWeightRoutine = null;
-    }
-
-    #endregion
 
     #region foliage
     IEnumerator GrassHandle(){

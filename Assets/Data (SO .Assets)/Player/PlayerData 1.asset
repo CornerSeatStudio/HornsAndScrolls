@@ -15,10 +15,11 @@ MonoBehaviour:
   maxHealth: 100
   maxStamina: 20
   staminaRegenerationRatePerS: 3
+  staminaRegenerationWindow: 3
   jogSpeed: 20
   sprintSpeed: 32
   walkSpeed: 10
   crouchWalkSpeed: 14
   combatMoveSpeed: 15
-  dodgeTime: 0.5
-  dodgeSpeed: 12
+  dodgeTime: 0.8
+  dodgeSpeed: 20
