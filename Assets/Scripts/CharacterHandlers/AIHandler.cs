@@ -81,7 +81,7 @@ public class AIHandler : CharacterHandler {
             if (patrolWaypoints.Count != 0) {
                 NextWaypointLocation = patrolWaypoints[0].transform.position; //set first patrol waypoint
             }else {
-                Debug.LogWarning("this ai dont have waypoint for patrols, should be at least one probs");
+                Debug.Log("this ai dont have waypoint for patrols, should be at least one probs");
             }
             
             SetStateDriver(new PatrolState(this, animator, agent));
