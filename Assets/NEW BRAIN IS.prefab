@@ -13,6 +13,18 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.7786538, y: 7.736452, z: 2.3761296}
   m_Center: {x: -1.4566312, y: 16.093943, z: 0.64677405}
+--- !u!114 &8815594465789386161
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8156893297062671393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85aab6c01831b8343902144bb6bc3b72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &9075442561346592639
 GameObject:
   m_ObjectHideFlags: 0
@@ -132,7 +144,6 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 512
-  targetPlayer: {fileID: 0}
   startAsAggro: 0
   stealthBar: {fileID: 2307370322100467061}
   patrolWaypoints:
