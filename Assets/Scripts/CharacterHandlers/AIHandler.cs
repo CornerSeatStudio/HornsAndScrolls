@@ -13,7 +13,6 @@ public enum GlobalState { UNAGGRO, AGGRO, DEAD }; //determines ai state tree are
 public class AIHandler : CharacterHandler {    
 
     [Header("AI Core Components/SOs")]
-    public PlayerHandler targetPlayer; 
     public bool startAsAggro = false;
 
     //stealth stuff
@@ -21,7 +20,6 @@ public class AIHandler : CharacterHandler {
     public Image stealthBar;
     public List<PatrolWaypoint> patrolWaypoints; //where ai walks
     public float idleTimeAtWaypoint; //how long ai stays at each patrol waypoint
-    public float spotTimerThreshold; //time it takes to go into aggro
     public float AIGlobalStateCheckRange = 30f; //range ai can sense other AI and their states
 
     [Header("Combat Stuff")]
@@ -35,6 +33,7 @@ public class AIHandler : CharacterHandler {
     public TextMeshProUGUI AIstate; 
 
     //private stuff
+    public PlayerHandler TargetPlayer {get; private set;} 
     protected NavMeshAgent agent;
     protected AIThinkState thinkState; 
     public float CurrSpotTimerThreshold {get; private set; }
@@ -49,16 +48,19 @@ public class AIHandler : CharacterHandler {
         Detection = this.GetComponent<Detection>();
         agent = this.GetComponent<NavMeshAgent>();
       
+        //auto find player finally
+        try { TargetPlayer = FindObjectOfType<PlayerHandler>(); } catch { Debug.LogWarning("WHERE THE PLAYER AT FOOL"); }
+
         AIMask = LayerMask.GetMask("Enemy");
         if(AIMask == -1) Debug.LogWarning("AI MASK NOT SET PROPERLY");
         if(gameObject.layer != LayerMask.NameToLayer("Enemy")) Debug.LogWarning ("layer should be set to Enemy, not " + LayerMask.LayerToName(gameObject.layer));
 
         //AI should always be in default combat state
         genericState = new DefaultCombatState(this, animator); //todo temp probably
-        
+
         //event stuff
-        CurrSpotTimerThreshold = spotTimerThreshold;
-        targetPlayer.OnStanceChange += SpotTimerChange;
+        CurrSpotTimerThreshold = (TargetPlayer.characterdata as PlayerData).detectionTime;
+        TargetPlayer.OnStanceChange += SpotTimerChange;
 
         StartingCondition();
         
@@ -88,22 +90,27 @@ public class AIHandler : CharacterHandler {
         //Debug.Log(GlobalState);
 
 
-        animator.SetBool(Animator.StringToHash("IsGlobalAggroState"), GlobalState == GlobalState.AGGRO);
-        if(GlobalState == GlobalState.AGGRO) HandleCombatMovementAnim();
+        animator.SetBool(Animator.StringToHash("Combat"), GlobalState == GlobalState.AGGRO);
         
     }
 
+    void LateUpdate() {
+        HandleMovementAnim();
+    }
+
     #region core
+    Vector3 preVelocity, velVel, currVelocity;
+    private void HandleMovementAnim() {
+        currVelocity = Vector3.SmoothDamp(preVelocity, agent.velocity, ref velVel, .12f);
+        preVelocity = currVelocity;
 
-    private void HandleCombatMovementAnim() {
-        CalculateVelocity();
+        Vector3 localDir = transform.InverseTransformDirection(currVelocity).normalized;
 
-       // Debug.Log(velocity);
+        float weight = Mathf.InverseLerp(0, agent.speed, currVelocity.magnitude);
+        animator.SetFloat(Animator.StringToHash("XMove"), localDir.x * weight);
+        animator.SetFloat(Animator.StringToHash("ZMove"), localDir.z * weight);
+        animator.SetFloat(Animator.StringToHash("Speed"), weight);
 
-        Vector3 localDir = transform.InverseTransformDirection(velocity).normalized;
-        animator.SetFloat(Animator.StringToHash("XCombatMove"), localDir.x);
-        animator.SetFloat(Animator.StringToHash("ZCombatMove"), localDir.z);
-        animator.SetBool(Animator.StringToHash("CombatWalking"), (Mathf.Abs(localDir.x) > 0.1f) || (Mathf.Abs(localDir.z) > 0.1f));
 
 
     }
@@ -122,9 +129,9 @@ public class AIHandler : CharacterHandler {
 
     private void PivotToAggro() {
         GlobalState = GlobalState.AGGRO;
-        animator.SetBool(Animator.StringToHash("IsGlobalAggroState"), true); //todo: to be put in separate class    
-        layerWeightRoutine = LayerWeightDriver(1, 0, 1, .3f);
-        StartCoroutine(layerWeightRoutine);
+        animator.SetBool(Animator.StringToHash("Combat"), true); //todo: to be put in separate class    
+        // layerWeightRoutine = LayerWeightDriver(1, 0, 1, .3f);
+        // StartCoroutine(layerWeightRoutine);
         StartCoroutine(OffenseScheduler());
         SetStateDriver(new DefaultAIAggroState(this, animator, agent));
     }
@@ -221,8 +228,8 @@ public class AIHandler : CharacterHandler {
 
     public bool DefenceConditional(){       //  Debug.Log("defense condi");
 
-        return targetPlayer.genericState is AttackState //player is attacking
-        && targetPlayer.FindTarget((targetPlayer.genericState as AttackState).chosenMove) == this //player is attacking me in particular
+        return TargetPlayer.genericState is AttackState //player is attacking
+        && TargetPlayer.FindTarget((TargetPlayer.genericState as AttackState).chosenMove) == this //player is attacking me in particular
         && !(genericState is AttackState) //im not already mid attack  
         && Stamina > 0;     
     }
@@ -230,7 +237,7 @@ public class AIHandler : CharacterHandler {
     public bool CloseDistanceConditional() { //returns if player is too far
            //    Debug.Log("far condi");
 
-        return (targetPlayer.transform.position - transform.position).sqrMagnitude > tooFarFromPlayerDistance * tooFarFromPlayerDistance;
+        return (TargetPlayer.transform.position - transform.position).sqrMagnitude > tooFarFromPlayerDistance * tooFarFromPlayerDistance;
     }
 
     public Vector3 currProximateAIPosition {get; private set;}
@@ -241,9 +248,9 @@ public class AIHandler : CharacterHandler {
         //first check if i am too close to another AI, 
          Collider[] aiInRange = Physics.OverlapSphere(transform.position, AIGlobalStateCheckRange, AIMask);
             foreach(Collider col in aiInRange) {
-                if(col.GetComponent<AIHandler>() != this 
+                if(col != this 
                     && (col.transform.position - transform.position).sqrMagnitude < backAwayDistance * backAwayDistance 
-                    && (col.transform.position - targetPlayer.transform.position).sqrMagnitude > (transform.position - targetPlayer.transform.position).sqrMagnitude) {// and of the two, i am closer to the player, proceed with a spacing method
+                    && (col.transform.position - TargetPlayer.transform.position).sqrMagnitude > (transform.position - TargetPlayer.transform.position).sqrMagnitude) {// and of the two, i am closer to the player, proceed with a spacing method
                     
                     currProximateAIPosition = col.transform.position;
                     return true;
@@ -263,8 +270,8 @@ public class AIHandler : CharacterHandler {
     public bool BackAwayConditional() { //if too close AND CAN back away
         NavMeshHit hit;
 
-        return (targetPlayer.transform.position - transform.position).sqrMagnitude <= backAwayDistance * backAwayDistance
-                && NavMesh.FindClosestEdge(transform.position + (transform.position - targetPlayer.transform.position), out hit, NavMesh.AllAreas);
+        return (TargetPlayer.transform.position - transform.position).sqrMagnitude <= backAwayDistance * backAwayDistance
+                && NavMesh.FindClosestEdge(transform.position + (transform.position - TargetPlayer.transform.position), out hit, NavMesh.AllAreas);
 
 
     }
@@ -272,7 +279,7 @@ public class AIHandler : CharacterHandler {
     public bool InstantShoveConditional() { //returns if player is too close
                // Debug.Log("close condi");
 
-        return (targetPlayer.transform.position - transform.position).sqrMagnitude <= shoveDistance * shoveDistance;
+        return (TargetPlayer.transform.position - transform.position).sqrMagnitude <= shoveDistance * shoveDistance;
     }
 
     public BTStatus StaggerTask() {   
@@ -336,9 +343,9 @@ public class AIHandler : CharacterHandler {
 
     //memthods used by think state behavior
     public IEnumerator ChasePlayer(float stopRange) {
-        agent.SetDestination(targetPlayer.transform.position);
+        agent.SetDestination(TargetPlayer.transform.position);
         while(stopRange < agent.remainingDistance || agent.pathPending){
-            agent.SetDestination(targetPlayer.transform.position);
+            agent.SetDestination(TargetPlayer.transform.position);
             yield return new WaitForSeconds(.2f);
         }
         agent.SetDestination(transform.position);
@@ -350,11 +357,11 @@ public class AIHandler : CharacterHandler {
         
         // Vector3 backAwayMainVec = (transform.position - targetPlayer.transform.position).normalized * (backAwayDistance + 15f);
         // Vector3 movePos = (transform.position + backAwayMainVec) - (transform.position + (transform.position - targetPlayer.transform.position));
-        NavMesh.SamplePosition(transform.position + ((transform.position - targetPlayer.transform.position).normalized * (backAwayDistance + 10f - Vector3.Distance(transform.position, targetPlayer.transform.position))), out hit, distanceFromPlayer, NavMesh.AllAreas);
+        NavMesh.SamplePosition(transform.position + ((transform.position - TargetPlayer.transform.position).normalized * (backAwayDistance + 10f - Vector3.Distance(transform.position, TargetPlayer.transform.position))), out hit, distanceFromPlayer, NavMesh.AllAreas);
         agent.SetDestination(hit.position);
         
-        while(((NavMesh.SamplePosition(transform.position + ((transform.position - targetPlayer.transform.position).normalized * (backAwayDistance + 10f - Vector3.Distance(transform.position, targetPlayer.transform.position))), out hit, distanceFromPlayer, NavMesh.AllAreas))
-                || (NavMesh.FindClosestEdge(transform.position + ((transform.position - targetPlayer.transform.position).normalized * (backAwayDistance + 10f - Vector3.Distance(transform.position, targetPlayer.transform.position))), out hit, NavMesh.AllAreas))
+        while(((NavMesh.SamplePosition(transform.position + ((transform.position - TargetPlayer.transform.position).normalized * (backAwayDistance + 10f - Vector3.Distance(transform.position, TargetPlayer.transform.position))), out hit, distanceFromPlayer, NavMesh.AllAreas))
+                || (NavMesh.FindClosestEdge(transform.position + ((transform.position - TargetPlayer.transform.position).normalized * (backAwayDistance + 10f - Vector3.Distance(transform.position, TargetPlayer.transform.position))), out hit, NavMesh.AllAreas))
               ) && (agent.stoppingDistance < agent.remainingDistance || agent.pathPending) 
                 ) {
 
@@ -369,7 +376,7 @@ public class AIHandler : CharacterHandler {
 
     public IEnumerator FacePlayer() {
         while (true) {
-            transform.LookAt(new Vector3(targetPlayer.transform.position.x, this.transform.position.y, targetPlayer.transform.position.z));
+            transform.LookAt(new Vector3(TargetPlayer.transform.position.x, this.transform.position.y, TargetPlayer.transform.position.z));
             yield return null;
         }
     }

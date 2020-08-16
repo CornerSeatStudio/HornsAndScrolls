@@ -13,16 +13,9 @@ public class PlayerHandler : CharacterHandler {
 
 
     [Header("Player Movement Variables")]
-    public float jogSpeed;
-    public float sprintSpeed;
-    public float walkSpeed;
-    public float crouchWalkSpeed;
-    public float combatMoveSpeed;
     [Range(0, 1)] public float turnSmoothness;
     public float slopeForceRayLength;
     public float slopeForce;
-    public float dodgeTime;
-    public float dodgeSpeed;
 
     [Header("Weapon animation stuff")]
     public GameObject weaponMesh;
@@ -41,19 +34,22 @@ public class PlayerHandler : CharacterHandler {
         
         SetStateDriver(new IdleMoveState(this, animator)); //player starts unaggro move state
 
-        lastPos = transform.position;
-
-        CurrMovementSpeed = jogSpeed;
+        CurrMovementSpeed = (characterdata as PlayerData).jogSpeed;
 
         if(gameObject.layer != LayerMask.NameToLayer("Player")) Debug.LogWarning ("layer should be set to Player, not " + LayerMask.LayerToName(gameObject.layer));
 
+      //  preVelocity = 0f;
         
     }
+
+    
 
 
     protected override void Update() {
         //base.Update(); 
         if(genericState != null) debugState.SetText(genericState.ToString());
+
+        //core move stuff
         inputVector = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
         inputVector = Camera.main.transform.TransformDirection(inputVector);
         inputVector.y = 0f;
@@ -62,10 +58,11 @@ public class PlayerHandler : CharacterHandler {
     }
 
     void FixedUpdate() {
+        //fix directions -> all speed dependencies occur after this
         inputVector.Normalize();
 
         if(genericState is DodgeState) {
-            controller.SimpleMove(dodgeDirection.normalized * dodgeSpeed );
+            controller.SimpleMove(dodgeDirection.normalized * (characterdata as PlayerData).dodgeSpeed );
         } else if (!(genericState is AttackState)) {
             controller.SimpleMove(inputVector * CurrMovementSpeed);  
         }
@@ -74,90 +71,62 @@ public class PlayerHandler : CharacterHandler {
             controller.Move(Vector3.down * controller.height / 2 * slopeForce);
         }
 
-
-        
-        // if(renderer.isVisible){
-        //     Vector3 direction = Camera.main.transform.position - transform.position;
-        //     if(Physics.Raycast(transform.position, direction, out hit)){
-        //         if(hit.collider.tag != "Main Camera"){
-                    
-        //         }
-        //     }
-        // }
     }
 
+    void LateUpdate() {
+        CalculateVelocity();
+        animator.SetFloat(Animator.StringToHash("PlayerSpeed"), currVelocity.magnitude);
+    }
+
+    Vector3 preVelocity, velVel, currVelocity;
+    protected void CalculateVelocity(){
+        //lerpify velocity
+        currVelocity = Vector3.SmoothDamp(preVelocity, controller.velocity, ref velVel, .12f);
+        preVelocity = currVelocity;
+       // Debug.Log(currVelocity + ", old: " + preVelocity);
+    }
+    //for slope speed
     private bool OnSlope(){
         RaycastHit hit;
         return Physics.Raycast(transform.position, Vector3.down, out hit, controller.height/2 * slopeForceRayLength) && hit.normal != Vector3.up;
     }
 
+    //for stealth reactoin time
     public void ChangeStanceTimer(float stanceModifier){
         OnStanceChange?.Invoke(stanceModifier);
     }
     
-/*
 
-    private void OnAnimatorIK(int layerIndex) {
-        
-        animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, animator.GetFloat("IKLeftFootWeight"));
-        animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, animator.GetFloat("IKLeftFootWeight"));       
-        animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, animator.GetFloat("IKRightFootWeight"));
-        animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, animator.GetFloat("IKRightFootWeight"));
-        RaycastHit hit;
-
-
-        Ray ray = new Ray(animator.GetIKPosition(AvatarIKGoal.LeftFoot) + Vector3.up, Vector3.down);
-        if (Physics.Raycast(ray, out hit, distanceToGround + 1f, ~this.gameObject.layer)) {
-            if((floor | (1 << hit.transform.gameObject.layer)) == floor) {
-                Vector3 footPosition = hit.point;
-                footPosition.y += distanceToGround;
-                animator.SetIKPosition(AvatarIKGoal.LeftFoot, footPosition);
-                animator.SetIKRotation(AvatarIKGoal.LeftFoot, Quaternion.LookRotation(transform.forward, hit.normal));
-            }
-        } 
-
-        ray = new Ray(animator.GetIKPosition(AvatarIKGoal.RightFoot) + Vector3.up, Vector3.down);
-        if (Physics.Raycast(ray, out hit, distanceToGround + 1f, ~this.gameObject.layer)) {
-            if((floor | (1 << hit.transform.gameObject.layer)) == floor) {
-                Vector3 footPosition = hit.point;
-                footPosition.y += distanceToGround;
-                animator.SetIKPosition(AvatarIKGoal.RightFoot, footPosition);
-                animator.SetIKRotation(AvatarIKGoal.RightFoot, Quaternion.LookRotation(transform.forward, hit.normal));
-            }
-        } 
-    }
-
-
-*/
     #endregion
 
     #region chieftan fish
     //master if statement
     private void DetermineInputOutcome() {
-        if(genericState is MoveState) { 
+         if(genericState is MoveState) { 
             //check for sheathing
-            if(Input.GetKeyDown(KeyCode.X) || Input.GetButtonDown("Fire1") && crouchSheathCase == null) { 
-                SetStateDriver(new UnsheathingCombatState(this, animator));
+            if(Input.GetKeyDown(KeyCode.X) || Input.GetButtonDown("Fire1")) { 
+                SetStateDriver(new SheathingCombatState(this, animator));
             } else {
-                HandleNormalMovement();
-                FaceKeyPress();
-                HandleNormalInteractions();
-            }
-        } else if (genericState is CombatState) { 
-            //check for sheathing
-            if(Input.GetKeyDown(KeyCode.X) && !(genericState is DodgeState)) { // but not dodge state
-                if(genericState is SheathingCombatState) {
-                    SetStateDriver(new UnsheathingCombatState(this, animator));
-                } else {
-                    SetStateDriver(new SheathingCombatState(this, animator));
+                if(!(genericState is SheathingCrouchState)) {
+                    HandleNormalMovement();
+                    HandleNormalInteractions();
                 }
-            } else if(Input.GetKeyDown(KeyCode.C) && !(genericState is SheathingCombatState)) {
-                crouchSheathCase = CrouchToSheathe();
-                StartCoroutine(crouchSheathCase);
-            } 
-            else {
-                HandleCombatMovement();
-                HandleInteractions();
+                FaceKeyPress();
+            }
+        } else {  //combat state (implied already) but not dodge state
+            //check for sheathing  
+            if(Input.GetKeyDown(KeyCode.X)) {
+                if(genericState is SheathingCombatState) {
+                    (genericState as SheathingCombatState).ToggleAnim();
+                } else {
+                    SetStateDriver(new SheathingCombatState(this, animator, true));
+                }
+
+            } else if(Input.GetKeyDown(KeyCode.C)) {
+                SetStateDriver(new SheathingCrouchState(this, animator));
+            } else if (!(genericState is DodgeState)) {
+                HandleCombatMovement(); //dodging & direction info
+                HandleInteractions(); //clicking
                 if(!(genericState is AttackState)) FaceMouseDirection();
             }
         }
@@ -168,28 +137,11 @@ public class PlayerHandler : CharacterHandler {
     protected override void TakeDamage(float damage, bool isStaggerable, CharacterHandler attacker){
         base.TakeDamage(damage, isStaggerable, attacker);
 
-        if(Health <= 0) { //UPON AI DEATH todo should this be in super class
+        if(Health <= 0) { //UPON DEATH
             this.gameObject.SetActive(false);
         }
     }
 
-    IEnumerator crouchSheathCase;
-    private IEnumerator CrouchToSheathe(){
-        animator.SetBool(Animator.StringToHash("WeaponOut"), false); 
-        animator.SetBool(Animator.StringToHash("Crouching"), true); 
-        animator.SetTrigger(Animator.StringToHash("WeaponDraw"));
-        Array.Find(audioData, AudioData => AudioData.name == "sheath").Play(AudioSource);
-
-        SetStateDriver(new CrouchIdleMoveState(this, animator));
-
-        yield return new WaitForSeconds(1.5f); //sheath time idk why its varied
-
-        yield return new WaitUntil(() => layerWeightRoutine == null);
-        layerWeightRoutine = LayerWeightDriver(1, 1, 0, .3f);
-        yield return StartCoroutine(layerWeightRoutine);
-
-        crouchSheathCase = null;
-    }
 
     #region big fish
     private void HandleNormalInteractions(){
@@ -233,25 +185,29 @@ public class PlayerHandler : CharacterHandler {
         //all feet stuff handled here, not in state
         //determine if smoovin
         //do homemade velocity calculation cause shit be buggy
-        CalculateVelocity();
 
         //if not dodging
         Vector3 localDir;
         
-        if(genericState is DodgeState){
+        if(genericState is DodgeState) { //if i am dodging already, keep dodging in the dodge direction
             localDir = transform.InverseTransformDirection(dodgeDirection).normalized;
-        } else {
+        } else { //if i am not dodging
+            //get local dir from currVelocity instead
+            localDir = transform.InverseTransformDirection(currVelocity).normalized;
+
+            //if i have jumped, do the appropriate setup
             if(Input.GetButtonDown("Jump") && (inputVector.x != 0 || inputVector.z != 0)) {
-                dodgeDirection = velocity;
+                dodgeDirection = currVelocity;
                 SetStateDriver(new DodgeState(this, animator, dodgeDirection));                
             } 
-
-            localDir = transform.InverseTransformDirection(velocity).normalized;
-            animator.SetBool(Animator.StringToHash("CombatWalking"), (inputVector.x != 0f) || (inputVector.z != 0f));
         }
 
-        animator.SetFloat(Animator.StringToHash("XCombatMove"), localDir.x);
-        animator.SetFloat(Animator.StringToHash("ZCombatMove"), localDir.z);
+        //finally set the floats for movement directions
+        float weight = Mathf.InverseLerp(0, (characterdata as PlayerData).combatMoveSpeed, currVelocity.magnitude);
+        animator.SetFloat(Animator.StringToHash("XMove"), localDir.x * weight);
+        animator.SetFloat(Animator.StringToHash("ZMove"), localDir.z * weight);
+    
+       // Debug.Log(currVelocity);
     }
 
     private void HandleInteractions() {
@@ -276,8 +232,6 @@ public class PlayerHandler : CharacterHandler {
     #endregion
 
     #region small fish
-
-    
 
     private void FaceKeyPress() {
         if (inputVector.x != 0 || inputVector.z != 0){ //independent of y

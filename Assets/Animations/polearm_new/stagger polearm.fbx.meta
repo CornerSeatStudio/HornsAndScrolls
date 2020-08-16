@@ -1,11 +1,14 @@
 fileFormatVersion: 2
-guid: 8329e0250db5881499e3387cc4a988a2
+guid: e6feb2c3555dcb44a8b7c957cefc5966
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable:
   - first:
-      74: 5975651412602298226
-    second: Armature|WalkForward.002
+      74: 896188942311107492
+    second: block
+  - first:
+      74: 896188942311107492
+    second: stagger polearm
   externalObjects: {}
   materials:
     materialImportMode: 1
@@ -35,23 +38,23 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Armature|WalkForward.002
-      takeName: Armature|WalkForward.002
+      name: stagger polearm
+      takeName: Armature|Polearm_walk_agro
       internalID: 0
-      firstFrame: 6
-      lastFrame: 90
+      firstFrame: 0
+      lastFrame: 55
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 1
+      loopTime: 0
       loopBlend: 0
-      loopBlendOrientation: 0
+      loopBlendOrientation: 1
       loopBlendPositionY: 0
       loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
+      keepOriginalOrientation: 1
       keepOriginalPositionY: 1
       keepOriginalPositionXZ: 0
       heightFromFeet: 0
