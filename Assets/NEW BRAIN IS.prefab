@@ -25,6 +25,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85aab6c01831b8343902144bb6bc3b72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  weaponUser: {fileID: 9075442561346592637}
 --- !u!1 &9075442561346592639
 GameObject:
   m_ObjectHideFlags: 0
@@ -43,7 +44,7 @@ GameObject:
   - component: {fileID: 9075442563432413235}
   m_Layer: 8
   m_Name: NEW BRAIN IS
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2324,6 +2325,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: new_polearm-model
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 95867475bc70dfd43842fae2448f36cb,
+        type: 3}
+      propertyPath: m_TagString
+      value: Weapon
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 95867475bc70dfd43842fae2448f36cb, type: 3}

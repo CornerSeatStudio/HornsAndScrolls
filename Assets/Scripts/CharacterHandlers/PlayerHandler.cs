@@ -75,14 +75,17 @@ public class PlayerHandler : CharacterHandler {
 
     void LateUpdate() {
         CalculateVelocity();
+        //Debug.Log(controller.velocity);
         animator.SetFloat(Animator.StringToHash("PlayerSpeed"), currVelocity.magnitude);
     }
 
-    Vector3 preVelocity, velVel, currVelocity;
+    Vector3 preVelocity, velVel, currVelocity, prePos, curPos, posVel;
     protected void CalculateVelocity(){
-        //lerpify velocity
-        currVelocity = Vector3.SmoothDamp(preVelocity, controller.velocity, ref velVel, .12f);
+        curPos = Vector3.SmoothDamp(prePos, transform.position, ref posVel, .6f);
+        currVelocity = Vector3.SmoothDamp(preVelocity, (curPos - prePos) / Time.fixedDeltaTime, ref velVel, .12f);
+        prePos = curPos;
         preVelocity = currVelocity;
+
        // Debug.Log(currVelocity + ", old: " + preVelocity);
     }
     //for slope speed
