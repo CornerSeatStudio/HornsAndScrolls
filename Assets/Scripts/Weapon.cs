@@ -4,14 +4,11 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
-    private CharacterHandler weaponUser;
+    public CharacterHandler weaponUser;
 
     public void Start(){
-        try {
-            weaponUser = this.transform.root.GetComponent<CharacterHandler>();
-        } catch {
-            Debug.LogWarning("WEAPON NEEDS CHARACTERHANDLER");
-        }
+       // weaponUser = this.transform.root.GetComponent<CharacterHandler>();
+        //Debug.Log("badsf");
     }
     public virtual void OnTriggerEnter(Collider col){
         if(col.gameObject != weaponUser.gameObject && (col.CompareTag("Enemy") || col.CompareTag("Player"))) {

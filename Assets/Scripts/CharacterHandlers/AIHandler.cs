@@ -78,7 +78,12 @@ public class AIHandler : CharacterHandler {
 
         } else {
             GlobalState = GlobalState.UNAGGRO; // temp
-            if (patrolWaypoints.Any()) NextWaypointLocation = patrolWaypoints[0].transform.position; //set first patrol waypoint
+            if (patrolWaypoints.Count != 0) {
+                NextWaypointLocation = patrolWaypoints[0].transform.position; //set first patrol waypoint
+            }else {
+                Debug.LogWarning("this ai dont have waypoint for patrols, should be at least one probs");
+            }
+            
             SetStateDriver(new PatrolState(this, animator, agent));
         }
     }
