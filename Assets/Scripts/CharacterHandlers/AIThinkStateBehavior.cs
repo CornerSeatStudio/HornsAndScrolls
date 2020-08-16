@@ -172,14 +172,13 @@ public class InvestigationState : AIThinkState {
             yield return new WaitForSeconds(wfsIncrement); //space between each investigation timer tick - should be the same as think cycle
             CurrInvestigationTimer = isDecreasingDetection? CurrInvestigationTimer -= wfsIncrement : CurrInvestigationTimer += wfsIncrement;
             if(character.CurrSpotTimerThreshold/2 < CurrInvestigationTimer) {//start recording location after halfway point
-                lastSeenPlayerLocation = character.targetPlayer.transform.position;
+                lastSeenPlayerLocation = character.TargetPlayer.transform.position;
             }
         }
 
     }
 
     public IEnumerator MoveToLocation(Vector3 location){ //Debug.Log("enteredMove");//shouldnt be a coroutine lol, no reason for the while statemtn
-        animator.SetTrigger(Animator.StringToHash("InvestigateWalk"));
         agent.SetDestination(location);
         //character.debug(agent.stoppingDistance + " " + agent.remainingDistance);
         yield return new WaitUntil(() => (!agent.pathPending && agent.stoppingDistance > agent.remainingDistance));
@@ -202,8 +201,7 @@ public class InvestigationState : AIThinkState {
         character.StopCoroutine(timerCoroutine); //stop the timer
         timerCoroutine = null;
 
-        animator.SetBool(Animator.StringToHash("Investigating"), true);
-
+        animator.SetTrigger(Animator.StringToHash("BrokeLOS"));
 
         //"in place search" variation - as grace period
         float temp = 3f;
@@ -220,7 +218,7 @@ public class InvestigationState : AIThinkState {
         }
 
         //move to last seen location
-        investigationCoroutine = MoveToLocation(lastSeenPlayerLocation);
+        investigationCoroutine = InvestigatePlayerPos();
         yield return character.StartCoroutine(investigationCoroutine);
 
         if(character.LOSOnPlayer()) { //if sight regained, back to staring
@@ -229,6 +227,7 @@ public class InvestigationState : AIThinkState {
             yield break;
         }
 
+        animator.SetTrigger(Animator.StringToHash("SearchLastPos"));
         //go back to in place search
         investigationCoroutine = InPlaceSearch();
         character.StartCoroutine(investigationCoroutine);
@@ -274,7 +273,7 @@ public class DefenseState : AIThinkState {
 
     private IEnumerator Defense() {
         //face player, stand still todo
-        character.transform.LookAt(character.targetPlayer.transform); //ok to not be in coroutine cause its fast
+        character.transform.LookAt(character.TargetPlayer.transform); //ok to not be in coroutine cause its fast
         //agent.SetDestination(character.transform.position);
 
         character.SetStateDriver(new BlockState(character, animator));
@@ -436,14 +435,14 @@ public class SpacingState : AIThinkState {
 
     private Vector3 FindMostViablePosition() {
         //cast a circle around the player AND spacing ai of radiusbackAwayDistance
-        float circDistance = Vector3.Distance(character.transform.position, character.targetPlayer.transform.position);
+        float circDistance = Vector3.Distance(character.transform.position, character.TargetPlayer.transform.position);
         float selfToMid = (circDistance * circDistance) / (2 * circDistance);
         float midToEdge = (5 + character.backAwayDistance) * (5 + character.backAwayDistance) - (selfToMid * selfToMid);
 
         //find all RADIUS intersections between those circles
-        Vector3 intersectionPoint = character.transform.position + selfToMid * (character.targetPlayer.transform.position - character.transform.position) / circDistance;
-        Vector3 pointCheck1 = new Vector3(intersectionPoint.x + midToEdge * (character.targetPlayer.transform.position.z - character.transform.position.z) / circDistance, character.currProximateAIPosition.y, intersectionPoint.z - midToEdge * (character.targetPlayer.transform.position.x - character.transform.position.x) / circDistance);
-        Vector3 pointCheck2 = new Vector3(intersectionPoint.x - midToEdge * (character.targetPlayer.transform.position.z - character.transform.position.z) / circDistance, character.currProximateAIPosition.y, intersectionPoint.z + midToEdge * (character.targetPlayer.transform.position.x - character.transform.position.x) / circDistance);
+        Vector3 intersectionPoint = character.transform.position + selfToMid * (character.TargetPlayer.transform.position - character.transform.position) / circDistance;
+        Vector3 pointCheck1 = new Vector3(intersectionPoint.x + midToEdge * (character.TargetPlayer.transform.position.z - character.transform.position.z) / circDistance, character.currProximateAIPosition.y, intersectionPoint.z - midToEdge * (character.TargetPlayer.transform.position.x - character.transform.position.x) / circDistance);
+        Vector3 pointCheck2 = new Vector3(intersectionPoint.x - midToEdge * (character.TargetPlayer.transform.position.z - character.transform.position.z) / circDistance, character.currProximateAIPosition.y, intersectionPoint.z + midToEdge * (character.TargetPlayer.transform.position.x - character.transform.position.x) / circDistance);
 
         //pick the intersection FURTHEST from the AI being spaced from
         return (pointCheck1 - character.currProximateAIPosition).sqrMagnitude > (pointCheck2 - character.currProximateAIPosition).sqrMagnitude ? pointCheck1 : pointCheck2;

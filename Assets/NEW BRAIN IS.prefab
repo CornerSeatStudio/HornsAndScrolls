@@ -63,7 +63,7 @@ Animator:
   m_GameObject: {fileID: 9075442561346592639}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: b29c40eefda98834eaf1de84b5a3141a, type: 3}
-  m_Controller: {fileID: 9100000, guid: cdc80df848c7c2747b8a6afe7a90cfbd, type: 2}
+  m_Controller: {fileID: 9100000, guid: fd162e7d6056b494bbb7dfda3979fa1b, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -139,7 +139,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   idleTimeAtWaypoint: 10
-  spotTimerThreshold: 1
   AIGlobalStateCheckRange: 50
   weaponMesh: {fileID: 8156893297062671393}
   tooFarFromPlayerDistance: 40
