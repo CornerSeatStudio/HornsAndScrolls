@@ -250,15 +250,16 @@ public class AttackState : CombatState {
 
     private IEnumerator Attack(){
         //begin animation
-        animator.SetTrigger(Animator.StringToHash("Attacking"));
         animator.applyRootMotion = true; //cleaner maybe
+        //yield return new WaitForSeconds(.5f);
+
+        animator.SetTrigger(Animator.StringToHash("Attacking"));
 
         //sound
         try { Array.Find(character.audioData, AudioData => AudioData.name == "woosh").Play(character.AudioSource); } catch {} //temp todo
         
         //time it takes before weapon trigger is allowed to do damage
         yield return new WaitForSeconds(chosenMove.startup);
-
         //timer to finish attack if no contact
         timerRoutine = AttackTime();
         character.StartCoroutine(timerRoutine);
@@ -275,7 +276,7 @@ public class AttackState : CombatState {
       //  character.layerWeightRoutine = character.LayerWeightDriver(1, 0, 1, .3f);
         animator.applyRootMotion = false;
      //   yield return character.StartCoroutine(character.layerWeightRoutine);       
-       if(timerRoutine != null) character.StopCoroutine(timerRoutine);
+        if(timerRoutine != null) character.StopCoroutine(timerRoutine);
         if(currAttackCoroutine != null) character.StopCoroutine(currAttackCoroutine); 
         yield break;
     }
