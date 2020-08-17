@@ -479,13 +479,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 185040221}
-  m_LocalRotation: {x: -0.20399715, y: 0.0018707151, z: -0.008977158, w: 0.97892857}
-  m_LocalPosition: {x: 165.4, y: 93, z: -92}
+  m_LocalRotation: {x: 0.13782907, y: -0.6845188, z: 0.1353494, w: 0.70293504}
+  m_LocalPosition: {x: 126.9, y: 3.3, z: -69.6}
   m_LocalScale: {x: 14.767862, y: 3.959, z: 36.995224}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 16
-  m_LocalEulerAnglesHint: {x: -23.538002, y: 0.45800003, z: -1.146}
+  m_LocalEulerAnglesHint: {x: 22.276001, y: -88.46001, z: 0.098000005}
 --- !u!1 &207439081
 GameObject:
   m_ObjectHideFlags: 0
@@ -643,6 +643,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85aab6c01831b8343902144bb6bc3b72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  weaponUser: {fileID: 0}
 --- !u!1 &797190281
 GameObject:
   m_ObjectHideFlags: 0
@@ -848,6 +849,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85aab6c01831b8343902144bb6bc3b72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  weaponUser: {fileID: 0}
 --- !u!1001 &1184002799
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1140,6 +1142,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: NEW BRAIN IS
+      objectReference: {fileID: 0}
+    - target: {fileID: 9075442561346592639, guid: be058e469e10e854e87801b004f8319b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: be058e469e10e854e87801b004f8319b, type: 3}
