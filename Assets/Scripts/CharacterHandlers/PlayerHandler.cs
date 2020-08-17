@@ -64,26 +64,30 @@ public class PlayerHandler : CharacterHandler {
         if(genericState is DodgeState) {
             controller.SimpleMove(dodgeDirection.normalized * (characterdata as PlayerData).dodgeSpeed );
         } else if (!(genericState is AttackState)) {
-            controller.SimpleMove(inputVector * CurrMovementSpeed);  
+            if((inputVector.x != 0 || inputVector.z != 0) && OnSlope()) {
+                controller.Move( (inputVector * CurrMovementSpeed * Time.fixedDeltaTime) + (Vector3.down * controller.height / 2 * slopeForce) );
+            } else {
+                controller.SimpleMove(inputVector * CurrMovementSpeed);  
+            }
         }
 
-        if((inputVector.x != 0 || inputVector.z != 0) && OnSlope()) {
-            controller.Move(Vector3.down * controller.height / 2 * slopeForce);
-        }
+        
 
     }
 
     void LateUpdate() {
-        CalculateVelocity();
+        CalculateVelocity(); 
         //Debug.Log(controller.velocity);
         animator.SetFloat(Animator.StringToHash("PlayerSpeed"), currVelocity.magnitude);
     }
 
-    Vector3 preVelocity, velVel, currVelocity, prePos, curPos, posVel;
+    Vector3 preVelocity, velVel, currVelocity;
     protected void CalculateVelocity(){
-        curPos = Vector3.SmoothDamp(prePos, transform.position, ref posVel, .6f);
-        currVelocity = Vector3.SmoothDamp(preVelocity, (curPos - prePos) / Time.fixedDeltaTime, ref velVel, .12f);
-        prePos = curPos;
+        //curPos = Vector3.SmoothDamp(prePos, transform.position, ref posVel, 2f);
+        //currVelocity = Vector3.SmoothDamp(preVelocity, (curPos - prePos) / Time.fixedDeltaTime, ref velVel, .12f);
+        //prePos = curPos;
+        currVelocity = Vector3.SmoothDamp(preVelocity, controller.velocity, ref velVel, .12f);
+
         preVelocity = currVelocity;
 
        // Debug.Log(currVelocity + ", old: " + preVelocity);

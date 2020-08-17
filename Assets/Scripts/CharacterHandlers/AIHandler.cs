@@ -205,9 +205,8 @@ public class AIHandler : CharacterHandler {
     }
 
     //check if ai has line of sight on player
-    public bool LOSOnPlayer() {
-        return Detection.VisibleTargets.Count != 0;
-    }
+    public bool LOSOnPlayer() => Detection.VisibleTargets.Count != 0;
+    
     
     //move to next patrol point
     private int currPatrolIndex;
@@ -227,9 +226,8 @@ public class AIHandler : CharacterHandler {
 
     }
 
-    public bool StaggerCheckConditional() {     //    Debug.Log("stag condi");
-        return genericState is StaggerState;
-    }
+    public bool StaggerCheckConditional() => genericState is StaggerState;
+    
 
     public bool DefenceConditional(){       //  Debug.Log("defense condi");
 
@@ -239,11 +237,8 @@ public class AIHandler : CharacterHandler {
         && Stamina > 0;     
     }
 
-    public bool CloseDistanceConditional() { //returns if player is too far
-           //    Debug.Log("far condi");
-
-        return (TargetPlayer.transform.position - transform.position).sqrMagnitude > tooFarFromPlayerDistance * tooFarFromPlayerDistance;
-    }
+    //returns if player is too far
+    public bool CloseDistanceConditional() => (TargetPlayer.transform.position - transform.position).sqrMagnitude > tooFarFromPlayerDistance * tooFarFromPlayerDistance;
 
     public Vector3 currProximateAIPosition {get; private set;}
     public bool SpacingConditional() {
@@ -267,10 +262,8 @@ public class AIHandler : CharacterHandler {
         return false;
         
     }
-
-    public bool OffenseConditional() { //canOffend initiates it, thinkState check ensures it goes through
-        return CanOffend || thinkState is OffenseState;
-    }
+//canOffend initiates it, thinkState check ensures it goes through
+    public bool OffenseConditional() => CanOffend || thinkState is OffenseState;
 
     public bool BackAwayConditional() { //if too close AND CAN back away
         NavMeshHit hit;
@@ -281,11 +274,8 @@ public class AIHandler : CharacterHandler {
 
     }
 
-    public bool InstantShoveConditional() { //returns if player is too close
-               // Debug.Log("close condi");
-
-        return (TargetPlayer.transform.position - transform.position).sqrMagnitude <= shoveDistance * shoveDistance;
-    }
+    //returns if player is too close
+    public bool InstantShoveConditional() => (TargetPlayer.transform.position - transform.position).sqrMagnitude <= shoveDistance * shoveDistance; 
 
     public BTStatus StaggerTask() {   
 
