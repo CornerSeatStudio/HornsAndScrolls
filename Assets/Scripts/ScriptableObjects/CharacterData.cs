@@ -10,11 +10,21 @@ public class CharacterData : ScriptableObject {
 
     public float staminaRegenerationRatePerS;
     //list of interactables
-
-    public float speed;
-    public float rel_gravity;
-    
+    public float staminaRegenerationWindow = 3f;
     //inventory
 
+}
 
+
+[CreateAssetMenu(fileName = "PlayerData", menuName = "ScriptableObjects/PlayerData")]
+public class PlayerData : CharacterData {
+
+    public float jogSpeed;
+    public float sprintSpeed;
+    public float walkSpeed;
+    public float crouchWalkSpeed;
+    public float combatMoveSpeed;
+    public float dodgeTime; //should be length of animation
+    public float dodgeSpeed;
+    public float detectionTime;
 }

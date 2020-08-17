@@ -44,7 +44,6 @@ public class PatrolState : AIThinkState {
     public override IEnumerator OnStateEnter() { //Debug.Log("enteredPatrol");
         if(character.NextWaypointLocation == null) { Debug.LogWarning("no waypoints on some cunt"); character.SetStateDriver(new IdleState(character, animator, agent)); };
         
-        animator.SetBool(Animator.StringToHash("IsPatrol"), true);
         moveToLocationCoroutine = MoveToLocation(character.NextWaypointLocation);
         yield return character.StartCoroutine(moveToLocationCoroutine);
     }    
@@ -65,7 +64,6 @@ public class PatrolState : AIThinkState {
 
     public override IEnumerator OnStateExit() { //Debug.Log("exitedPatrol");
         if(LOSCoroutine != null) character.StopCoroutine(LOSCoroutine);        
-        animator.SetBool(Animator.StringToHash("IsPatrol"), false);
         if(moveToLocationCoroutine != null) character.StopCoroutine(moveToLocationCoroutine); //stop coroutine
         yield return null;
     }
@@ -98,7 +96,7 @@ public class InvestigationState : AIThinkState {
 
         Array.Find(character.audioData, AudioData => AudioData.name == "spotted").Play(character.AudioSource);
 
-        agent.isStopped = true; //halt movement
+        agent.SetDestination(character.transform.position); //halt movement
         isDecreasingDetection = false; //start by increasing detection
         
         if(timerCoroutine == null) { //start timer each first time only
@@ -112,20 +110,17 @@ public class InvestigationState : AIThinkState {
         character.StartCoroutine(lookCoroutine);
 
 
-        animator.SetBool("IsStaring", true);
+        animator.SetTrigger(Animator.StringToHash("Spotted"));
         //todo also make look at its own coroutine
         yield return new WaitUntil(() => !character.LOSOnPlayer() || CurrInvestigationTimer >= character.CurrSpotTimerThreshold); //keep incrementing until LOS is broken || caught
-
-        //if condition break, stop staring animation (todo)
-        animator.SetBool("IsStaring", false);
+        
 
         //3 possibilities, 
         if(!character.LOSOnPlayer()) {
             character.StopCoroutine(lookCoroutine);
             //lost of sight before halfway
             if(character.CurrSpotTimerThreshold/2 > CurrInvestigationTimer) {
-                //reverse timer, but switch to ChainedDiscovery
-                isDecreasingDetection = true;
+                //reverse timer, in place search
                 investigationCoroutine = InPlaceSearch();
                 character.StartCoroutine(investigationCoroutine);
                 yield break;
@@ -134,9 +129,9 @@ public class InvestigationState : AIThinkState {
                 yield break;
             }
         } else { //caught, change global state, let mono behavior handle the rest
-            animator.SetBool(Animator.StringToHash("IsGlobalAggroState"), true); //todo: to be put in separate class
-            character.layerWeightRoutine = character.LayerWeightDriver(1, 0, 1, .3f);
-            character.StartCoroutine(character.layerWeightRoutine);
+            animator.SetBool(Animator.StringToHash("Combat"), true); //todo: to be put in separate class
+            // character.layerWeightRoutine = character.LayerWeightDriver(1, 0, 1, .3f);
+            // character.StartCoroutine(character.layerWeightRoutine);
             character.GlobalState = GlobalState.AGGRO;
             character.SetStateDriver(new DefaultAIAggroState(character, animator, agent));
         }
@@ -144,8 +139,8 @@ public class InvestigationState : AIThinkState {
     }
 
     private IEnumerator InPlaceSearch() {
-        animator.SetBool(Animator.StringToHash("IsSearching"), true);
-        agent.isStopped = true; //halt movement
+        animator.SetTrigger(Animator.StringToHash("BrokeLOS"));
+        agent.SetDestination(character.transform.position); //halt movement
         isDecreasingDetection = true; //start by DECREASING detection
         
         if(timerCoroutine == null) { //start timer each first time only
@@ -157,31 +152,17 @@ public class InvestigationState : AIThinkState {
 
         yield return new WaitUntil(() => character.LOSOnPlayer() || CurrInvestigationTimer <= 0); //keep decrementing until LOS is regained || lost
 
-        animator.SetBool(Animator.StringToHash("IsSearching"), false);
-
         //two situations
         if(character.LOSOnPlayer()) { //if sight regained, back to staring
-            isDecreasingDetection = false; //reverse timer
             investigationCoroutine = StareAndFacePlayer();//switch back to StareAndFace
             character.StartCoroutine(investigationCoroutine);
             yield break;
         } else { //otherwise, back to patrolling
-            agent.isStopped = false; //resume movement
+            animator.SetTrigger(Animator.StringToHash("Normal"));
             character.SetStateDriver(new PatrolState(character, animator, agent));
             yield break;
         }
 
-    }
-
-    public IEnumerator MoveToLocation(Vector3 location){ //Debug.Log("enteredMove");//shouldnt be a coroutine lol, no reason for the while statemtn
-        
-        animator.SetBool(Animator.StringToHash("IsSuspiciousWalk"), true);
-        
-        agent.SetDestination(location);
-        //character.debug(agent.stoppingDistance + " " + agent.remainingDistance);
-        yield return new WaitUntil(() => !agent.pathPending && agent.stoppingDistance > agent.remainingDistance);
-        //Debug.Log(agent.pathPending + " " + (agent.stoppingDistance < agent.remainingDistance));
-        animator.SetBool(Animator.StringToHash("IsSuspiciousWalk"), false);
     }
 
     private IEnumerator InvestigationTimer() {
@@ -191,28 +172,62 @@ public class InvestigationState : AIThinkState {
             yield return new WaitForSeconds(wfsIncrement); //space between each investigation timer tick - should be the same as think cycle
             CurrInvestigationTimer = isDecreasingDetection? CurrInvestigationTimer -= wfsIncrement : CurrInvestigationTimer += wfsIncrement;
             if(character.CurrSpotTimerThreshold/2 < CurrInvestigationTimer) {//start recording location after halfway point
-                lastSeenPlayerLocation = character.targetPlayer.transform.position;
+                lastSeenPlayerLocation = character.TargetPlayer.transform.position;
             }
         }
 
     }
 
+    public IEnumerator MoveToLocation(Vector3 location){ //Debug.Log("enteredMove");//shouldnt be a coroutine lol, no reason for the while statemtn
+        agent.SetDestination(location);
+        //character.debug(agent.stoppingDistance + " " + agent.remainingDistance);
+        yield return new WaitUntil(() => (!agent.pathPending && agent.stoppingDistance > agent.remainingDistance));
+
+        //if spotted again, 
+    }
+
+    public IEnumerator InvestigatePlayerPos(){ //Debug.Log("enteredMove");//shouldnt be a coroutine lol, no reason for the while statemtn
+        animator.SetTrigger(Animator.StringToHash("InvestigateWalk"));
+        agent.SetDestination(lastSeenPlayerLocation);
+        //character.debug(agent.stoppingDistance + " " + agent.remainingDistance);
+        yield return new WaitUntil(() => (!agent.pathPending && agent.stoppingDistance > agent.remainingDistance) || character.LOSOnPlayer());
+
+        //if spotted again, 
+    }
+
     private IEnumerator ChainedDiscovery() { //move to last seen location AND investigate
         //Debug.Log("chain discovering");
+
         character.StopCoroutine(timerCoroutine); //stop the timer
         timerCoroutine = null;
-        animator.SetBool(Animator.StringToHash("IsSearching"), true);
+
+        animator.SetTrigger(Animator.StringToHash("BrokeLOS"));
 
         //"in place search" variation - as grace period
-        yield return new WaitForSeconds(3f);
+        float temp = 3f;
+        while (temp > 0) {
+            if(character.LOSOnPlayer()) break;
+            temp -= Time.fixedDeltaTime;
+            yield return new WaitForFixedUpdate();
+        }
 
-        animator.SetBool(Animator.StringToHash("IsSearching"), false);
+        if(character.LOSOnPlayer()) { //if sight regained, back to staring
+            investigationCoroutine = StareAndFacePlayer();//switch back to StareAndFace
+            character.StartCoroutine(investigationCoroutine);
+            yield break;
+        }
 
-        agent.isStopped = false; //allow character to move after grace period
         //move to last seen location
-        investigationCoroutine = MoveToLocation(lastSeenPlayerLocation);
+        investigationCoroutine = InvestigatePlayerPos();
         yield return character.StartCoroutine(investigationCoroutine);
 
+        if(character.LOSOnPlayer()) { //if sight regained, back to staring
+            investigationCoroutine = StareAndFacePlayer();//switch back to StareAndFace
+            character.StartCoroutine(investigationCoroutine);
+            yield break;
+        }
+
+        animator.SetTrigger(Animator.StringToHash("SearchLastPos"));
         //go back to in place search
         investigationCoroutine = InPlaceSearch();
         character.StartCoroutine(investigationCoroutine);
@@ -220,12 +235,9 @@ public class InvestigationState : AIThinkState {
     }
 
     public override IEnumerator OnStateExit() { 
-        agent.isStopped = false; //ensure movement can continue
         //disable to exit possibilites (being to aggro and to patrol)
-        animator.SetBool(Animator.StringToHash("IsStaring"), false);
-        animator.SetBool(Animator.StringToHash("IsSearching"), false);
         if(lookCoroutine != null) character.StopCoroutine(lookCoroutine);
-        if(timerCoroutine != null) character.StopCoroutine(timerCoroutine); //stop coroutine
+        if(timerCoroutine != null) character.StopCoroutine(timerCoroutine); 
         yield return null;
     }
 }
@@ -261,7 +273,7 @@ public class DefenseState : AIThinkState {
 
     private IEnumerator Defense() {
         //face player, stand still todo
-        character.transform.LookAt(character.targetPlayer.transform); //ok to not be in coroutine cause its fast
+        character.transform.LookAt(character.TargetPlayer.transform); //ok to not be in coroutine cause its fast
         //agent.SetDestination(character.transform.position);
 
         character.SetStateDriver(new BlockState(character, animator));
@@ -423,14 +435,14 @@ public class SpacingState : AIThinkState {
 
     private Vector3 FindMostViablePosition() {
         //cast a circle around the player AND spacing ai of radiusbackAwayDistance
-        float circDistance = Vector3.Distance(character.transform.position, character.targetPlayer.transform.position);
+        float circDistance = Vector3.Distance(character.transform.position, character.TargetPlayer.transform.position);
         float selfToMid = (circDistance * circDistance) / (2 * circDistance);
         float midToEdge = (5 + character.backAwayDistance) * (5 + character.backAwayDistance) - (selfToMid * selfToMid);
 
         //find all RADIUS intersections between those circles
-        Vector3 intersectionPoint = character.transform.position + selfToMid * (character.targetPlayer.transform.position - character.transform.position) / circDistance;
-        Vector3 pointCheck1 = new Vector3(intersectionPoint.x + midToEdge * (character.targetPlayer.transform.position.z - character.transform.position.z) / circDistance, character.currProximateAIPosition.y, intersectionPoint.z - midToEdge * (character.targetPlayer.transform.position.x - character.transform.position.x) / circDistance);
-        Vector3 pointCheck2 = new Vector3(intersectionPoint.x - midToEdge * (character.targetPlayer.transform.position.z - character.transform.position.z) / circDistance, character.currProximateAIPosition.y, intersectionPoint.z + midToEdge * (character.targetPlayer.transform.position.x - character.transform.position.x) / circDistance);
+        Vector3 intersectionPoint = character.transform.position + selfToMid * (character.TargetPlayer.transform.position - character.transform.position) / circDistance;
+        Vector3 pointCheck1 = new Vector3(intersectionPoint.x + midToEdge * (character.TargetPlayer.transform.position.z - character.transform.position.z) / circDistance, character.currProximateAIPosition.y, intersectionPoint.z - midToEdge * (character.TargetPlayer.transform.position.x - character.transform.position.x) / circDistance);
+        Vector3 pointCheck2 = new Vector3(intersectionPoint.x - midToEdge * (character.TargetPlayer.transform.position.z - character.transform.position.z) / circDistance, character.currProximateAIPosition.y, intersectionPoint.z + midToEdge * (character.TargetPlayer.transform.position.x - character.transform.position.x) / circDistance);
 
         //pick the intersection FURTHEST from the AI being spaced from
         return (pointCheck1 - character.currProximateAIPosition).sqrMagnitude > (pointCheck2 - character.currProximateAIPosition).sqrMagnitude ? pointCheck1 : pointCheck2;

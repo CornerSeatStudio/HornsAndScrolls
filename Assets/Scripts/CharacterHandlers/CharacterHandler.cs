@@ -12,22 +12,19 @@ public class CharacterHandler : MonoBehaviour {
     public CharacterData characterdata;
     public WeaponData weapon; 
     public AudioData[] audioData;
+    public Collider weaponHitbox;
 
-    [Header("Core Members")]
+    [Header("Debug Members")]
     public Image heathbar;
     public Image staminabar;
     public TextMeshProUGUI debugState; 
-    public float staminaRegenerationWindow = 3f;
     
     [Header ("Foliage Handling")]
     public Material[] materials;
-    // [Header("IK")]
-    // [Range (0, 5)] public float distanceToGround;
-    // public LayerMask floor;
+
 
     //private stuff
     protected Animator animator;
-    protected Vector3 velocity;
     public AudioSource AudioSource {get; private set;}
     public Dictionary<string, MeleeMove> MeleeAttacks {get; private set;} 
     public MeleeMove MeleeBlock {get; private set; }
@@ -35,6 +32,8 @@ public class CharacterHandler : MonoBehaviour {
     public float Stamina {get; private set; }
     public GenericState genericState {get; protected set;}
     private LayerMask foliageMask;
+    public bool CanAttack {get; set;} = false; //checks if weapon is in contact with target (via weapon script on weapon)
+    public GameObject AttackReceiver {get; set; }
     
 
     #region Callbacks
@@ -69,7 +68,7 @@ public class CharacterHandler : MonoBehaviour {
 
         Collider[] colliders = gameObject.GetComponentsInChildren<Collider>();
         foreach(Collider col in colliders) {
-            if (col.gameObject != this.gameObject) {
+            if (col.gameObject != this.gameObject && col != weaponHitbox) {
                 col.enabled = false;
             }
         }
@@ -88,7 +87,7 @@ public class CharacterHandler : MonoBehaviour {
     }
     #endregion
 
-    #region core/var manipulation
+    #region Combat Core
 
         //LayerMasks allow for raycasts to choose what to and not to register
     [Header("find target stuff")]
@@ -123,7 +122,9 @@ public class CharacterHandler : MonoBehaviour {
 
 
     //upon contact with le weapon, this handles the appropriate response (such as tackign damage, stamina drain, counters etc)
-    public virtual void AttackResponse(float damage, CharacterHandler attacker) { 
+    public virtual void AttackRequest(float damage){
+        CharacterHandler receiver = AttackReceiver.GetComponent<CharacterHandler>();
+        
         string result = "null";//for debug
 
         // try {
@@ -133,46 +134,44 @@ public class CharacterHandler : MonoBehaviour {
         //     }
         // } catch {}
 
-        if(this.genericState is MoveState) { //no sword drawn and get hit, (todo - do a different stagger)
-            TakeDamage(damage, false, attacker); 
+        if(receiver.genericState is MoveState) { //target has no sword drawn and get hit, (todo - do a different stagger)
+            receiver.TakeDamage(damage, false, this); 
             result = "cunt dont have sword out ";
-
         }
 
-        else if(this.genericState is AttackState) { //TODO AM IN RANGE
-            //i am currently in an unblockable attack while being attacked
-            //if enemy is simultaneously in attack
-            if(attacker.genericState is AttackState){
-                //if my attack is unblockable
-                if(!(this.genericState as AttackState).chosenMove.blockableAttack){
+        else if(receiver.genericState is AttackState) { //if they are attacking
+            //but i am also simultaneously in attack
+            if(this.genericState is AttackState){
+                //if their attack is unblockable
+                if(!(receiver.genericState as AttackState).chosenMove.blockableAttack){
                     //take damage but dont stagger
-                    TakeDamage(damage, false, attacker);
-                    result = "both take damage, but reacter staggers only due to unblockable attack";
+                    receiver.TakeDamage(damage, false, this);
+                    result = "both take damage, but blockbale buboons stagger only due to unblockable attack";
                 } else {
                     //take damage, stagger as usual
-                    TakeDamage(damage, true, attacker);
+                    receiver.TakeDamage(damage, true, this);
                     result = "both take damage and stagger";
                 }
             }
             
-        } else if (this.genericState is BlockState){ //todo CHECK IF VALID BLOCK
-            //i am blocking an unblockable attack AND if its a valid block (should be null if no target)
-            if(!(attacker.genericState as AttackState).chosenMove.blockableAttack) {
+        } else if (receiver.genericState is BlockState){ //if they are blocking
+            //and if i am using an unblockable attack
+            if(!(this.genericState as AttackState).chosenMove.blockableAttack) {
                 //take damage and stagger
                 result = "requester beats block with unblockable, receiver takes damage and staggers";
-                    TakeDamage(damage, true, attacker);
+                receiver.TakeDamage(damage, true, this);
            
             } else {
                 //drain stamina instead
-                DealStamina(damage);
-                Array.Find(attacker.audioData, AudioData => AudioData.name == "clang").Play(attacker.AudioSource);
+                receiver.DealStamina(damage);
+                Array.Find(this.audioData, AudioData => AudioData.name == "clang").Play(this.AudioSource);
                 result = "receiver blocks, only stamina drain";
             }
 
 
-        } else if (this.genericState is CounterState) { //todo CHECK IF VALID BLOCk
-            //if i am countering an unblockable attack
-            if(!(attacker.genericState as AttackState).chosenMove.blockableAttack){
+        } else if (receiver.genericState is CounterState) { //if they're countering
+            //if they are countering an unblockable attack
+            if(!(this.genericState as AttackState).chosenMove.blockableAttack){
                 //no damage, but enemy isnt staggared
                 //either a heavy attack with long endlag,
                 //OR can be instantly followed up with another swing maybe
@@ -182,32 +181,30 @@ public class CharacterHandler : MonoBehaviour {
                 result = "receiver counters, requester staggers";
                 //proper counter here
             }
-            Array.Find(attacker.audioData, AudioData => AudioData.name == "clang").Play(attacker.AudioSource);
+            Array.Find(this.audioData, AudioData => AudioData.name == "clang").Play(this.AudioSource);
 
-            attacker.SetStateDriver(new StaggerState(attacker, attacker.animator));
+            this.SetStateDriver(new StaggerState(this, this.animator));
 
-        } else if (this.genericState is DodgeState) {
+        } else if (receiver.genericState is DodgeState) { //if they're dodging
             result = "receiver dodged, no damage, stamina only";
-            DealStamina(5f);
-        } else if (this.genericState is StaggerState) {
+            receiver.DealStamina(5f);
+        } else if (receiver.genericState is StaggerState) {
             result = "receiver hit when staggered";
-            TakeDamage(damage, false, attacker);
+            receiver.TakeDamage(damage, false, this);
             //everytime this is triggered, increment todo
             //"prevent camping when down" counter maybe
         } else { 
             result = "default situation, receiver takes damage and staggers, possible out of range";
             //take damage, stagger
-            TakeDamage(damage, true, attacker);
+            receiver.TakeDamage(damage, true, this);
 
         }
 
-        Debug.Log("REQUESTER: " + attacker.genericState.ToString() 
-                + ", REACTER: " + genericState.ToString()
+        Debug.Log("REQUESTER: " + this.genericState.ToString() 
+                + ", REACTER: " + receiver.genericState.ToString()
                 + ", RESULT: " + result);
 
-
     }
-
     //upon taking damage
     protected virtual void TakeDamage(float damage, bool isStaggerable, CharacterHandler attacker){ 
         Health -= damage;
@@ -254,7 +251,7 @@ public class CharacterHandler : MonoBehaviour {
     protected IEnumerator TakeStaminaDrain(float staminaDrain){
         Stamina -= staminaDrain;
         staminabar.fillAmount = Stamina / characterdata.maxStamina;
-        yield return new WaitForSeconds(staminaRegenerationWindow);
+        yield return new WaitForSeconds(characterdata.staminaRegenerationWindow);
 
         //start regening again
         staminaRegenCoroutine = StaminaRegeneration();
@@ -277,41 +274,6 @@ public class CharacterHandler : MonoBehaviour {
     }
     #endregion
 
-    #region useful helper functions
-
-    protected Vector3 oldPos;
-    protected Vector3 movedPos;
-    protected Vector3 lastPos; //math stuff
-    protected void CalculateVelocity(){
-        oldPos = movedPos;
-        movedPos = Vector3.Slerp(oldPos, transform.position - lastPos, .1f); 
-        lastPos = transform.position; 
-        velocity = movedPos / Time.fixedTime;      
-    }
-
-    public IEnumerator layerWeightRoutine;
-
-    public IEnumerator LayerWeightDriver(int layeri, float startVal, float endVal, float smoothness){
-        layerWeightRoutine = LayerWeightShift(layeri, startVal, endVal, smoothness);
-        yield return StartCoroutine(layerWeightRoutine);
-    }
-
-    private IEnumerator LayerWeightShift(int layeri, float startVal, float endVal, float smoothness){
-        float temp = startVal;
-        while(! (Mathf.Abs(temp - endVal) < 0.01f)) {
-               // Debug.Log(temp);
-
-            temp = Mathf.Lerp(startVal, endVal, smoothness);
-            startVal = temp;
-            animator.SetLayerWeight(layeri, temp);
-            yield return null;
-        }
-
-        animator.SetLayerWeight(layeri, endVal);
-        layerWeightRoutine = null;
-    }
-
-    #endregion
 
     #region foliage
     IEnumerator GrassHandle(){
@@ -325,7 +287,7 @@ public class CharacterHandler : MonoBehaviour {
                 Shader.SetGlobalFloat(Shader.PropertyToID("characterCount"), 10); //temp idk
             } 
             //Debug.Log(foliageInView.Length);
-            yield return new WaitForSeconds(Time.fixedDeltaTime);
+            yield return new WaitForFixedUpdate();
         }
     }
     #endregion
