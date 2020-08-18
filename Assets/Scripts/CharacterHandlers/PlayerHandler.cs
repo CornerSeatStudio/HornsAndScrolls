@@ -63,7 +63,9 @@ public class PlayerHandler : CharacterHandler {
 
         if(genericState is DodgeState) {
             controller.SimpleMove(dodgeDirection.normalized * (characterdata as PlayerData).dodgeSpeed );
-        } else if (!(genericState is AttackState)) {
+        } else if (genericState is AttackState) {
+           // controller.SimpleMove(transform.forward * 6f);  
+        } else {
             if((inputVector.x != 0 || inputVector.z != 0) && OnSlope()) {
                 controller.Move( (inputVector * CurrMovementSpeed * Time.fixedDeltaTime) + (Vector3.down * controller.height / 2 * slopeForce) );
             } else {
@@ -97,7 +99,9 @@ public class PlayerHandler : CharacterHandler {
         RaycastHit hit;
         return Physics.Raycast(transform.position, Vector3.down, out hit, controller.height/2 * slopeForceRayLength) && hit.normal != Vector3.up;
     }
-
+    private bool IsDrinking(){
+        
+    }
     //for stealth reactoin time
     public void ChangeStanceTimer(float stanceModifier){
         OnStanceChange?.Invoke(stanceModifier);
@@ -132,9 +136,11 @@ public class PlayerHandler : CharacterHandler {
             } else if(Input.GetKeyDown(KeyCode.C)) {
                 SetStateDriver(new SheathingCrouchState(this, animator));
             } else if (!(genericState is DodgeState)) {
-                HandleCombatMovement(); //dodging & direction info
+                if(!(genericState is AttackState)) {
+                    HandleCombatMovement(); //feet direction info
+                    FaceMouseDirection();
+                }
                 HandleInteractions(); //clicking
-                if(!(genericState is AttackState)) FaceMouseDirection();
             }
         }
     }
