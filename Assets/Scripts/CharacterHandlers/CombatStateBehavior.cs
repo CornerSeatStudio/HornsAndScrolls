@@ -238,7 +238,8 @@ public class AttackState : CombatState {
        yield return character.StartCoroutine(currAttackCoroutine);
        
         //wrap it up
-        character.SetStateDriver(new DefaultCombatState(character, animator));
+        character.SetStateDriver(new FollowUpState(character, animator));
+        //TODO GO SOMWHERE ELSE
     }    
 
     private IEnumerator AttackTime(){
@@ -280,6 +281,31 @@ public class AttackState : CombatState {
         if(currAttackCoroutine != null) character.StopCoroutine(currAttackCoroutine); 
         yield break;
     }
+}
+
+//grace period for comboing
+public class FollowUpState : CombatState {
+
+    IEnumerator timeo;
+    public FollowUpState(CharacterHandler character, Animator animator) : base(character, animator) {}
+
+    public override IEnumerator OnStateEnter(){
+        timeo = FollowUpTime();
+        yield return character.StartCoroutine(timeo);
+        character.SetStateDriver(new DefaultCombatState(character, animator));
+
+    }
+
+    private IEnumerator FollowUpTime(){
+        yield return new WaitForSeconds(.4f);
+    }
+
+    public override IEnumerator OnStateExit(){
+        if(timeo != null) character.StopCoroutine(timeo);
+        yield break;
+    }
+
+
 }
 
 public class BlockState : CombatState {
