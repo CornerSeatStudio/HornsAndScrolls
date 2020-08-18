@@ -63,7 +63,7 @@ public class PlayerHandler : CharacterHandler {
 
         if(genericState is DodgeState) {
             controller.SimpleMove(dodgeDirection.normalized * (characterdata as PlayerData).dodgeSpeed );
-        } else if (genericState is AttackState) {
+        } else if (genericState is AttackState || genericState is FollowUpState) {
            // controller.SimpleMove(transform.forward * 6f);  
         } else {
             if((inputVector.x != 0 || inputVector.z != 0) && OnSlope()) {
@@ -134,11 +134,12 @@ public class PlayerHandler : CharacterHandler {
             } else if(Input.GetKeyDown(KeyCode.C)) {
                 SetStateDriver(new SheathingCrouchState(this, animator));
             } else if (!(genericState is DodgeState)) {
-                if(!(genericState is AttackState)) {
+                if(!(genericState is AttackState) && !(genericState is FollowUpState)) { //TODO SPACE FOR ANOTHER ATTACK
                     HandleCombatMovement(); //feet direction info
                     FaceMouseDirection();
                 }
                 HandleInteractions(); //clicking
+                Debug.Log("we");
             }
         }
     }
@@ -222,9 +223,8 @@ public class PlayerHandler : CharacterHandler {
     }
 
     private void HandleInteractions() {
-        if(genericState is DefaultCombatState) {
+        if(genericState is DefaultCombatState || genericState is FollowUpState) {
             if(Input.GetButtonDown("Fire1") == true) {
-               // Debug.Log("Fire1'd");
                 SetStateDriver(new AttackState(this, animator));
             } else if(Stamina > 0 && Input.GetButtonDown("Fire2") == true) {
                 //Debug.Log("Fire2'd/counter trigger");
