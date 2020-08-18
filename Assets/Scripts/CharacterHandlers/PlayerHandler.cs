@@ -79,8 +79,25 @@ public class PlayerHandler : CharacterHandler {
 
     void LateUpdate() {
         CalculateVelocity(); 
-        //Debug.Log(controller.velocity);
-        animator.SetFloat(Animator.StringToHash("PlayerSpeed"), currVelocity.magnitude);
+        TiltOnDelta();
+    }
+
+    Vector2 preDir, curDir; 
+    float tiltVel;
+    protected void TiltOnDelta() {
+        //get neccesary info this time around
+        Vector2 curDir = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        Camera.main.transform.TransformDirection(curDir);
+        //Debug.Log($"pre: {preDir}, post: {curDir}");
+
+        //get the smoothed delta
+        float xDiff = curDir.x < 0 ? preDir.x - curDir.x : curDir.x - preDir.x; xDiff *= 120;
+        float zDiff = curDir.y < 0 ? preDir.y - curDir.y : curDir.y - preDir.y; zDiff *= 120;
+        //translate said delta into lerped tilt with high smooth
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(xDiff + zDiff, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z), Time.deltaTime * 3);
+
+        //update the last dir for info
+        preDir = curDir;
     }
 
     Vector3 preVelocity, velVel, currVelocity;
@@ -88,9 +105,10 @@ public class PlayerHandler : CharacterHandler {
         //curPos = Vector3.SmoothDamp(prePos, transform.position, ref posVel, 2f);
         //currVelocity = Vector3.SmoothDamp(preVelocity, (curPos - prePos) / Time.fixedDeltaTime, ref velVel, .12f);
         //prePos = curPos;
-        currVelocity = Vector3.SmoothDamp(preVelocity, controller.velocity, ref velVel, .12f);
+        currVelocity = Vector3.SmoothDamp(preVelocity, controller.velocity, ref velVel, .2f);
 
         preVelocity = currVelocity;
+        animator.SetFloat(Animator.StringToHash("PlayerSpeed"), currVelocity.magnitude);
 
        // Debug.Log(currVelocity + ", old: " + preVelocity);
     }
