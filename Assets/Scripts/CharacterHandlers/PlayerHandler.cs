@@ -99,7 +99,9 @@ public class PlayerHandler : CharacterHandler {
         RaycastHit hit;
         return Physics.Raycast(transform.position, Vector3.down, out hit, controller.height/2 * slopeForceRayLength) && hit.normal != Vector3.up;
     }
-
+    private bool IsDrinking(){
+        
+    }
     //for stealth reactoin time
     public void ChangeStanceTimer(float stanceModifier){
         OnStanceChange?.Invoke(stanceModifier);
