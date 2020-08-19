@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-
+using UnityEngine.Jobs;
 public class ThinkCycle : MonoBehaviour
 {
     //private SlotOrganizer slotter;

@@ -80,6 +80,7 @@ public class PlayerHandler : CharacterHandler {
     void LateUpdate() {
         CalculateVelocity(); 
         TiltOnDelta();
+        
     }
 
     Vector2 preDir, curDir; 
