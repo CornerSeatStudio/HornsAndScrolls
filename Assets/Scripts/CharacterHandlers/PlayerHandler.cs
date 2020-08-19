@@ -63,7 +63,7 @@ public class PlayerHandler : CharacterHandler {
 
         if(genericState is DodgeState) {
             controller.SimpleMove(dodgeDirection.normalized * (characterdata as PlayerData).dodgeSpeed );
-        } else if (genericState is AttackState) {
+        } else if (genericState is AttackState || genericState is FollowUpState) {
            // controller.SimpleMove(transform.forward * 6f);  
         } else {
             if((inputVector.x != 0 || inputVector.z != 0) && OnSlope()) {
@@ -79,8 +79,25 @@ public class PlayerHandler : CharacterHandler {
 
     void LateUpdate() {
         CalculateVelocity(); 
-        //Debug.Log(controller.velocity);
-        animator.SetFloat(Animator.StringToHash("PlayerSpeed"), currVelocity.magnitude);
+        TiltOnDelta();
+    }
+
+    Vector2 preDir, curDir; 
+    float tiltVel;
+    protected void TiltOnDelta() {
+        //get neccesary info this time around
+        Vector2 curDir = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        Camera.main.transform.TransformDirection(curDir);
+        //Debug.Log($"pre: {preDir}, post: {curDir}");
+
+        //get the smoothed delta
+        float xDiff = curDir.x < 0 ? preDir.x - curDir.x : curDir.x - preDir.x; xDiff *= 120;
+        float zDiff = curDir.y < 0 ? preDir.y - curDir.y : curDir.y - preDir.y; zDiff *= 120;
+        //translate said delta into lerped tilt with high smooth
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(xDiff + zDiff, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z), Time.deltaTime * 3);
+
+        //update the last dir for info
+        preDir = curDir;
     }
 
     Vector3 preVelocity, velVel, currVelocity;
@@ -88,9 +105,10 @@ public class PlayerHandler : CharacterHandler {
         //curPos = Vector3.SmoothDamp(prePos, transform.position, ref posVel, 2f);
         //currVelocity = Vector3.SmoothDamp(preVelocity, (curPos - prePos) / Time.fixedDeltaTime, ref velVel, .12f);
         //prePos = curPos;
-        currVelocity = Vector3.SmoothDamp(preVelocity, controller.velocity, ref velVel, .12f);
+        currVelocity = Vector3.SmoothDamp(preVelocity, controller.velocity, ref velVel, .2f);
 
         preVelocity = currVelocity;
+        animator.SetFloat(Animator.StringToHash("PlayerSpeed"), currVelocity.magnitude);
 
        // Debug.Log(currVelocity + ", old: " + preVelocity);
     }
@@ -99,7 +117,6 @@ public class PlayerHandler : CharacterHandler {
         RaycastHit hit;
         return Physics.Raycast(transform.position, Vector3.down, out hit, controller.height/2 * slopeForceRayLength) && hit.normal != Vector3.up;
     }
-
     //for stealth reactoin time
     public void ChangeStanceTimer(float stanceModifier){
         OnStanceChange?.Invoke(stanceModifier);
@@ -134,11 +151,12 @@ public class PlayerHandler : CharacterHandler {
             } else if(Input.GetKeyDown(KeyCode.C)) {
                 SetStateDriver(new SheathingCrouchState(this, animator));
             } else if (!(genericState is DodgeState)) {
-                if(!(genericState is AttackState)) {
+                if(!(genericState is AttackState) && !(genericState is FollowUpState)) { //TODO SPACE FOR ANOTHER ATTACK
                     HandleCombatMovement(); //feet direction info
                     FaceMouseDirection();
                 }
                 HandleInteractions(); //clicking
+                Debug.Log("we");
             }
         }
     }
@@ -222,9 +240,8 @@ public class PlayerHandler : CharacterHandler {
     }
 
     private void HandleInteractions() {
-        if(genericState is DefaultCombatState) {
+        if(genericState is DefaultCombatState || genericState is FollowUpState) {
             if(Input.GetButtonDown("Fire1") == true) {
-               // Debug.Log("Fire1'd");
                 SetStateDriver(new AttackState(this, animator));
             } else if(Stamina > 0 && Input.GetButtonDown("Fire2") == true) {
                 //Debug.Log("Fire2'd/counter trigger");
