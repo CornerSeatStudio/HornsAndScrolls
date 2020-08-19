@@ -11289,6 +11289,93 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 593036804}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &600288292
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1704905941}
+    m_Modifications:
+    - target: {fileID: 2001937453541543216, guid: e03bb5b69c35d6b43ab8d7fe0b06ea09,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 450.79596
+      objectReference: {fileID: 0}
+    - target: {fileID: 2001937453541543216, guid: e03bb5b69c35d6b43ab8d7fe0b06ea09,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 63.678604
+      objectReference: {fileID: 0}
+    - target: {fileID: 2001937453541543216, guid: e03bb5b69c35d6b43ab8d7fe0b06ea09,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -8.987854
+      objectReference: {fileID: 0}
+    - target: {fileID: 2001937453541543216, guid: e03bb5b69c35d6b43ab8d7fe0b06ea09,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2001937453541543216, guid: e03bb5b69c35d6b43ab8d7fe0b06ea09,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2001937453541543216, guid: e03bb5b69c35d6b43ab8d7fe0b06ea09,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2001937453541543216, guid: e03bb5b69c35d6b43ab8d7fe0b06ea09,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2001937453541543216, guid: e03bb5b69c35d6b43ab8d7fe0b06ea09,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2001937453541543216, guid: e03bb5b69c35d6b43ab8d7fe0b06ea09,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2001937453541543216, guid: e03bb5b69c35d6b43ab8d7fe0b06ea09,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2001937453541543216, guid: e03bb5b69c35d6b43ab8d7fe0b06ea09,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2001937453541543219, guid: e03bb5b69c35d6b43ab8d7fe0b06ea09,
+        type: 3}
+      propertyPath: m_Name
+      value: Soldier 4 Waypoint 3
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e03bb5b69c35d6b43ab8d7fe0b06ea09, type: 3}
+--- !u!4 &600288293 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2001937453541543216, guid: e03bb5b69c35d6b43ab8d7fe0b06ea09,
+    type: 3}
+  m_PrefabInstance: {fileID: 600288292}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &600288294 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2001937453541543217, guid: e03bb5b69c35d6b43ab8d7fe0b06ea09,
+    type: 3}
+  m_PrefabInstance: {fileID: 600288292}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8302745e90f506c439e11f0a4e8648fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &603353207 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2001937453541543216, guid: e03bb5b69c35d6b43ab8d7fe0b06ea09,
@@ -22671,7 +22758,7 @@ PrefabInstance:
     - target: {fileID: 9075442561346592637, guid: be058e469e10e854e87801b004f8319b,
         type: 3}
       propertyPath: patrolWaypoints.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9075442561346592637, guid: be058e469e10e854e87801b004f8319b,
         type: 3}
@@ -22683,6 +22770,11 @@ PrefabInstance:
       propertyPath: patrolWaypoints.Array.data[1]
       value: 
       objectReference: {fileID: 364928837}
+    - target: {fileID: 9075442561346592637, guid: be058e469e10e854e87801b004f8319b,
+        type: 3}
+      propertyPath: patrolWaypoints.Array.data[2]
+      value: 
+      objectReference: {fileID: 600288294}
     - target: {fileID: 9075442561346592639, guid: be058e469e10e854e87801b004f8319b,
         type: 3}
       propertyPath: m_Name
@@ -30212,6 +30304,7 @@ Transform:
   - {fileID: 2037124222}
   - {fileID: 2138992011}
   - {fileID: 1941633709}
+  - {fileID: 600288293}
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
