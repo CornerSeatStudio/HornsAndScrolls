@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Jobs;
+using Unity.Collections;
+using Unity.Jobs; 
 public class ThinkCycle : MonoBehaviour
 {
     //private SlotOrganizer slotter;
@@ -14,6 +15,9 @@ public class ThinkCycle : MonoBehaviour
 
     void Start()
     {        
+        
+
+
         ai = this.GetComponent<AIHandler>();
         buildTree();
         //nce all trees are in, start thinking process
@@ -21,11 +25,14 @@ public class ThinkCycle : MonoBehaviour
 
     }
 
+
     IEnumerator RunTree(float delay) {
         while (!isDead) {
             //Debug.Log("running");
-            yield return new WaitForSeconds(delay);
+
             root.Evaluate(Time.deltaTime);
+            yield return new WaitForSeconds(delay);
+
         }
     }
 

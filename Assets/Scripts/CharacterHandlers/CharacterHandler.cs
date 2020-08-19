@@ -235,7 +235,7 @@ public class CharacterHandler : MonoBehaviour {
         
         //deal stamina damage again, restart cooldown
         staminaDrainAndCooldown = TakeStaminaDrain(staminaDrain);
-        StartCoroutine(staminaDrainAndCooldown);
+        StartCoroutine(staminaDrainAndCooldown); //TODO stop at death
     }
 
     protected IEnumerator StaminaRegeneration() {

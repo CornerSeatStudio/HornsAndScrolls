@@ -310,7 +310,7 @@ public class FollowUpState : CombatState {
 
 public class BlockState : CombatState {
     protected MeleeMove block;
-    IEnumerator blockStaminaDrain;
+    IEnumerator blockStaminaDrain, layerRoutine;
 
     public BlockState(CharacterHandler character, Animator animator) : base(character, animator) {
         try {block = character.MeleeBlock; } catch { Debug.LogWarning("no block in char SO"); }
@@ -318,8 +318,8 @@ public class BlockState : CombatState {
 
     public override IEnumerator OnStateEnter() { 
         animator.SetBool(Animator.StringToHash("Blocking"), true);
-        // blockStaminaDrain = StaminDrainOverTime();
-        // character.StartCoroutine(blockStaminaDrain);
+        blockStaminaDrain = StaminDrainOverTime();
+        character.StartCoroutine(blockStaminaDrain);
         yield break;
     } 
 
@@ -330,76 +330,12 @@ public class BlockState : CombatState {
         }
     }
 
-    public override IEnumerator OnStateExit() { 
-       // if(blockStaminaDrain != null) character.StopCoroutine(blockStaminaDrain);
-        animator.SetBool(Animator.StringToHash("Blocking"), false);
-        yield break;
-    } 
-
-}
-
-public class CounterState : CombatState {
-    protected MeleeMove block;
-
-    public CounterState(CharacterHandler character, Animator animator) : base(character, animator) {
-        try {block = character.MeleeBlock; } catch { Debug.LogWarning("no block in char SO"); }
-    }
-
-    public override IEnumerator OnStateEnter() {   
-        //trigger counter event
-        //if enemy is attacking you specifically (dont trigger if coming from a specific state)
-        //shouldnt be done here, should be done in attack response via comparing type
-        
-        animator.SetBool(Animator.StringToHash("Blocking"), true);
-        yield return new WaitForSeconds(0.3f); //where param is counter timeframe
-        character.SetStateDriver(new BlockState(character, animator));
-    }
-
-    public override IEnumerator OnStateExit() {
-        yield break;
-    }
-
-}
-
-public class DodgeState : CombatState {
-    Vector3 direction;
-    IEnumerator layerRoutine;
-
-    public DodgeState(CharacterHandler character, Animator animator, Vector3 direction) : base(character, animator) {
-        this.direction = direction;
-    }
-
-
-    public override IEnumerator OnStateEnter() {
-        layerRoutine = LayerUp();
-        character.StartCoroutine(layerRoutine);
-
-
-        animator.ResetTrigger(Animator.StringToHash("Dodge"));
-        animator.SetTrigger(Animator.StringToHash("Dodge"));
-        yield return new WaitForSeconds((character.characterdata as PlayerData).dodgeTime);
-        character.SetStateDriver(new DefaultCombatState(character, animator));
-    }
-
     float currWeight, timeVal;
-    
-    IEnumerator LayerUp(){
-        currWeight = timeVal = 0;
-        while( Mathf.Abs(currWeight - 1) > 0.01f){
-            currWeight = Mathf.Lerp(0, 1, timeVal*3);
-            animator.SetLayerWeight(1, currWeight);
-            timeVal += Time.fixedDeltaTime;
-            yield return new WaitForFixedUpdate();
-        }
-        layerRoutine = null;
-        yield break;
-        
-    }
 
     IEnumerator LayerDown(){ //purposefully slow for juke reasons lmao
         currWeight = 1;
         timeVal = 0;
-        while(Mathf.Abs(currWeight) > 0.01f && !(character.genericState is SheathingCrouchState)) { //stop if state has changed to crouch sheath
+        while(Mathf.Abs(currWeight) > 0.01f) { //stop if state has changed to crouch sheath
             currWeight = Mathf.Lerp(1, 0, timeVal *3);
             animator.SetLayerWeight(1, currWeight);
             timeVal += Time.fixedDeltaTime;
@@ -409,10 +345,80 @@ public class DodgeState : CombatState {
         yield break;
     }
 
-    public override IEnumerator OnStateExit() {
-        if(layerRoutine != null) character.StopCoroutine(layerRoutine);
+    public override IEnumerator OnStateExit() { 
+       if(blockStaminaDrain != null) character.StopCoroutine(blockStaminaDrain);
+        animator.SetBool(Animator.StringToHash("Blocking"), false);
         layerRoutine = LayerDown();
         character.StartCoroutine(layerRoutine);
+        yield break;
+    } 
+
+}
+
+public class CounterState : CombatState {
+    protected MeleeMove block;
+    IEnumerator layerRoutine;
+
+    public CounterState(CharacterHandler character, Animator animator) : base(character, animator) {
+        try {block = character.MeleeBlock; } catch { Debug.LogWarning("no block in char SO"); }
+    }
+
+    public override IEnumerator OnStateEnter() {   
+        //trigger counter event
+        //if enemy is attacking you specifically (dont trigger if coming from a specific state)
+        //shouldnt be done here, should be done in attack response via comparing type
+        animator.SetLayerWeight(1, 1);
+
+
+        animator.SetBool(Animator.StringToHash("Blocking"), true);
+        yield return new WaitForSeconds(0.3f); //where param is counter timeframe
+        character.SetStateDriver(new BlockState(character, animator));
+    }
+
+    float currWeight, timeVal;
+    
+    IEnumerator LayerDown(){ //purposefully slow for juke reasons lmao
+        currWeight = 1;
+        timeVal = 0;
+        while(Mathf.Abs(currWeight) > 0.01f) { //stop if state has changed to crouch sheath
+            currWeight = Mathf.Lerp(1, 0, timeVal *3);
+            animator.SetLayerWeight(1, currWeight);
+            timeVal += Time.fixedDeltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+        layerRoutine = null;
+        yield break;
+    }
+    public override IEnumerator OnStateExit() {
+        if(layerRoutine != null) {
+            character.StopCoroutine(layerRoutine);
+            layerRoutine = LayerDown();
+            character.StartCoroutine(layerRoutine);
+        }
+        yield break;
+    }
+
+}
+
+public class DodgeState : CombatState {
+    Vector3 direction;
+
+    public DodgeState(CharacterHandler character, Animator animator, Vector3 direction) : base(character, animator) {
+        this.direction = direction;
+    }
+
+
+    public override IEnumerator OnStateEnter() {
+        animator.ResetTrigger(Animator.StringToHash("Dodge"));
+        animator.SetTrigger(Animator.StringToHash("Dodge"));
+        character.DealStamina(3f);
+        yield return new WaitForSeconds((character.characterdata as PlayerData).dodgeTime);
+        character.SetStateDriver(new DefaultCombatState(character, animator));
+    }
+
+
+
+    public override IEnumerator OnStateExit() {
         yield break;
     }
 
@@ -453,9 +459,8 @@ public class DeathState : CombatState {
             //stop APPROPRITE coroutines
             (character as AIHandler).Detection.IsAlive = false; //detection
             //weapon stuff
-            (character as AIHandler).weaponMesh.transform.SetParent(null);
-            (character as AIHandler).weaponMesh.AddComponent<Rigidbody>();
-            (character as AIHandler).weaponMesh.AddComponent<BoxCollider>();
+            (character as AIHandler).weaponHitbox.transform.SetParent(null);
+            (character as AIHandler).weaponHitbox.isTrigger = false;
             //ragdoll 
             (character as AIHandler).GetComponent<Collider>().enabled = false;
         } catch {

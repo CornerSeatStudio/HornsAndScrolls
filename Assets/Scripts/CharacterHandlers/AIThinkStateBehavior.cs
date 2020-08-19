@@ -386,7 +386,7 @@ public class OffenseState : AIThinkState {
         float timer = chosenAttack.endlag + chosenAttack.startup;
         while(timer >= 0) {
             if(character.genericState is StaggerState) { 
-                Debug.Log("offense interupt"); 
+                Debug.Log("offense interupted for stagger"); 
                 yield break; 
             }
             

@@ -23,7 +23,6 @@ public class AIHandler : CharacterHandler {
     public float AIGlobalStateCheckRange = 30f; //range ai can sense other AI and their states
 
     [Header("Combat Stuff")]
-    public GameObject weaponMesh;
     public float tooFarFromPlayerDistance;
     public float backAwayDistance;
     public float shoveDistance;
@@ -141,6 +140,7 @@ public class AIHandler : CharacterHandler {
         SetStateDriver(new DefaultAIAggroState(this, animator, agent));
     }
 
+
     //upon combat start, begin actively calculating probabillity
     public bool CanOffend {get; set; } = false;
     //private bool offenseCooldown = false;
@@ -188,6 +188,16 @@ public class AIHandler : CharacterHandler {
 
     #region stealthstuff
     //verify if stealth is valid
+
+    // struct ThinkJob : IJob {
+    //     public void Execute(){
+    //     }
+    // }
+    //     ThinkJob job = new ThinkJob();
+    //     JobHandle handle = job.Schedule();
+    //     handle.Complete();
+
+
     public BTStatus VerifyStealth() {
         if(GlobalState != GlobalState.UNAGGRO) return BTStatus.FAILURE; 
 
@@ -370,7 +380,7 @@ public class AIHandler : CharacterHandler {
     }
 
     public IEnumerator FacePlayer() {
-        while (true) {
+        while (GlobalState != GlobalState.DEAD) {
             transform.LookAt(new Vector3(TargetPlayer.transform.position.x, this.transform.position.y, TargetPlayer.transform.position.z));
             yield return null;
         }
