@@ -1,22 +1,24 @@
 ﻿using UnityEngine;
-using System.IO;
+using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 public static class Saving
 {
     public static List<SaveData> savedGames = new List<SaveData>();
  
     public static void Save() {
-        savedGames.Add(Game.current);
+        savedGames.Add(SaveData.current);
         BinaryFormatter bf = new BinaryFormatter();
         FileStream file = File.Create (Application.persistentDataPath + "/savedGames.gd");
-        bf.Serialize(file, SaveLoad.savedGames);
+        bf.Serialize(file, Saving.savedGames);
         file.Close();
 }
     public static void Load() {
         if(File.Exists(Application.persistentDataPath + "/savedGames.gd")) {
             BinaryFormatter bf = new BinaryFormatter();
             FileStream file = File.Open(Application.persistentDataPath + "/savedGames.gd", FileMode.Open);
-            SaveLoad.savedGames = (List<Game>)bf.Deserialize(file);
+            Saving.savedGames = (List<SaveData>)bf.Deserialize(file);
             file.Close();
     }
 }
