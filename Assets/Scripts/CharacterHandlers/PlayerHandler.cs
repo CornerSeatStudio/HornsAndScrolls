@@ -62,7 +62,7 @@ public class PlayerHandler : CharacterHandler {
         inputVector.Normalize();
 
         if(genericState is DodgeState) {
-            controller.SimpleMove(dodgeDirection.normalized * (characterdata as PlayerData).dodgeSpeed );
+            //controller.SimpleMove(dodgeDirection.normalized * (characterdata as PlayerData).dodgeSpeed );
         } else if (genericState is AttackState || genericState is FollowUpState) {
            // controller.SimpleMove(transform.forward * 6f);  
         } else {
@@ -79,7 +79,7 @@ public class PlayerHandler : CharacterHandler {
 
     void LateUpdate() {
         CalculateVelocity(); 
-        TiltOnDelta();
+        //TiltOnDelta();
         
     }
 
@@ -167,12 +167,14 @@ public class PlayerHandler : CharacterHandler {
 
     #endregion
 
-    protected override void TakeDamage(float damage, bool isStaggerable, CharacterHandler attacker){
-        base.TakeDamage(damage, isStaggerable, attacker);
+    protected override bool TakeDamageAndCheckDeath(float damage, bool isStaggerable, CharacterHandler attacker){
+        bool f = base.TakeDamageAndCheckDeath(damage, isStaggerable, attacker);
 
         if(Health <= 0) { //UPON DEATH
             this.gameObject.SetActive(false);
         }
+
+        return f;
     }
 
 

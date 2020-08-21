@@ -130,8 +130,7 @@ public class InvestigationState : AIThinkState {
             }
         } else { //caught, change global state, let mono behavior handle the rest
             animator.SetBool(Animator.StringToHash("Combat"), true); //todo: to be put in separate class
-            // character.layerWeightRoutine = character.LayerWeightDriver(1, 0, 1, .3f);
-            // character.StartCoroutine(character.layerWeightRoutine);
+
             character.GlobalState = GlobalState.AGGRO;
             character.SetStateDriver(new DefaultAIAggroState(character, animator, agent));
         }
@@ -249,6 +248,8 @@ public class DefaultAIAggroState : AIThinkState {
     public DefaultAIAggroState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
     
     public override IEnumerator OnStateEnter() {
+        animator.SetLayerWeight(1, 1);
+
         facePlayerRoutine = character.FacePlayer();
         character.StartCoroutine(facePlayerRoutine);
         yield break;
@@ -261,11 +262,13 @@ public class DefaultAIAggroState : AIThinkState {
 }
 
 public class DefenseState : AIThinkState {
-    IEnumerator defenseRoutine;
+    IEnumerator defenseRoutine, facePlayerRoutine;
     //default block quota
     public DefenseState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
     
     public override IEnumerator OnStateEnter() {
+        facePlayerRoutine = character.FacePlayer();
+        character.StartCoroutine(facePlayerRoutine);
         defenseRoutine = Defense();
         yield return character.StartCoroutine(defenseRoutine);
         character.SetStateDriver(new DefaultAIAggroState(character, animator, agent));
@@ -273,7 +276,6 @@ public class DefenseState : AIThinkState {
 
     private IEnumerator Defense() {
         //face player, stand still todo
-        character.transform.LookAt(character.TargetPlayer.transform); //ok to not be in coroutine cause its fast
         //agent.SetDestination(character.transform.position);
 
         character.SetStateDriver(new BlockState(character, animator));
@@ -283,6 +285,7 @@ public class DefenseState : AIThinkState {
     }
 
     public override IEnumerator OnStateExit() {
+        if(facePlayerRoutine != null) character.StopCoroutine(facePlayerRoutine);
         if(defenseRoutine != null) character.StopCoroutine(defenseRoutine);
         yield break;
     }
@@ -376,7 +379,7 @@ public class OffenseState : AIThinkState {
     }
 
     private IEnumerator Offense(MeleeMove chosenAttack) {
-        subRoutine = character.ChasePlayer(chosenAttack.range - 3f);
+        subRoutine = character.ChasePlayer(chosenAttack.range);
         yield return character.StartCoroutine(subRoutine);
 
         //Debug.Log("AI attempting an attack...");
@@ -424,13 +427,11 @@ public class SpacingState : AIThinkState {
         NavMeshHit hit;
         Vector3 movePoint = FindMostViablePosition();
         if(NavMesh.SamplePosition(movePoint, out hit, character.backAwayDistance + 5f, NavMesh.AllAreas)
-            || NavMesh.FindClosestEdge(movePoint, out hit, NavMesh.AllAreas)) {
+            || agent.FindClosestEdge(out hit)) {
             agent.SetDestination(hit.position);
         }
 
         yield return new WaitWhile(() => agent.stoppingDistance < agent.remainingDistance || agent.pathPending);
-
-        character.SetStateDriver(new DefaultAIAggroState(character, animator, agent));
     }
 
     private Vector3 FindMostViablePosition() {

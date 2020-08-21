@@ -198,8 +198,7 @@ public class SheathingCrouchState : MoveState {
         layerRoutine = LayerDown();
         character.StartCoroutine(layerRoutine); //TODO THIS SHOULD BE STOPPED IF DONE IN AGAIN
 
-        // character.layerWeightRoutine = character.LayerWeightDriver(1, 1, 0, .3f);
-        // yield return character.StartCoroutine(character.layerWeightRoutine);
+
         yield break;
     }
 }
@@ -254,7 +253,7 @@ public class AttackState : CombatState {
         animator.applyRootMotion = true; //cleaner maybe
         //yield return new WaitForSeconds(.5f);
 
-        animator.SetTrigger(Animator.StringToHash("Attacking"));
+        animator.SetTrigger(Animator.StringToHash(chosenMove.name));
 
         //sound
         try { Array.Find(character.audioData, AudioData => AudioData.name == "woosh").Play(character.AudioSource); } catch {} //temp todo
@@ -273,10 +272,7 @@ public class AttackState : CombatState {
 
     }
     public override IEnumerator OnStateExit() {
-      //  yield return new WaitUntil(() => character.layerWeightRoutine == null);
-      //  character.layerWeightRoutine = character.LayerWeightDriver(1, 0, 1, .3f);
-        animator.applyRootMotion = false;
-     //   yield return character.StartCoroutine(character.layerWeightRoutine);       
+      
         if(timerRoutine != null) character.StopCoroutine(timerRoutine);
         if(currAttackCoroutine != null) character.StopCoroutine(currAttackCoroutine); 
         yield break;
@@ -302,6 +298,7 @@ public class FollowUpState : CombatState {
 
     public override IEnumerator OnStateExit(){
         if(timeo != null) character.StopCoroutine(timeo);
+        animator.applyRootMotion = false;
         yield break;
     }
 
@@ -348,8 +345,11 @@ public class BlockState : CombatState {
     public override IEnumerator OnStateExit() { 
        if(blockStaminaDrain != null) character.StopCoroutine(blockStaminaDrain);
         animator.SetBool(Animator.StringToHash("Blocking"), false);
-        layerRoutine = LayerDown();
-        character.StartCoroutine(layerRoutine);
+
+        if(character is PlayerHandler){
+            layerRoutine = LayerDown();
+            character.StartCoroutine(layerRoutine);
+        }
         yield break;
     } 
 
@@ -412,6 +412,7 @@ public class DodgeState : CombatState {
         animator.ResetTrigger(Animator.StringToHash("Dodge"));
         animator.SetTrigger(Animator.StringToHash("Dodge"));
         character.DealStamina(3f);
+        animator.applyRootMotion = true;
         yield return new WaitForSeconds((character.characterdata as PlayerData).dodgeTime);
         character.SetStateDriver(new DefaultCombatState(character, animator));
     }
@@ -419,6 +420,7 @@ public class DodgeState : CombatState {
 
 
     public override IEnumerator OnStateExit() {
+        animator.applyRootMotion = false;
         yield break;
     }
 
@@ -429,9 +431,7 @@ public class StaggerState : CombatState {
 
     public override IEnumerator OnStateEnter() {  
         Array.Find(character.audioData, AudioData => AudioData.name == "stagger").Play(character.AudioSource);
-     //   yield return new WaitUntil(() => character.layerWeightRoutine == null);
-      //  character.layerWeightRoutine = character.LayerWeightDriver(1, 1, 0, .2f);
-       // yield return character.StartCoroutine(character.layerWeightRoutine);       
+ 
         animator.SetTrigger(Animator.StringToHash("Staggering"));
         yield return new WaitForSeconds(.7f); //stagger time
         character.SetStateDriver(new DefaultCombatState(character, animator));      
@@ -439,9 +439,7 @@ public class StaggerState : CombatState {
 
     public override IEnumerator OnStateExit() {
         yield break;
-     //   yield return new WaitUntil(() => character.layerWeightRoutine == null);
-        // character.layerWeightRoutine = character.LayerWeightDriver(1, 0, 1, .2f);
-        // yield return character.StartCoroutine(character.layerWeightRoutine);       
+   
     }
 
 
@@ -463,6 +461,7 @@ public class DeathState : CombatState {
             (character as AIHandler).weaponHitbox.isTrigger = false;
             //ragdoll 
             (character as AIHandler).GetComponent<Collider>().enabled = false;
+            (character as AIHandler).GetComponent<NavMeshAgent>().enabled = false;
         } catch {
             Debug.LogWarning("player shouldnt use death state for now");
         }

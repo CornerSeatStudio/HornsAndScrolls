@@ -110,6 +110,8 @@ public class AIHandler : CharacterHandler {
 
         Vector3 localDir = transform.InverseTransformDirection(currVelocity).normalized;
 
+        //Debug.Log(currVelocity.magnitude);
+
         float weight = Mathf.InverseLerp(0, agent.speed, currVelocity.magnitude);
         animator.SetFloat(Animator.StringToHash("XMove"), localDir.x * weight);
         animator.SetFloat(Animator.StringToHash("ZMove"), localDir.z * weight);
@@ -119,14 +121,13 @@ public class AIHandler : CharacterHandler {
 
     }
 
-    protected override void TakeDamage(float damage, bool isStaggerable, CharacterHandler attacker) {
-        base.TakeDamage(damage, isStaggerable, attacker);
-
-        if(GlobalState != GlobalState.AGGRO) PivotToAggro();
-        
-        //Debug.Log("taken damage");
-        if(Health <= 0) { //UPON AI DEATH todo should this be in super class
+    protected override bool TakeDamageAndCheckDeath(float damage, bool isStaggerable, CharacterHandler attacker) {
+        if (base.TakeDamageAndCheckDeath(damage, isStaggerable, attacker)){
             SetStateDriver(new DeathState(this, animator)); 
+            return true;
+        } else {
+            if(GlobalState != GlobalState.AGGRO) PivotToAggro();
+            return false;
         }
 
     }
@@ -134,8 +135,7 @@ public class AIHandler : CharacterHandler {
     private void PivotToAggro() {
         GlobalState = GlobalState.AGGRO;
         animator.SetBool(Animator.StringToHash("Combat"), true); //todo: to be put in separate class    
-        // layerWeightRoutine = LayerWeightDriver(1, 0, 1, .3f);
-        // StartCoroutine(layerWeightRoutine);
+
         StartCoroutine(OffenseScheduler());
         SetStateDriver(new DefaultAIAggroState(this, animator, agent));
     }
@@ -242,9 +242,14 @@ public class AIHandler : CharacterHandler {
     public bool DefenceConditional(){       //  Debug.Log("defense condi");
 
         return TargetPlayer.genericState is AttackState //player is attacking
-        && TargetPlayer.FindTarget((TargetPlayer.genericState as AttackState).chosenMove) == this //player is attacking me in particular
+        && (TargetPlayer.transform.position - transform.position).sqrMagnitude < TargetPlayer.weapon.Attacks.First().range * TargetPlayer.weapon.Attacks.First().range //player is close enough (temp)
         && !(genericState is AttackState) //im not already mid attack  
         && Stamina > 0;     
+
+        // return TargetPlayer.genericState is AttackState //player is attacking
+        // && TargetPlayer.FindTarget((TargetPlayer.genericState as AttackState).chosenMove) == this //player is attacking me in particular
+        // && !(genericState is AttackState) //im not already mid attack  
+        // && Stamina > 0;     
     }
 
     //returns if player is too far
@@ -278,8 +283,10 @@ public class AIHandler : CharacterHandler {
     public bool BackAwayConditional() { //if too close AND CAN back away
         NavMeshHit hit;
 
+      //  Debug.Log((TargetPlayer.transform.position - transform.position).sqrMagnitude <= backAwayDistance * backAwayDistance);
+
         return (TargetPlayer.transform.position - transform.position).sqrMagnitude <= backAwayDistance * backAwayDistance
-                && NavMesh.FindClosestEdge(transform.position + (transform.position - TargetPlayer.transform.position), out hit, NavMesh.AllAreas);
+                && agent.FindClosestEdge(out hit); //NavMesh.FindClosestEdge(transform.position + (transform.position - TargetPlayer.transform.position), out hit, NavMesh.AllAreas);
 
 
     }
@@ -311,21 +318,25 @@ public class AIHandler : CharacterHandler {
 
         //begin an attack if neccesary
         if(!(thinkState is OffenseState)) { 
-            SetStateDriver(new OffenseState(this, animator, agent)); //todo attack move selection
+            SetStateDriver(new OffenseState(this, animator, agent, RandomMoveSelection())); //todo attack move selection
         }
 
         return BTStatus.RUNNING;
     }
 
+    private MeleeMove RandomMoveSelection(){
+        return weapon.Attacks[Random.Range(0, weapon.Attacks.Count)];
+    }
+
     public BTStatus BackAwayTask() {// Debug.Log("back away");
-  
+       // Debug.Log("back away tasking");
         //implication: cannot be in offense state if this area is reached
         if(!(thinkState is BackAwayState)) {
             //if im NOT in an offense cooldown AND I can offend (via probabillity check)
-            if(CanOffend) {
+            if(false) { //if(CanOffend) {
                 SetStateDriver(new OffenseState(this, animator, agent));
             } else {
-                SetStateDriver(new BackAwayState(this, animator, agent));
+                //SetStateDriver(new BackAwayState(this, animator, agent));
             }
         }
         return BTStatus.RUNNING;
@@ -359,14 +370,13 @@ public class AIHandler : CharacterHandler {
     public IEnumerator SpaceFromPlayer(float distanceFromPlayer){
         NavMeshHit hit;
 
-        
         // Vector3 backAwayMainVec = (transform.position - targetPlayer.transform.position).normalized * (backAwayDistance + 15f);
         // Vector3 movePos = (transform.position + backAwayMainVec) - (transform.position + (transform.position - targetPlayer.transform.position));
         NavMesh.SamplePosition(transform.position + ((transform.position - TargetPlayer.transform.position).normalized * (backAwayDistance + 10f - Vector3.Distance(transform.position, TargetPlayer.transform.position))), out hit, distanceFromPlayer, NavMesh.AllAreas);
         agent.SetDestination(hit.position);
         
         while(((NavMesh.SamplePosition(transform.position + ((transform.position - TargetPlayer.transform.position).normalized * (backAwayDistance + 10f - Vector3.Distance(transform.position, TargetPlayer.transform.position))), out hit, distanceFromPlayer, NavMesh.AllAreas))
-                || (NavMesh.FindClosestEdge(transform.position + ((transform.position - TargetPlayer.transform.position).normalized * (backAwayDistance + 10f - Vector3.Distance(transform.position, TargetPlayer.transform.position))), out hit, NavMesh.AllAreas))
+                || (agent.FindClosestEdge(out hit)) //(NavMesh.FindClosestEdge(transform.position + ((transform.position - TargetPlayer.transform.position).normalized * (backAwayDistance + 10f - Vector3.Distance(transform.position, TargetPlayer.transform.position))), out hit, NavMesh.AllAreas))
               ) && (agent.stoppingDistance < agent.remainingDistance || agent.pathPending) 
                 ) {
 
