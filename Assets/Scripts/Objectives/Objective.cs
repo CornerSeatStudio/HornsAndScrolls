@@ -12,6 +12,7 @@ public abstract class Objective : MonoBehaviour
     protected virtual void Start(){
         //locate obectiveHandler
         objectiveHandler = GameObject.FindObjectOfType<ObjectiveHandler>();
+        objectiveHandler.CurrObjectiveIndex = 0; //start from beginning
         GetComponent<Collider>().isTrigger = true;
     }
 
@@ -27,12 +28,15 @@ public abstract class Objective : MonoBehaviour
         yield return StartCoroutine(objectiveHandler.objectives[objectiveHandler.CurrObjectiveIndex].OnObjectiveCompletion());
         objectiveHandler.CurrObjectiveIndex++;
 
+        Debug.Log("obj inc");
+
+
         if(objectiveHandler.objectives.Count > objectiveHandler.CurrObjectiveIndex) {
             objectiveHandler.CurrObjective = objectiveHandler.objectives[objectiveHandler.CurrObjectiveIndex];
             yield return StartCoroutine(objectiveHandler.objectives[objectiveHandler.CurrObjectiveIndex].OnObjectiveStart());
         } else {
             Debug.Log("objectives done");
-            objectiveHandler.OnGameFinish();
+            objectiveHandler.OnLevelFinish();
         }
     }
 

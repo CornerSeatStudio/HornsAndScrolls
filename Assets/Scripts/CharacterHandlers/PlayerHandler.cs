@@ -24,8 +24,9 @@ public class PlayerHandler : CharacterHandler {
 
     public delegate void PickupHandler();
     public event PickupHandler OnInteract;
-
     public event Action<float> OnStanceChange; 
+
+
 
     #region callbacks
     protected override void Start(){
