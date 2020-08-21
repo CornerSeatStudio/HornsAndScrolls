@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-
+using UnityEngine.Events;
 
 public abstract class Objective : MonoBehaviour
 {
 
     protected ObjectiveHandler objectiveHandler;
-
+    public UnityEvent onObjectiveCompletion;
     protected virtual void Start(){
         //locate obectiveHandler
         objectiveHandler = GameObject.FindObjectOfType<ObjectiveHandler>();
@@ -48,6 +48,8 @@ public abstract class Objective : MonoBehaviour
     public virtual IEnumerator OnObjectiveCompletion() {
         //Debug.Log("default objective completion");
         Array.Find(objectiveHandler.audioData, AudioData => AudioData.name == "win").Play(objectiveHandler.AudioSource);
+
+        onObjectiveCompletion?.Invoke();
 
         yield break;
     }

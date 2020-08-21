@@ -13,7 +13,6 @@ public class IdleMoveState : MoveState {
     public override IEnumerator OnStateEnter() {
         (character as PlayerHandler).ChangeStanceTimer((character.characterdata as PlayerData).detectionTime);
         animator.SetBool(Animator.StringToHash("Crouching"), false);
-        animator.SetBool(Animator.StringToHash("Combat"), false);
         animator.SetBool(Animator.StringToHash("midDraw"), false); //drawing is finished
 
    //     animator.SetBool(Animator.StringToHash("Idle"), true);
