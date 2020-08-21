@@ -690,18 +690,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &867542953 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1029908477032750623, guid: f37fb0cfe65c1e747906c765dc94a945,
-    type: 3}
-  m_PrefabInstance: {fileID: 1676902319}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1c1010317c11e5848ae7bf145e4bce5b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &961058445
 GameObject:
   m_ObjectHideFlags: 0
@@ -991,7 +979,7 @@ PrefabInstance:
         type: 3}
       propertyPath: targetPlayer
       value: 
-      objectReference: {fileID: 867542953}
+      objectReference: {fileID: 0}
     - target: {fileID: 9075442561346592637, guid: be058e469e10e854e87801b004f8319b,
         type: 3}
       propertyPath: patrolWaypoints.Array.data[0]
@@ -1452,7 +1440,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!114 &1334001316 stripped
 MonoBehaviour:
@@ -3812,7 +3800,7 @@ PrefabInstance:
     - target: {fileID: 9075442561346592633, guid: be058e469e10e854e87801b004f8319b,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.2
+      value: 1.8
       objectReference: {fileID: 0}
     - target: {fileID: 9075442561346592633, guid: be058e469e10e854e87801b004f8319b,
         type: 3}
@@ -3874,6 +3862,16 @@ PrefabInstance:
       propertyPath: obstacleMask.m_Bits
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9075442561346592635, guid: be058e469e10e854e87801b004f8319b,
+        type: 3}
+      propertyPath: m_Height
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 9075442561346592635, guid: be058e469e10e854e87801b004f8319b,
+        type: 3}
+      propertyPath: m_Center.y
+      value: 6.5
+      objectReference: {fileID: 0}
     - target: {fileID: 9075442561346592636, guid: be058e469e10e854e87801b004f8319b,
         type: 3}
       propertyPath: m_Radius
@@ -3883,7 +3881,7 @@ PrefabInstance:
         type: 3}
       propertyPath: targetPlayer
       value: 
-      objectReference: {fileID: 867542953}
+      objectReference: {fileID: 0}
     - target: {fileID: 9075442561346592637, guid: be058e469e10e854e87801b004f8319b,
         type: 3}
       propertyPath: patrolWaypoints.Array.data[0]
@@ -3994,12 +3992,27 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: -6478536213147159724, guid: f868ae568dc85ce4b988eb42329c8f33,
+      objectReference: {fileID: -6478536213147159724, guid: b29c40eefda98834eaf1de84b5a3141a,
         type: 3}
     - target: {fileID: 9075442561869680486, guid: be058e469e10e854e87801b004f8319b,
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9075442561869680487, guid: be058e469e10e854e87801b004f8319b,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9075442561869680487, guid: be058e469e10e854e87801b004f8319b,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 9075442561869680487, guid: be058e469e10e854e87801b004f8319b,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 9075442562003684241, guid: be058e469e10e854e87801b004f8319b,
         type: 3}

@@ -74,6 +74,7 @@ Material:
     - _ZWrite: 1
     - gloss: 0.1
     - grassHeight: 0.01
+    - shadowIntensity: 0
     - stepForce: 13
     - walkAura: 20
     - windDensity: 0.1
@@ -85,3 +86,4 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - ambientLight: {r: 1, g: 1, b: 1, a: 1}
     - lightColor: {r: 0.9655283, g: 1, b: 0.7028302, a: 1}
+    - shadowColor: {r: 0.3490566, g: 0.3490566, b: 0.3490566, a: 1}

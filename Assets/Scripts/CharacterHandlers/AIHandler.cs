@@ -283,7 +283,7 @@ public class AIHandler : CharacterHandler {
     public bool BackAwayConditional() { //if too close AND CAN back away
         NavMeshHit hit;
 
-      //  Debug.Log((TargetPlayer.transform.position - transform.position).sqrMagnitude <= backAwayDistance * backAwayDistance);
+        // Debug.Log(agent.FindClosestEdge(out hit));
 
         return (TargetPlayer.transform.position - transform.position).sqrMagnitude <= backAwayDistance * backAwayDistance
                 && agent.FindClosestEdge(out hit); //NavMesh.FindClosestEdge(transform.position + (transform.position - TargetPlayer.transform.position), out hit, NavMesh.AllAreas);
@@ -336,7 +336,7 @@ public class AIHandler : CharacterHandler {
             if(false) { //if(CanOffend) {
                 SetStateDriver(new OffenseState(this, animator, agent));
             } else {
-                //SetStateDriver(new BackAwayState(this, animator, agent));
+                SetStateDriver(new BackAwayState(this, animator, agent));
             }
         }
         return BTStatus.RUNNING;

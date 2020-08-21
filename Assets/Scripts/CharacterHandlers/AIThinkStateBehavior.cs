@@ -279,7 +279,7 @@ public class DefenseState : AIThinkState {
         //agent.SetDestination(character.transform.position);
 
         character.SetStateDriver(new BlockState(character, animator));
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(0.5f);
         character.SetStateDriver(new DefaultCombatState(character, animator));
         
     }

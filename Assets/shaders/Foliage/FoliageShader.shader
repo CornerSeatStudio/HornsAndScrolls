@@ -13,6 +13,7 @@
         yDisplace ("Vert displace manually lol", Float) = .3
         walkAura ("Walk Aura idk why no runtime ", Float) = 10
         stepForce ("Step force", Float) = .03
+        shadowIntensity ("Receive Shadow Reduction", Float) = 0
 
     }
     SubShader
@@ -55,6 +56,7 @@
             float4 _MainTex_ST;
             uniform float gloss;
             float3 lightColor;
+            uniform float shadowIntensity;
             uniform float4 ambientLight;
             uniform float windMove;
             uniform float windDensity;
@@ -177,7 +179,7 @@
                 //return float4(o.uv.xxx, 1);
 
                 //return col * ;
-                return col * float4(totalLight, 1) * shadow;                
+                return col * float4(totalLight, 1) * (shadow + shadowIntensity);                
             }
 
             ENDCG
@@ -309,6 +311,8 @@
 
                 //return float4(o.uv.xxx, 1);
                 float4 col = tex2D(_MainTex, o.uv);
+                //float4 col = float4(0,0,0,1);
+
                 return col;              
             }
 
