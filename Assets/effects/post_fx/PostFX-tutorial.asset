@@ -65,7 +65,7 @@ MonoBehaviour:
     value: -50
   saturation:
     overrideState: 1
-    value: 75
+    value: 40
   brightness:
     overrideState: 0
     value: 0
@@ -80,7 +80,7 @@ MonoBehaviour:
     value: 30
   mixerRedOutGreenIn:
     overrideState: 1
-    value: 175
+    value: 170
   mixerRedOutBlueIn:
     overrideState: 1
     value: -21
@@ -95,22 +95,22 @@ MonoBehaviour:
     value: 10
   mixerBlueOutRedIn:
     overrideState: 1
-    value: 200
+    value: 150
   mixerBlueOutGreenIn:
     overrideState: 1
-    value: 0
+    value: 15
   mixerBlueOutBlueIn:
     overrideState: 1
     value: 110
   lift:
     overrideState: 1
-    value: {x: 0.10797924, y: 0.21507224, z: 1, w: 0.0048332415}
+    value: {x: 0.10797924, y: 0.21507224, z: 1, w: 0.01049326}
   gamma:
     overrideState: 1
     value: {x: 1, y: 0.89372784, z: 0.6116787, w: -0.16949153}
   gain:
     overrideState: 1
-    value: {x: 1, y: 0.8485511, z: 0.6900339, w: -0.60401934}
+    value: {x: 1, y: 0.8485511, z: 0.6900339, w: -0.19202413}
   masterCurve:
     overrideState: 0
     value:
@@ -1321,7 +1321,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8e6292b2c06870d4495f009f912b9600, type: 3}
-  m_Name: PostFX-castle-town
+  m_Name: PostFX-tutorial
   m_EditorClassIdentifier: 
   settings:
   - {fileID: -8353652451953207729}
