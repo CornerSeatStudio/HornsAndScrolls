@@ -87,7 +87,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: Attacking
+    m_ConditionEvent: default
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -8016153021729589992}
@@ -400,9 +400,9 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.22537196
-  m_TransitionOffset: 0.44009754
-  m_ExitTime: 1.0192086
+  m_TransitionDuration: 0.22537148
+  m_TransitionOffset: 0.32827768
+  m_ExitTime: 1.0891283
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -603,9 +603,9 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.23488355
-  m_TransitionOffset: 0.104041524
-  m_ExitTime: 0.9896573
+  m_TransitionDuration: 0.37204874
+  m_TransitionOffset: 0
+  m_ExitTime: 0.95322096
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -829,79 +829,79 @@ AnimatorController:
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: Crouching
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: Combat
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: XMove
     m_Type: 1
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: ZMove
     m_Type: 1
     m_DefaultFloat: 1
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: Sheath
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: SheathDir
     m_Type: 1
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: midDraw
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: Unsheath
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: Dodge
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
-  - m_Name: Attacking
+    m_Controller: {fileID: 0}
+  - m_Name: default
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: Blocking
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: Stagger
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
@@ -964,7 +964,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: Attacking
+    m_ConditionEvent: default
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 7441056408409801525}
@@ -1283,7 +1283,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: Attacking
+    m_ConditionEvent: default
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -8016153021729589992}
@@ -1291,9 +1291,9 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.07801825
+  m_TransitionDuration: 0.07801837
   m_TransitionOffset: 0
-  m_ExitTime: 0.22509538
+  m_ExitTime: 0.20430829
   m_HasExitTime: 0
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -1424,7 +1424,7 @@ BlendTree:
   m_Name: Blend Tree
   m_Childs:
   - serializedVersion: 2
-    m_Motion: {fileID: 9128885920207887336, guid: 9249a2b7364b49c4da6d165105e2adf9,
+    m_Motion: {fileID: -6146568296862323243, guid: 9ef4cf95fbca2bf47a39531ea7129ac1,
       type: 3}
     m_Threshold: 0
     m_Position: {x: 0, y: 1}
@@ -1433,7 +1433,7 @@ BlendTree:
     m_DirectBlendParameter: XCombatMove
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 9128885920207887336, guid: 2e5eeb0a0abf3364e95d0c9f1519fd41,
+    m_Motion: {fileID: 9128885920207887336, guid: 720e3b4e334c7034dbd5303fe3c54ada,
       type: 3}
     m_Threshold: 0.33333334
     m_Position: {x: 1, y: 0}
@@ -1442,7 +1442,7 @@ BlendTree:
     m_DirectBlendParameter: XCombatMove
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 9128885920207887336, guid: 342aba89d3ad23e4bab4a4801daa3852,
+    m_Motion: {fileID: 3590016115411608137, guid: 9ef4cf95fbca2bf47a39531ea7129ac1,
       type: 3}
     m_Threshold: 0.6666667
     m_Position: {x: 0, y: -1}
@@ -1451,7 +1451,7 @@ BlendTree:
     m_DirectBlendParameter: XCombatMove
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 9128885920207887336, guid: 95a185af9c5d538419d6c02e1dd8289e,
+    m_Motion: {fileID: 844688330495865900, guid: 720e3b4e334c7034dbd5303fe3c54ada,
       type: 3}
     m_Threshold: 1
     m_Position: {x: -1, y: 0}
@@ -1489,7 +1489,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 9128885920207887336, guid: fe8958c82921ab5489344f5f993d1722,
+  m_Motion: {fileID: 9128885920207887336, guid: 01b6b956981463947b749a972c97fa71,
     type: 3}
   m_Tag: 
   m_SpeedParameter: 
