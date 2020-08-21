@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-
+using Unity.Collections;
+using Unity.Jobs; 
 public class ThinkCycle : MonoBehaviour
 {
     //private SlotOrganizer slotter;
@@ -14,6 +15,9 @@ public class ThinkCycle : MonoBehaviour
 
     void Start()
     {        
+        
+
+
         ai = this.GetComponent<AIHandler>();
         buildTree();
         //nce all trees are in, start thinking process
@@ -21,11 +25,14 @@ public class ThinkCycle : MonoBehaviour
 
     }
 
+
     IEnumerator RunTree(float delay) {
         while (!isDead) {
             //Debug.Log("running");
-            yield return new WaitForSeconds(delay);
+
             root.Evaluate(Time.deltaTime);
+            yield return new WaitForSeconds(delay);
+
         }
     }
 
@@ -45,10 +52,10 @@ public class ThinkCycle : MonoBehaviour
                                 .EmplaceConditional("range check" , t => ai.CloseDistanceConditional())
                                 .EmplaceTask("close distance", t => ai.ChasingTask())
                                 .PopDepth()
-                            // .EmplaceSequencer("offense selector")
-                            //     .EmplaceConditional("offense conditional", t => ai.OffenseConditional())
-                            //     .EmplaceTask("offense task", t => ai.OffenseTask())
-                            //     .PopDepth()
+                            .EmplaceSequencer("offense selector")
+                                .EmplaceConditional("offense conditional", t => ai.OffenseConditional())
+                                .EmplaceTask("offense task", t => ai.OffenseTask())
+                                .PopDepth()
                             .EmplaceSequencer("Instant shove")
                                 .EmplaceConditional("insta shove check", t => ai.InstantShoveConditional())
                                 .EmplaceTask("insta shove",t => ai.ShovingTask())
@@ -57,10 +64,10 @@ public class ThinkCycle : MonoBehaviour
                                 .EmplaceConditional("back away conditional", t => ai.BackAwayConditional())
                                 .EmplaceTask("back away", t => ai.BackAwayTask())
                                 .PopDepth()
-                            .EmplaceSequencer("spacing selector")
-                                .EmplaceConditional("spacing conditional", t => ai.SpacingConditional())
-                                .EmplaceTask("spacing task", t => ai.SpacingTask())
-                                .PopDepth()
+                            // .EmplaceSequencer("spacing selector")
+                            //     .EmplaceConditional("spacing conditional", t => ai.SpacingConditional())
+                            //     .EmplaceTask("spacing task", t => ai.SpacingTask())
+                            //     .PopDepth()
                             .EmplaceTask("idle about", t => alwaysRunning())
                             .PopDepth()
                         .PopDepth()

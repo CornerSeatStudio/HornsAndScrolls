@@ -89,38 +89,6 @@ public class CharacterHandler : MonoBehaviour {
 
     #region Combat Core
 
-        //LayerMasks allow for raycasts to choose what to and not to register
-    [Header("find target stuff")]
-    public LayerMask targetMask;
-    public LayerMask obstacleMask;
-
-    public CharacterHandler FindTarget(MeleeMove meleeMove){
-        float minDistanceToTarget = float.MaxValue; //guarantees first check in findingInteractableTargets
-        CharacterHandler chosenTarget = null; //reset character chosen
-        //cast a sphere over player, store everything inside col
-        Collider[] targetsInView = Physics.OverlapSphere(transform.position, meleeMove.range, targetMask);
-        
-        foreach(Collider col in targetsInView){
-            //Debug.Log(col.transform);
-            Transform target = col.transform; //get the targets locatoin
-            Vector3 directionToTarget = (target.position - transform.position).normalized; //direction vector of where bloke is
-            if (Vector3.Angle(transform.forward, directionToTarget) < meleeMove.angle/2){ //if the attack is within bounds, /2 cause left right
-                //do the ray 
-                float distanceToTarget = Vector3.Distance(transform.position, target.position);
-                if(!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleMask)){ //if, from character at given angle and distance, it DOESNT collide with obstacleMask
-                    //if distance is closer
-                    if(distanceToTarget < minDistanceToTarget) {
-                        minDistanceToTarget = distanceToTarget;
-                        chosenTarget = col.GetComponent<CharacterHandler>();
-                    }
-                }
-            }
-        }             
-
-        return chosenTarget;
-    }
-
-
     //upon contact with le weapon, this handles the appropriate response (such as tackign damage, stamina drain, counters etc)
     public virtual void AttackRequest(float damage){
         CharacterHandler receiver = AttackReceiver.GetComponent<CharacterHandler>();
@@ -134,8 +102,10 @@ public class CharacterHandler : MonoBehaviour {
         //     }
         // } catch {}
 
+        
+
         if(receiver.genericState is MoveState) { //target has no sword drawn and get hit, (todo - do a different stagger)
-            receiver.TakeDamage(damage, false, this); 
+            DealDamageAndCheckDeathDataManagement(damage, false, receiver); 
             result = "cunt dont have sword out ";
         }
 
@@ -145,11 +115,11 @@ public class CharacterHandler : MonoBehaviour {
                 //if their attack is unblockable
                 if(!(receiver.genericState as AttackState).chosenMove.blockableAttack){
                     //take damage but dont stagger
-                    receiver.TakeDamage(damage, false, this);
+                    DealDamageAndCheckDeathDataManagement(damage, false, receiver);
                     result = "both take damage, but blockbale buboons stagger only due to unblockable attack";
                 } else {
                     //take damage, stagger as usual
-                    receiver.TakeDamage(damage, true, this);
+                    DealDamageAndCheckDeathDataManagement(damage, true, receiver);
                     result = "both take damage and stagger";
                 }
             }
@@ -159,7 +129,7 @@ public class CharacterHandler : MonoBehaviour {
             if(!(this.genericState as AttackState).chosenMove.blockableAttack) {
                 //take damage and stagger
                 result = "requester beats block with unblockable, receiver takes damage and staggers";
-                receiver.TakeDamage(damage, true, this);
+                DealDamageAndCheckDeathDataManagement(damage, true, receiver);
            
             } else {
                 //drain stamina instead
@@ -190,30 +160,49 @@ public class CharacterHandler : MonoBehaviour {
             receiver.DealStamina(5f);
         } else if (receiver.genericState is StaggerState) {
             result = "receiver hit when staggered";
-            receiver.TakeDamage(damage, false, this);
+            DealDamageAndCheckDeathDataManagement(damage, false, receiver);
             //everytime this is triggered, increment todo
             //"prevent camping when down" counter maybe
         } else { 
             result = "default situation, receiver takes damage and staggers, possible out of range";
             //take damage, stagger
-            receiver.TakeDamage(damage, true, this);
+            DealDamageAndCheckDeathDataManagement(damage, true, receiver);
 
         }
+
 
         Debug.Log("REQUESTER: " + this.genericState.ToString() 
                 + ", REACTER: " + receiver.genericState.ToString()
                 + ", RESULT: " + result);
 
+        //clear out fields
+        CanAttack = false;
+        AttackReceiver = null;
+
     }
+
+
     //upon taking damage
-    protected virtual void TakeDamage(float damage, bool isStaggerable, CharacterHandler attacker){ 
+
+    //
+    protected void DealDamageAndCheckDeathDataManagement(float damage, bool isStaggerable, CharacterHandler receiver){
+        if(receiver.TakeDamageAndCheckDeath(damage, isStaggerable, this)) {
+            Debug.Log("death management goes here");
+        }
+    }
+
+    protected virtual bool TakeDamageAndCheckDeath(float damage, bool isStaggerable, CharacterHandler attacker){ 
         Health -= damage;
         heathbar.fillAmount = Health / characterdata.maxHealth;
 
         Array.Find(attacker.audioData, AudioData => AudioData.name == "flesh").Play(attacker.AudioSource);
 
 
-        if (isStaggerable && Health > 0) { SetStateDriver(new StaggerState(this, animator)); }
+        if (isStaggerable && Health > 0) { 
+            SetStateDriver(new StaggerState(this, animator)); 
+        }
+
+        return Health <= 0 ? true : false;
         //if dead:
             //change CombatState to death
                 //which in itself handels death stuff 
@@ -235,7 +224,7 @@ public class CharacterHandler : MonoBehaviour {
         
         //deal stamina damage again, restart cooldown
         staminaDrainAndCooldown = TakeStaminaDrain(staminaDrain);
-        StartCoroutine(staminaDrainAndCooldown);
+        StartCoroutine(staminaDrainAndCooldown); //TODO stop at death
     }
 
     protected IEnumerator StaminaRegeneration() {

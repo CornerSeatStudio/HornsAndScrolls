@@ -62,7 +62,7 @@ public class PlayerHandler : CharacterHandler {
         inputVector.Normalize();
 
         if(genericState is DodgeState) {
-            controller.SimpleMove(dodgeDirection.normalized * (characterdata as PlayerData).dodgeSpeed );
+            //controller.SimpleMove(dodgeDirection.normalized * (characterdata as PlayerData).dodgeSpeed );
         } else if (genericState is AttackState || genericState is FollowUpState) {
            // controller.SimpleMove(transform.forward * 6f);  
         } else {
@@ -79,7 +79,8 @@ public class PlayerHandler : CharacterHandler {
 
     void LateUpdate() {
         CalculateVelocity(); 
-        TiltOnDelta();
+        //TiltOnDelta();
+        
     }
 
     Vector2 preDir, curDir; 
@@ -156,19 +157,21 @@ public class PlayerHandler : CharacterHandler {
                     FaceMouseDirection();
                 }
                 HandleInteractions(); //clicking
-                Debug.Log("we");
+                //Debug.Log("we");
             }
         }
     }
 
     #endregion
 
-    protected override void TakeDamage(float damage, bool isStaggerable, CharacterHandler attacker){
-        base.TakeDamage(damage, isStaggerable, attacker);
+    protected override bool TakeDamageAndCheckDeath(float damage, bool isStaggerable, CharacterHandler attacker){
+        bool f = base.TakeDamageAndCheckDeath(damage, isStaggerable, attacker);
 
         if(Health <= 0) { //UPON DEATH
             this.gameObject.SetActive(false);
         }
+
+        return f;
     }
 
 
@@ -209,6 +212,7 @@ public class PlayerHandler : CharacterHandler {
 
     }
     
+
     private Vector3 dodgeDirection;
     private void HandleCombatMovement() {
         //all feet stuff handled here, not in state
@@ -217,24 +221,35 @@ public class PlayerHandler : CharacterHandler {
 
         //if not dodging
         Vector3 localDir;
-        
-        if(genericState is DodgeState) { //if i am dodging already, keep dodging in the dodge direction
-            localDir = transform.InverseTransformDirection(dodgeDirection).normalized;
-        } else { //if i am not dodging
-            //get local dir from currVelocity instead
-            localDir = transform.InverseTransformDirection(currVelocity).normalized;
+        // Vector2 curDir = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        // Camera.main.transform.TransformDirection(curDir);
 
+        if(genericState is DodgeState) { //if i am dodging already, keep dodging in the dodge direction
+            //localDir = transform.InverseTransformDirection(dodgeDirection).normalized;
+            localDir = dodgeDirection;
+        } else { //if i am not dodging
             //if i have jumped, do the appropriate setup
-            if(Input.GetButtonDown("Jump") && (inputVector.x != 0 || inputVector.z != 0)) {
-                dodgeDirection = currVelocity;
+            if(Input.GetButtonDown("Jump") && (inputVector.x != 0 || inputVector.z != 0) && Stamina > 0) {
+                localDir = Camera.main.transform.TransformDirection(inputVector).normalized; //get dodge based off of INPUT instead (more responsive)
+                dodgeDirection = localDir; //save info for movement during dodge
                 SetStateDriver(new DodgeState(this, animator, dodgeDirection));                
-            } 
+                
+                //set dodge dirs
+                animator.SetFloat(Animator.StringToHash("XMove"), localDir.x);
+                animator.SetFloat(Animator.StringToHash("ZMove"), localDir.z);
+            } else {
+                //get local dir from currVelocity instead
+                localDir = transform.InverseTransformDirection(currVelocity).normalized;
+
+                //set the floats for movement directions
+                float weight = Mathf.InverseLerp(0, (characterdata as PlayerData).combatMoveSpeed, currVelocity.magnitude);
+                animator.SetFloat(Animator.StringToHash("XMove"), localDir.x * weight);
+                animator.SetFloat(Animator.StringToHash("ZMove"), localDir.z * weight);
+
+            }
         }
 
-        //finally set the floats for movement directions
-        float weight = Mathf.InverseLerp(0, (characterdata as PlayerData).combatMoveSpeed, currVelocity.magnitude);
-        animator.SetFloat(Animator.StringToHash("XMove"), localDir.x * weight);
-        animator.SetFloat(Animator.StringToHash("ZMove"), localDir.z * weight);
+        
     
        // Debug.Log(currVelocity);
     }
