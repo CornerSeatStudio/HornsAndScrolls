@@ -6,16 +6,26 @@ using UnityEngine.SceneManagement;
 public class SaveManager : MonoBehaviour
 {
 
-    //saving stuff
-    public int currentLevelIndex;
+    public void Update(){
+        if(Input.GetKeyDown(KeyCode.P)) {
+            Debug.Log(CurrentLevelIndex);
+        }
 
-    public void Start(){ 
-        //upon APP start, load the written file for save data
-        //probably doesn't go on start
+     
     }
 
+    public void Start(){
+        //aka if on main menu
+        if(SceneManager.GetActiveScene().buildIndex == 0) {
+            OnLoad();
+        }
+    }
+
+    //saving stuff
+    public static int CurrentLevelIndex {get; private set;}
+
     public void OnLoad(){
-        SaveData data = Saving.Load();
+        CurrentLevelIndex = Saving.Load().currentLevelIndex;
 
     }
 
@@ -24,14 +34,14 @@ public class SaveManager : MonoBehaviour
     }
 
     public void ResetData() {
-        currentLevelIndex = 0;
+        CurrentLevelIndex = 0;
     }
 
     public void OnLevelCompletion(){
        // Debug.Log("saved?");
 
         //update completed scene value
-        currentLevelIndex = Mathf.Max(currentLevelIndex, SceneManager.GetActiveScene().buildIndex + 1);
+        CurrentLevelIndex = Mathf.Max(CurrentLevelIndex, SceneManager.GetActiveScene().buildIndex + 1);
 
        //save it
         Saving.Save(this);
@@ -41,11 +51,13 @@ public class SaveManager : MonoBehaviour
 
     //load most recent scene
     public void OnContinue(){
-        SceneManager.LoadScene(currentLevelIndex == 0 ? 1 : currentLevelIndex);
+        if(CurrentLevelIndex == 0) OnCleanStart();
+        SceneManager.LoadScene(CurrentLevelIndex);
     }
 
     //start from the beginning (without reseting data)
     public void OnCleanStart(){
+        CurrentLevelIndex = 1;
         IncrementScene();
     }
     //goes to next scene

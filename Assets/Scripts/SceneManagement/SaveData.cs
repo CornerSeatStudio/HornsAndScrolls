@@ -8,7 +8,8 @@ public class SaveData
     public int currentLevelIndex;
 
     public SaveData(SaveManager player){
-        currentLevelIndex = player.currentLevelIndex;
+        currentLevelIndex = SaveManager.CurrentLevelIndex;
+        Debug.Log($"saved with index {currentLevelIndex}");
     }
 
 

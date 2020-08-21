@@ -28,8 +28,6 @@ public abstract class Objective : MonoBehaviour
         yield return StartCoroutine(objectiveHandler.objectives[objectiveHandler.CurrObjectiveIndex].OnObjectiveCompletion());
         objectiveHandler.CurrObjectiveIndex++;
 
-        Debug.Log("obj inc");
-
 
         if(objectiveHandler.objectives.Count > objectiveHandler.CurrObjectiveIndex) {
             objectiveHandler.CurrObjective = objectiveHandler.objectives[objectiveHandler.CurrObjectiveIndex];

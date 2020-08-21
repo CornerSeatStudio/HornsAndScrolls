@@ -23,7 +23,7 @@ public class ObjectiveHandler : MonoBehaviour
         StartCoroutine(objectives[CurrObjectiveIndex].OnObjectiveStart());
         CurrObjective = objectives[CurrObjectiveIndex];
 
-        Debug.Log($"current level SHOULD BE: {saveManager.currentLevelIndex}");
+       // Debug.Log($"current level SHOULD BE: {SaveManager.CurrentLevelIndex}");
     }
 
     public void OnLevelFinish() {
@@ -34,7 +34,7 @@ public class ObjectiveHandler : MonoBehaviour
         //game end (maybe a fade out?)
         Debug.Log("game end");
         winScreen.gameObject.SetActive(true);
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(3f);
 
         //save, then load the next scene
         saveManager.OnLevelCompletion();
