@@ -7,6 +7,7 @@ public class SaveManager : MonoBehaviour
 {
 
     public void Update(){
+        //debug
         if(Input.GetKeyDown(KeyCode.P)) {
             Debug.Log(CurrentLevelIndex);
         }
@@ -66,7 +67,7 @@ public class SaveManager : MonoBehaviour
         CurrentLevelIndex = 1;
         IncrementScene();
     }
-    
+
     //goes to next scene
     private void IncrementScene(){
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);

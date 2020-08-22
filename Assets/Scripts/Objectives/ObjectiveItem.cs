@@ -22,15 +22,16 @@ public class ObjectiveItem : Objective
 
     void OnTriggerEnter(Collider col) {
         if(col.GetComponent<PlayerHandler>() && objectiveHandler.CurrObjective == this) {
-            col.GetComponent<PlayerHandler>().OnInteract += OnPickup;
             player = col.GetComponent<PlayerHandler>();
+            player.OnInteract += OnPickup;
+           
         }
         
     } 
 
     void OnTriggerExit(Collider col) {
         if(col.GetComponent<PlayerHandler>() && objectiveHandler.CurrObjective == this) {
-            col.GetComponent<PlayerHandler>().OnInteract -= OnPickup;
+            player.OnInteract -= OnPickup;
             player = null;
         }
     }
