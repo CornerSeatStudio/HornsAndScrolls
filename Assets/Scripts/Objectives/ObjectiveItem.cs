@@ -8,7 +8,6 @@ public class ObjectiveItem : Objective
 {
 
     private PlayerHandler player;
-
     public Transform itemAttachTransform;
 
     public Vector3 pickupPosition;
