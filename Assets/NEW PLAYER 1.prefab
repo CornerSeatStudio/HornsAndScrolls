@@ -5996,7 +5996,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c1010317c11e5848ae7bf145e4bce5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterdata: {fileID: 11400000, guid: 4a0691e5958eeaf469c9f2c0db3730ed, type: 2}
+  characterdata: {fileID: 11400000, guid: ec0e9ac2d9f541a409a06710f5a6d17a, type: 2}
   weapon: {fileID: 11400000, guid: 57c4d76a7bae1954ba2e6240142ae803, type: 2}
   audioData:
   - {fileID: 11400000, guid: 740192b0fb680da4eb05709ec46f28c0, type: 2}
@@ -6012,12 +6012,6 @@ MonoBehaviour:
   materials:
   - {fileID: 2100000, guid: dff58537da064904194e3a9252c5dcf3, type: 2}
   - {fileID: 2100000, guid: 8d54cd7de507e1340b3ed80fd5dd8175, type: 2}
-  targetMask:
-    serializedVersion: 2
-    m_Bits: 256
-  obstacleMask:
-    serializedVersion: 2
-    m_Bits: 512
   turnSmoothness: 0.109
   slopeForceRayLength: 1
   slopeForce: 3

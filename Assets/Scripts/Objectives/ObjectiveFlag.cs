@@ -11,8 +11,13 @@ public class ObjectiveFlag : Objective
     }
 
     void OnTriggerEnter(Collider col) {
-        if(col.GetComponent<PlayerHandler>() && objectiveHandler.CurrObjective == this) StartCoroutine(OnObjectiveIncrement());
-        GetComponent<Collider>().enabled = false; 
+        if(col.GetComponent<PlayerHandler>() && objectiveHandler.CurrObjective == this) {
+            StartCoroutine(OnObjectiveIncrement());
+            GetComponent<Collider>().enabled = false; 
+        }
+        
+        
     } 
+
 
 }

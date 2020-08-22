@@ -24,8 +24,9 @@ public class PlayerHandler : CharacterHandler {
 
     public delegate void PickupHandler();
     public event PickupHandler OnInteract;
-
     public event Action<float> OnStanceChange; 
+
+
 
     #region callbacks
     protected override void Start(){
@@ -134,32 +135,39 @@ public class PlayerHandler : CharacterHandler {
             if(Input.GetKeyDown(KeyCode.X) || Input.GetButtonDown("Fire1")) { 
                 SetStateDriver(new SheathingCombatState(this, animator));
             } else {
-                if(!(genericState is SheathingCrouchState)) {
-                    HandleNormalMovement();
-                    HandleNormalInteractions();
-                }
+                HandleNormalMovement();
+                HandleNormalInteractions();
                 FaceKeyPress();
             }
         } else {  //combat state (implied already) but not dodge state
             //check for sheathing  
             if(Input.GetKeyDown(KeyCode.X)) {
                 if(genericState is SheathingCombatState) {
-                    (genericState as SheathingCombatState).ToggleAnim();
+                    (genericState as SheathingCombatState).ToggleAnim(false);
                 } else {
                     SetStateDriver(new SheathingCombatState(this, animator, true));
                 }
 
             } else if(Input.GetKeyDown(KeyCode.C)) {
-                SetStateDriver(new SheathingCrouchState(this, animator));
-            } else if (!(genericState is DodgeState)) {
-                if(!(genericState is AttackState) && !(genericState is FollowUpState)) { //TODO SPACE FOR ANOTHER ATTACK
-                    HandleCombatMovement(); //feet direction info
-                    FaceMouseDirection();
+                if(!animator.GetBool(Animator.StringToHash("Crouching"))){
+                    if(genericState is SheathingCombatState) {
+                        (genericState as SheathingCombatState).ToggleAnim(true);
+                    } else {
+                        SetStateDriver(new SheathingCombatState(this, animator, true, true));
+                    }
                 }
-                HandleInteractions(); //clicking
-                //Debug.Log("we");
+            } else if (!(genericState is DodgeState)) {
+                if(!(genericState is AttackState) && !(genericState is FollowUpState)) { 
+                    if(animator.GetBool(Animator.StringToHash("Crouching"))) {
+                        FaceKeyPress();
+                    } else {
+                        HandleCombatMovement(); //feet direction info
+                        FaceMouseDirection();
+                        HandleCombatInteractions(); 
+                    }
+                }
             }
-        }
+        }  
     }
 
     #endregion
@@ -254,7 +262,7 @@ public class PlayerHandler : CharacterHandler {
        // Debug.Log(currVelocity);
     }
 
-    private void HandleInteractions() {
+    private void HandleCombatInteractions() {
         if(genericState is DefaultCombatState || genericState is FollowUpState) {
             if(Input.GetButtonDown("Fire1") == true) {
                 SetStateDriver(new AttackState(this, animator));
@@ -307,7 +315,21 @@ public class PlayerHandler : CharacterHandler {
 
     #region sheathing stuff
    
+    public void SheathParentManagement(){
+        if(animator.GetFloat(Animator.StringToHash("SheathDir")) < 0){
+            ParentToHand();
+        } else {
+            ParentToSheath();
+        }
+    }
 
+    public void UnsheathParentManagement(){
+        if(animator.GetFloat(Animator.StringToHash("SheathDir")) > 0){
+            ParentToHand();
+        } else {
+            ParentToSheath();
+        }    
+    }
 
     public void ParentToSheath() {
         
@@ -321,5 +343,7 @@ public class PlayerHandler : CharacterHandler {
         weaponMesh.transform.localPosition = new Vector3(0.0009f, 0.008f, -0.005f);
         weaponMesh.transform.localEulerAngles = new Vector3(198f, -4.5f, 23.1f);
     }
+
+
     #endregion
 }

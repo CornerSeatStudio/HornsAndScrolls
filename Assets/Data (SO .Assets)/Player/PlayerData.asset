@@ -9,18 +9,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: PlayerData 1
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerData
-  maxHealth: 100
-  maxStamina: 20
+  m_Script: {fileID: 11500000, guid: 595a75fcbbad7174dacb65caeb712169, type: 3}
+  m_Name: PlayerData
+  m_EditorClassIdentifier: 
+  maxHealth: 50
+  maxStamina: 50
   staminaRegenerationRatePerS: 3
   staminaRegenerationWindow: 3
   jogSpeed: 20
-  sprintSpeed: 32
+  sprintSpeed: 30
   walkSpeed: 10
-  crouchWalkSpeed: 14
-  combatMoveSpeed: 15
-  dodgeTime: 0.9
-  dodgeSpeed: 20
-  detectionTime: 15
+  crouchWalkSpeed: 12
+  combatMoveSpeed: 10
+  dodgeTime: 1
+  dodgeSpeed: 10
+  detectionTime: 2

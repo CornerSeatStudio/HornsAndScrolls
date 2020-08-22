@@ -12,21 +12,31 @@ public class ObjectiveHandler : MonoBehaviour
     public Canvas winScreen;
     public AudioData[] audioData;
     public AudioSource AudioSource {get; private set;}
+    private SaveManager saveManager;
 
 
     void Start(){
+        saveManager = FindObjectOfType<SaveManager>();
         AudioSource = this.GetComponent<AudioSource>();
         winScreen.gameObject.SetActive(false);
         StartCoroutine(objectives[CurrObjectiveIndex].OnObjectiveStart());
         CurrObjective = objectives[CurrObjectiveIndex];
+
+       // Debug.Log($"current level SHOULD BE: {SaveManager.CurrentLevelIndex}");
     }
 
-    public void OnGameFinish() {
+    public void OnLevelFinish() {
+        StartCoroutine(OnGameFinishWithTime());
+    }
+
+    IEnumerator OnGameFinishWithTime(){
+        //game end (maybe a fade out?)
         Debug.Log("game end");
         winScreen.gameObject.SetActive(true);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        yield return new WaitForSeconds(3f);
 
-
+        //save, then load the next scene
+        saveManager.OnLevelCompletion();
     }
 
     

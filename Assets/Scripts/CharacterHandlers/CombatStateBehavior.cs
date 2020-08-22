@@ -5,22 +5,23 @@ using UnityEngine.AI;
 using System;
 
 public class SheathingCombatState : CombatState {
-    IEnumerator sheath, layerRoutine;
+    IEnumerator sheath;
     float animTime = 1.2f; //sheath time
     float currAnimTime = 0f;
-    float currAudioTime = 0f;
     bool isSheathing = false;
+    bool crouchSheathing = false;
     
     public SheathingCombatState(CharacterHandler character, Animator animator) : base(character, animator) {}
     public SheathingCombatState(CharacterHandler character, Animator animator, bool isSheathing) : base(character, animator) {
         this.isSheathing = isSheathing;
     }
+    public SheathingCombatState(CharacterHandler character, Animator animator, bool isSheathing, bool crouchSheathing) : base(character, animator) {
+        this.isSheathing = isSheathing;
+        this.crouchSheathing = crouchSheathing;
+    }
 
     public override IEnumerator OnStateEnter() {
 
-        //layer shifto
-        // layerRoutine = LayerUp();
-        // yield return character.StartCoroutine(layerRoutine);
         //fuck it just set layer - if it cucks up in the future use above
         animator.SetLayerWeight(1, 1);
         
@@ -30,7 +31,9 @@ public class SheathingCombatState : CombatState {
         animator.SetBool(Animator.StringToHash("Combat"), true); //for facing mouse animation
         animator.SetBool(Animator.StringToHash("midDraw"), true);//determines when to actually transition out
         animator.SetFloat(Animator.StringToHash("SheathDir"), 1); //speed of anim (-1 to reverse it)
-        animator.SetBool(Animator.StringToHash("Crouching"), false); //if coming from crouch sheath case
+
+        animator.SetBool(Animator.StringToHash("Crouching"), crouchSheathing ? true : false);
+
 
         //sound and animation direction
         AudioData nextSound = isSheathing ? Array.Find(character.audioData, AudioData => AudioData.name == "sheath") : Array.Find(character.audioData, AudioData => AudioData.name == "unsheath");
@@ -45,22 +48,22 @@ public class SheathingCombatState : CombatState {
     }
 
 
-
+    float handThreshold;
     private IEnumerator Unsheath(){
         //while still in range of time
         animator.SetTrigger(Animator.StringToHash("Unsheath")); //begin the animation
 
-        (character as PlayerHandler).ParentToHand(); //parent to hand
+        //(character as PlayerHandler).ParentToHand(); //parent to hand
 
         while(currAnimTime >= 0 && currAnimTime <= animTime) {
             currAnimTime += isSheathing ? -.1f : .1f;
-            currAudioTime += .1f;
             yield return new WaitForSeconds(.1f);
         }
 
         //one done, determine outcome
         if(currAnimTime <= 0) {
-            try { (character as PlayerHandler).ParentToSheath(); } catch { Debug.LogWarning("ai shoudnt be in this state"); }
+            animator.SetLayerWeight(1, 0);
+            animator.SetBool(Animator.StringToHash("Combat"), false);
             character.SetStateDriver(new IdleMoveState(character, animator));
         } else {
             character.SetStateDriver(new DefaultCombatState(character, animator));
@@ -74,131 +77,40 @@ public class SheathingCombatState : CombatState {
         //while still in range of time
         while(currAnimTime >= 0 && currAnimTime <= animTime) {
             currAnimTime += isSheathing ? .1f : -.1f;
-            currAudioTime += .1f;
             yield return new WaitForSeconds(.1f);
         }
+
+        //Debug.Log("yewot");
 
         //one done, determine outcome
         if(currAnimTime <= 0) {
             character.SetStateDriver(new DefaultCombatState(character, animator));
         } else {
-            try { (character as PlayerHandler).ParentToSheath(); } catch { Debug.LogWarning("ai shoudnt be in this state"); }
-            character.SetStateDriver(new IdleMoveState(character, animator));
+            animator.SetLayerWeight(1, 0);
+            animator.SetBool(Animator.StringToHash("Combat"), false);
+            if(crouchSheathing){
+                character.SetStateDriver(new CrouchIdleMoveState(character, animator));
+            } else {
+                character.SetStateDriver(new IdleMoveState(character, animator));
+            }
         }
     }
 
-    public void ToggleAnim(){ //switch sheath direction, animation playback speed, and sound start management
+    public void ToggleAnim(bool toCrouch){ //switch sheath direction, animation playback speed, and sound start management
         isSheathing = !isSheathing;
         animator.SetFloat(Animator.StringToHash("SheathDir"), animator.GetFloat(Animator.StringToHash("SheathDir")) * -1f);
         AudioData nextSound = isSheathing ? Array.Find(character.audioData, AudioData => AudioData.name == "sheath") : Array.Find(character.audioData, AudioData => AudioData.name == "unsheath");
-        currAudioTime = nextSound.AverageLength() - currAudioTime;
-        nextSound.PlayAtPoint(character.AudioSource, currAudioTime);
+
+        animator.SetBool(Animator.StringToHash("Crouching"), toCrouch);
+
+        nextSound.Play(character.AudioSource);
 
     }
 
     float currWeight, timeVal;
-    
-    IEnumerator LayerUp(){
-        currWeight = timeVal = 0;
-        while( Mathf.Abs(currWeight - 1) > 0.01f){
-            currWeight = Mathf.Lerp(0, 1, timeVal*3);
-            animator.SetLayerWeight(1, currWeight);
-            timeVal += Time.fixedDeltaTime;
-            yield return new WaitForFixedUpdate();
-        }
-        layerRoutine = null;
-        yield break;
-        
-    }
-
-    IEnumerator LayerDown(){ //purposefully slow for juke reasons lmao
-        currWeight = 1;
-        timeVal = 0;
-        while(Mathf.Abs(currWeight) > 0.01f && !(character.genericState is SheathingCrouchState)) { //stop if state has changed to crouch sheath
-            currWeight = Mathf.Lerp(1, 0, timeVal*3);
-            animator.SetLayerWeight(1, currWeight);
-            timeVal += Time.fixedDeltaTime;
-            yield return new WaitForFixedUpdate();
-        }
-        layerRoutine = null;
-        yield break;
-    }
 
     public override IEnumerator OnStateExit() { //once drawn OR INTERUPTED
         if(sheath != null) character.StopCoroutine(sheath);
-        if(layerRoutine != null) character.StopCoroutine(layerRoutine);
-
-        layerRoutine = LayerDown();
-        character.StartCoroutine(layerRoutine);
-
-        yield break;
-    }
-}
-public class SheathingCrouchState : MoveState {
-    IEnumerator sheath, layerRoutine;
-    float animTime = 1.2f; //sheath time
-    float currAnimTime = 0f;
-    float currAudioTime = 0f;
-
-    public SheathingCrouchState(CharacterHandler character, Animator animator) : base(character, animator) {}
-
-    public override IEnumerator OnStateEnter() {
-        animator.SetLayerWeight(1, 1);
-
-
-        (character as PlayerHandler).ChangeStanceTimer((character.characterdata as PlayerData).detectionTime * 1.5f); //stealth stuff
-
-        animator.SetBool(Animator.StringToHash("Combat"), false); //for crouch case
-        animator.SetBool(Animator.StringToHash("Crouching"), true); //for crouch case
-
-        animator.SetBool(Animator.StringToHash("midDraw"), true);//determines when to actually transition out
-        animator.SetFloat(Animator.StringToHash("SheathDir"), 1); //speed of anim 
-
-        Array.Find(character.audioData, AudioData => AudioData.name == "sheath").Play(character.AudioSource);
-
-        //start the sheath animation depending on where its coming from
-        animator.SetTrigger(Animator.StringToHash("Sheath")); //begin the animation
-        sheath = Sheath();
-        yield return character.StartCoroutine(sheath);
-
-
-    }
-
-    private IEnumerator Sheath(){
-        //while still in range of time
-        while(currAnimTime <= animTime) {
-            currAnimTime += .1f;
-            currAudioTime += .1f;
-            yield return new WaitForSeconds(.1f);
-        }
-
-        //one done, idle outcome
-        try { (character as PlayerHandler).ParentToSheath(); } catch { Debug.LogWarning("ai shoudnt be in this state"); }
-        character.SetStateDriver(new CrouchIdleMoveState(character, animator));
-        
-    }
-
-    float currWeight, timeVal;
-    IEnumerator LayerDown(){ //purposefully slow for juke reasons lmao
-        currWeight = 1;
-        timeVal = 0;
-        while(Mathf.Abs(currWeight) > 0.01f && !(character.genericState is SheathingCombatState)) {
-            currWeight = Mathf.Lerp(1, 0, timeVal*3);
-            animator.SetLayerWeight(1, currWeight);
-            timeVal += Time.fixedDeltaTime;
-            yield return new WaitForFixedUpdate();
-        }
-        layerRoutine = null;
-        yield break;
-    }
-
-    public override IEnumerator OnStateExit() { //once drawn OR INTERUPTED
-        if(sheath != null) character.StopCoroutine(sheath);
-
-        layerRoutine = LayerDown();
-        character.StartCoroutine(layerRoutine); //TODO THIS SHOULD BE STOPPED IF DONE IN AGAIN
-
-
         yield break;
     }
 }
@@ -237,13 +149,13 @@ public class AttackState : CombatState {
        yield return character.StartCoroutine(currAttackCoroutine);
        
         //wrap it up
-        character.SetStateDriver(new FollowUpState(character, animator));
+        character.SetStateDriver(new FollowUpState(character, animator, chosenMove.endlag));
         //TODO GO SOMWHERE ELSE
     }    
 
     private IEnumerator AttackTime(){
         finishedAttack = false;
-        yield return new WaitForSeconds(chosenMove.endlag);
+        yield return new WaitForSeconds(chosenMove.endlag * .8f);
         finishedAttack = true;
         timerRoutine = null;
     }
@@ -283,7 +195,10 @@ public class AttackState : CombatState {
 public class FollowUpState : CombatState {
 
     IEnumerator timeo;
-    public FollowUpState(CharacterHandler character, Animator animator) : base(character, animator) {}
+    float endlag;
+    public FollowUpState(CharacterHandler character, Animator animator, float endlag) : base(character, animator) {
+        this.endlag = endlag;
+    }
 
     public override IEnumerator OnStateEnter(){
         timeo = FollowUpTime();
@@ -293,7 +208,7 @@ public class FollowUpState : CombatState {
     }
 
     private IEnumerator FollowUpTime(){
-        yield return new WaitForSeconds(.4f);
+        yield return new WaitForSeconds(endlag * .4f);
     }
 
     public override IEnumerator OnStateExit(){
@@ -329,27 +244,9 @@ public class BlockState : CombatState {
 
     float currWeight, timeVal;
 
-    IEnumerator LayerDown(){ //purposefully slow for juke reasons lmao
-        currWeight = 1;
-        timeVal = 0;
-        while(Mathf.Abs(currWeight) > 0.01f) { //stop if state has changed to crouch sheath
-            currWeight = Mathf.Lerp(1, 0, timeVal *3);
-            animator.SetLayerWeight(1, currWeight);
-            timeVal += Time.fixedDeltaTime;
-            yield return new WaitForFixedUpdate();
-        }
-        layerRoutine = null;
-        yield break;
-    }
-
     public override IEnumerator OnStateExit() { 
        if(blockStaminaDrain != null) character.StopCoroutine(blockStaminaDrain);
         animator.SetBool(Animator.StringToHash("Blocking"), false);
-
-        if(character is PlayerHandler){
-            layerRoutine = LayerDown();
-            character.StartCoroutine(layerRoutine);
-        }
         yield break;
     } 
 
@@ -367,7 +264,6 @@ public class CounterState : CombatState {
         //trigger counter event
         //if enemy is attacking you specifically (dont trigger if coming from a specific state)
         //shouldnt be done here, should be done in attack response via comparing type
-        animator.SetLayerWeight(1, 1);
 
 
         animator.SetBool(Animator.StringToHash("Blocking"), true);
@@ -377,24 +273,7 @@ public class CounterState : CombatState {
 
     float currWeight, timeVal;
     
-    IEnumerator LayerDown(){ //purposefully slow for juke reasons lmao
-        currWeight = 1;
-        timeVal = 0;
-        while(Mathf.Abs(currWeight) > 0.01f) { //stop if state has changed to crouch sheath
-            currWeight = Mathf.Lerp(1, 0, timeVal *3);
-            animator.SetLayerWeight(1, currWeight);
-            timeVal += Time.fixedDeltaTime;
-            yield return new WaitForFixedUpdate();
-        }
-        layerRoutine = null;
-        yield break;
-    }
     public override IEnumerator OnStateExit() {
-        if(layerRoutine != null) {
-            character.StopCoroutine(layerRoutine);
-            layerRoutine = LayerDown();
-            character.StartCoroutine(layerRoutine);
-        }
         yield break;
     }
 
