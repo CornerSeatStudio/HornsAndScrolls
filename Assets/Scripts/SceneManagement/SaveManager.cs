@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-
-[System.Serializable]
 public class SaveManager : MonoBehaviour
 {
 
@@ -47,8 +45,10 @@ public class SaveManager : MonoBehaviour
 
        //save it
         Saving.Save(this);
-        //move to next scene
-        IncrementScene();
+
+        //RETURN TO CAMP CAMP
+        ChooseLevel(2);
+          
     }
 
     //load most recent scene
@@ -57,11 +57,16 @@ public class SaveManager : MonoBehaviour
         SceneManager.LoadScene(CurrentLevelIndex);
     }
 
+    public void ChooseLevel(int buildIndex){
+        SceneManager.LoadScene(buildIndex);
+    }
+
     //start from the beginning (without reseting data)
     public void OnCleanStart(){
         CurrentLevelIndex = 1;
         IncrementScene();
     }
+    
     //goes to next scene
     private void IncrementScene(){
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);

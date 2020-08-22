@@ -12,7 +12,6 @@ public class ObjectiveHandler : MonoBehaviour
     public Canvas winScreen;
     public AudioData[] audioData;
     public AudioSource AudioSource {get; private set;}
-    
     private SaveManager saveManager;
 
 
