@@ -315,7 +315,21 @@ public class PlayerHandler : CharacterHandler {
 
     #region sheathing stuff
    
+    public void SheathParentManagement(){
+        if(animator.GetFloat(Animator.StringToHash("SheathDir")) < 0){
+            ParentToHand();
+        } else {
+            ParentToSheath();
+        }
+    }
 
+    public void UnsheathParentManagement(){
+        if(animator.GetFloat(Animator.StringToHash("SheathDir")) > 0){
+            ParentToHand();
+        } else {
+            ParentToSheath();
+        }    
+    }
 
     public void ParentToSheath() {
         
@@ -329,5 +343,7 @@ public class PlayerHandler : CharacterHandler {
         weaponMesh.transform.localPosition = new Vector3(0.0009f, 0.008f, -0.005f);
         weaponMesh.transform.localEulerAngles = new Vector3(198f, -4.5f, 23.1f);
     }
+
+
     #endregion
 }

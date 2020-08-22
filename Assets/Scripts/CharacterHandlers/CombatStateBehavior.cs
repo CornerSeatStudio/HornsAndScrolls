@@ -8,7 +8,6 @@ public class SheathingCombatState : CombatState {
     IEnumerator sheath;
     float animTime = 1.2f; //sheath time
     float currAnimTime = 0f;
-    float currAudioTime = 0f;
     bool isSheathing = false;
     bool crouchSheathing = false;
     
@@ -49,23 +48,20 @@ public class SheathingCombatState : CombatState {
     }
 
 
-
+    float handThreshold;
     private IEnumerator Unsheath(){
         //while still in range of time
         animator.SetTrigger(Animator.StringToHash("Unsheath")); //begin the animation
 
-        (character as PlayerHandler).ParentToHand(); //parent to hand
+        //(character as PlayerHandler).ParentToHand(); //parent to hand
 
         while(currAnimTime >= 0 && currAnimTime <= animTime) {
             currAnimTime += isSheathing ? -.1f : .1f;
-            currAudioTime += .1f;
             yield return new WaitForSeconds(.1f);
         }
 
         //one done, determine outcome
         if(currAnimTime <= 0) {
-
-            try { (character as PlayerHandler).ParentToSheath(); } catch { Debug.LogWarning("ai shoudnt be in this state"); }
             animator.SetLayerWeight(1, 0);
             animator.SetBool(Animator.StringToHash("Combat"), false);
             character.SetStateDriver(new IdleMoveState(character, animator));
@@ -81,7 +77,6 @@ public class SheathingCombatState : CombatState {
         //while still in range of time
         while(currAnimTime >= 0 && currAnimTime <= animTime) {
             currAnimTime += isSheathing ? .1f : -.1f;
-            currAudioTime += .1f;
             yield return new WaitForSeconds(.1f);
         }
 
@@ -91,7 +86,6 @@ public class SheathingCombatState : CombatState {
         if(currAnimTime <= 0) {
             character.SetStateDriver(new DefaultCombatState(character, animator));
         } else {
-            try { (character as PlayerHandler).ParentToSheath(); } catch { Debug.LogWarning("ai shoudnt be in this state"); }
             animator.SetLayerWeight(1, 0);
             animator.SetBool(Animator.StringToHash("Combat"), false);
             if(crouchSheathing){
@@ -106,11 +100,10 @@ public class SheathingCombatState : CombatState {
         isSheathing = !isSheathing;
         animator.SetFloat(Animator.StringToHash("SheathDir"), animator.GetFloat(Animator.StringToHash("SheathDir")) * -1f);
         AudioData nextSound = isSheathing ? Array.Find(character.audioData, AudioData => AudioData.name == "sheath") : Array.Find(character.audioData, AudioData => AudioData.name == "unsheath");
-        currAudioTime = nextSound.AverageLength() - currAudioTime;
 
         animator.SetBool(Animator.StringToHash("Crouching"), toCrouch);
 
-        //nextSound.PlayAtPoint(character.AudioSource, currAudioTime);
+        nextSound.Play(character.AudioSource);
 
     }
 
