@@ -149,7 +149,7 @@ public class CharacterHandler : MonoBehaviour {
                 result = "requester used unblockable attack but is countered, no effect to either";
             } else {
                 result = "receiver counters, requester staggers";
-                //proper counter here
+                //proper counter here + stamina drain
             }
             Array.Find(this.audioData, AudioData => AudioData.name == "clang").Play(this.AudioSource);
 
@@ -184,7 +184,8 @@ public class CharacterHandler : MonoBehaviour {
 
     //upon taking damage
 
-    //
+    public void GainHealth(float healthGain) => Health += healthGain;
+
     protected void DealDamageAndCheckDeathDataManagement(float damage, bool isStaggerable, CharacterHandler receiver){
         if(receiver.TakeDamageAndCheckDeath(damage, isStaggerable, this)) {
             Debug.Log("death management goes here");
@@ -212,6 +213,8 @@ public class CharacterHandler : MonoBehaviour {
     }
 
     //stamina management
+    public void GainStamina(float staminaGain) => Stamina += staminaGain;
+
     private IEnumerator staminaRegenCoroutine; //for the actual regening
     private IEnumerator staminaDrainAndCooldown; //for the drain, and short break before allowing cooldown
 
@@ -247,6 +250,7 @@ public class CharacterHandler : MonoBehaviour {
         StartCoroutine(staminaRegenCoroutine); 
         staminaDrainAndCooldown = null; //allow reuse   
     }
+
 
     #endregion
 

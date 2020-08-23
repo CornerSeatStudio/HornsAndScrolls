@@ -2893,6 +2893,12 @@ PrefabInstance:
       propertyPath: itemAttachTransform
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 3476933941674441232, guid: 3f0cbd4047326394dbbdf6759bb6aac7,
+        type: 3}
+      propertyPath: item
+      value: 
+      objectReference: {fileID: 11400000, guid: b2efdbbee598a1442bf4e529d3bd4964,
+        type: 2}
     - target: {fileID: 5230521590454715958, guid: 3f0cbd4047326394dbbdf6759bb6aac7,
         type: 3}
       propertyPath: m_Name
@@ -3935,7 +3941,7 @@ PrefabInstance:
     - target: {fileID: 9075442561346592639, guid: be058e469e10e854e87801b004f8319b,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9075442561346592639, guid: be058e469e10e854e87801b004f8319b,
         type: 3}

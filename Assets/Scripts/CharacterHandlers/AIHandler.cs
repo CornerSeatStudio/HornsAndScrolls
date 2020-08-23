@@ -148,7 +148,12 @@ public class AIHandler : CharacterHandler {
         //default offense chance
         while (GlobalState != GlobalState.DEAD) {
             CanOffend = false;
+
             //cooldown between each attack
+                //allow manipulation of this value:
+                    //if player misses, speed this up
+                    //dodges within the hot zone radius
+                    //if player is healing
             yield return new WaitForSeconds(Random.Range(minWaitBetweenAttacks-1f, minWaitBetweenAttacks+1f));
 
             int offenseAI = 0;
@@ -160,6 +165,8 @@ public class AIHandler : CharacterHandler {
                 foreach (Collider col in aiInRange) if(!(col.GetComponent<AIHandler>().thinkState is OffenseState)) ++offenseAI;
                 yield return new WaitForSeconds(1f); //wait between each check until an attack is available
             }
+
+
            //as of this point the ai is allowed to attack
            CanOffend = true;
            //wait until the offense begins, and then once it does, wait till it finishes
@@ -187,16 +194,6 @@ public class AIHandler : CharacterHandler {
     #endregion
 
     #region stealthstuff
-    //verify if stealth is valid
-
-    // struct ThinkJob : IJob {
-    //     public void Execute(){
-    //     }
-    // }
-    //     ThinkJob job = new ThinkJob();
-    //     JobHandle handle = job.Schedule();
-    //     handle.Complete();
-
 
     public BTStatus VerifyStealth() {
         if(GlobalState != GlobalState.UNAGGRO) return BTStatus.FAILURE; 
@@ -308,6 +305,8 @@ public class AIHandler : CharacterHandler {
     }
 
     public BTStatus ChasingTask() { //Debug.Log("chase task");
+        //regular chase OR charge attack
+
         if(!(thinkState is ChaseState)) { 
             SetStateDriver(new ChaseState(this, animator, agent));
         }
@@ -328,7 +327,13 @@ public class AIHandler : CharacterHandler {
         return weapon.Attacks[Random.Range(0, weapon.Attacks.Count)];
     }
 
-    public BTStatus BackAwayTask() {// Debug.Log("back away");
+    public BTStatus BackAwayTask() {// Debug.Log("back away");\
+        //options
+            //go for a prod
+            //fancy a dodge of sorts
+            //back away - slowly
+            //stand still
+
        // Debug.Log("back away tasking");
         //implication: cannot be in offense state if this area is reached
         if(!(thinkState is BackAwayState)) {
