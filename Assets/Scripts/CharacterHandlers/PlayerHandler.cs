@@ -47,8 +47,7 @@ public class PlayerHandler : CharacterHandler {
 
 
     protected override void Update() {
-        //base.Update(); 
-        if(genericState != null) debugState.SetText(genericState.ToString());
+        base.Update(); 
 
         //core move stuff
         inputVector = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
@@ -136,7 +135,6 @@ public class PlayerHandler : CharacterHandler {
                 SetStateDriver(new SheathingCombatState(this, animator));
             } else {
                 HandleNormalMovement();
-                HandleNormalInteractions();
                 FaceKeyPress();
             }
         } else {  //combat state (implied already) but not dodge state
@@ -167,7 +165,9 @@ public class PlayerHandler : CharacterHandler {
                     }
                 }
             }
-        }  
+        }
+
+        HandleNormalInteractions();  
     }
 
     #endregion
@@ -187,6 +187,14 @@ public class PlayerHandler : CharacterHandler {
     private void HandleNormalInteractions(){
         if(Input.GetKeyDown(KeyCode.F)) {
             OnInteract?.Invoke();
+        }
+
+        if(Input.GetKeyDown(KeyCode.Alpha1)) {
+            inventory.UseItem("HealthPot", this);
+        }
+
+        if(Input.GetKeyDown(KeyCode.Alpha2)) {
+            inventory.UseItem("StaminaPot", this);
         }
     }
 

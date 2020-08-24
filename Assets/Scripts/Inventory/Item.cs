@@ -35,24 +35,10 @@ public class Item : MonoBehaviour
         playerRef.OnInteract -= OnPickup;
         GetComponent<Collider>().enabled = false;
 
-        Destroy(this); //destruct
+        //PUT IT IN INVENTORY
+        playerRef.inventory.AddItem(itemObject);
+
+        Destroy(this.gameObject); //destruct
     }
 }
 
-/*
-ItemObject itemInQuestion
-PlayerHandler playerReference
-OnTriggerEnter() 
-Grab player reference
-Add to OnInteractEvent
-Highlight icon maybe, sprite stuff idk
-If interaction button pressed, call OnPickup()
-OnTriggerExit()
-Remove from OnInteract event
-Nullify player reference for safety
-OnPickup()
-Remove from listener
-Add to the player inventory (via playerReference)
-disable collider
-itemInQuetion.OnPickup()
-*/

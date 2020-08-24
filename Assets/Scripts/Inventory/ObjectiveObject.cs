@@ -9,7 +9,7 @@ public class ObjectiveObject : ItemObject {
     public Vector3 pickupScale;
 
     public override void OnUse(CharacterHandler character){
-
+        Debug.Log("quest item used baka");
     }
 
 }

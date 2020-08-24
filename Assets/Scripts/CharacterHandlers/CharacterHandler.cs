@@ -13,6 +13,7 @@ public class CharacterHandler : MonoBehaviour {
     public WeaponData weapon; 
     public AudioData[] audioData;
     public Collider weaponHitbox;
+    public InventoryObject inventory;
 
     [Header("Debug Members")]
     public Image heathbar;
@@ -51,10 +52,16 @@ public class CharacterHandler : MonoBehaviour {
         foliageMask = LayerMask.GetMask("Foliage");
         StartCoroutine(GrassHandle()); 
         
+
     }
 
     protected virtual void Update(){
         if(genericState != null) debugState.SetText(genericState.ToString());
+        if(Input.GetKeyDown(KeyCode.P)){
+            foreach(InventorySlot i in inventory.items){
+                Debug.Log($"{i.item.name} : {i.quanity}");
+            }
+        }
     }
 
     //disables ragdoll on character on game start
@@ -183,9 +190,8 @@ public class CharacterHandler : MonoBehaviour {
 
 
     //upon taking damage
-
-    public void GainHealth(float healthGain) => Health += healthGain;
-
+    public void GainHealth(float healthGain) => Health = Mathf.Min(characterdata.maxHealth, Health + healthGain);
+        
     protected void DealDamageAndCheckDeathDataManagement(float damage, bool isStaggerable, CharacterHandler receiver){
         if(receiver.TakeDamageAndCheckDeath(damage, isStaggerable, this)) {
             Debug.Log("death management goes here");
@@ -213,7 +219,9 @@ public class CharacterHandler : MonoBehaviour {
     }
 
     //stamina management
-    public void GainStamina(float staminaGain) => Stamina += staminaGain;
+    public void GainStamina(float staminaGain) => Stamina = Mathf.Min(characterdata.maxStamina, Stamina + staminaGain);
+        
+    
 
     private IEnumerator staminaRegenCoroutine; //for the actual regening
     private IEnumerator staminaDrainAndCooldown; //for the drain, and short break before allowing cooldown

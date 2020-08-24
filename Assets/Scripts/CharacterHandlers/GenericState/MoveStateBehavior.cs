@@ -13,7 +13,6 @@ public class IdleMoveState : MoveState {
     public override IEnumerator OnStateEnter() {
         (character as PlayerHandler).ChangeStanceTimer((character.characterdata as PlayerData).detectionTime);
         animator.SetBool(Animator.StringToHash("Crouching"), false);
-        animator.SetBool(Animator.StringToHash("midDraw"), false); //drawing is finished
 
    //     animator.SetBool(Animator.StringToHash("Idle"), true);
         yield break;
@@ -98,7 +97,6 @@ public class CrouchIdleMoveState : MoveState {
     public override IEnumerator OnStateEnter() {
         (character as PlayerHandler).ChangeStanceTimer((character.characterdata as PlayerData).detectionTime * 2.5f);
         animator.SetBool(Animator.StringToHash("Crouching"), true);
-        animator.SetBool(Animator.StringToHash("midDraw"), false); //drawing is finished        
         yield break;    
     }
 
@@ -120,7 +118,6 @@ public class CrouchWalkMoveState : MoveState {
     }
 
     public override IEnumerator OnStateExit() {
-       // animator.SetBool(Animator.StringToHash("CrouchWalking"), false);
         yield break;    
     }
 }

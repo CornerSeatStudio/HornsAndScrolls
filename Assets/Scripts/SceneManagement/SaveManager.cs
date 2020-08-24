@@ -8,9 +8,9 @@ public class SaveManager : MonoBehaviour
 
     public void Update(){
         //debug
-        if(Input.GetKeyDown(KeyCode.P)) {
-            Debug.Log(CurrentLevelIndex);
-        }
+        // if(Input.GetKeyDown(KeyCode.P)) {
+        //     Debug.Log(CurrentLevelIndex);
+        // }
 
      
     }

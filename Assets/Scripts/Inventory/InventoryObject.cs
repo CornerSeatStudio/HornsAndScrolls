@@ -5,49 +5,65 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "PlayerInventoryData", menuName = "ScriptableObjects/Inventory")]
 public class InventoryObject : ScriptableObject
 {
-    List<InventorySlot> items;
+    public List<InventorySlot> items = new List<InventorySlot>(); 
 
-    public void Awake(){
-        items = new List<InventorySlot>();
+    public InventorySlot FindInInventory(string itemName) {
+        return items.Find(i => i.item.name == itemName);
+    }
+    
+    public InventorySlot FindInInventory(ItemObject item) {
+        return items.Find(i => i.item == item);
     }
 
     //add an item into the inventory
-    public void AddItem(ItemObject item){
-        items.Add(new InventorySlot(item, 1));
+    public void AddItem(ItemObject item) {
+        InventorySlot slotRef = FindInInventory(item);
+        if(slotRef == null){
+            items.Add(new InventorySlot(item, 1));
+        } else {
+            slotRef.IncrementItemCount();
+        }
     }
     public void AddItem(ItemObject item, int quantity){
-        items.Add(new InventorySlot(item, quantity));
+        InventorySlot slotRef = FindInInventory(item);
+        if(slotRef == null){
+            items.Add(new InventorySlot(item, quantity));
+        } else {
+            slotRef.IncreaseItemCount(quantity);
+        }
     }
 
     //find the item in the inventory, delete it if its used up
-    public void UseItem(ItemObject item, CharacterHandler character){
-        InventorySlot slotRef = items.Find(i => i.Item == item);
-        if(slotRef == null) Debug.LogError("couldnt use item, ain't in inventory retard");
-        if(slotRef.UsedItem(character)) items.Remove(slotRef);
+    public void UseItem(string itemName, CharacterHandler character){
+        InventorySlot slotRef = FindInInventory(itemName);
+        if(slotRef != null && slotRef.UsedItem(character)) items.Remove(slotRef);
     }
 
 }
 
-[System.Serializable]
-public class InventorySlot {
-    public ItemObject Item {get; private set;}
-    public int Quantity {get; private set; }
+[System.Serializable] public class InventorySlot {
+    [SerializeField] public ItemObject item;
+    [SerializeField] public int quanity;
 
     public InventorySlot(ItemObject item, int quantity) {
-        this.Item = item;
-        this.Quantity = quantity;
+        this.item = item;
+        this.quanity = quantity;
     }
 
     //if picks up another one of those motherfucks
-    public void IncreaseItemCount(){
-        Quantity++;
+    public void IncrementItemCount(){
+        quanity++;
+    }
+
+    public void IncreaseItemCount(int quant){
+        quanity += quant;
     }
 
     //use item, reduce quanity, returns true if quantity has hit 0
     public bool UsedItem(CharacterHandler character){
-        Item.OnUse(character);
-        Quantity--;
+        item.OnUse(character);
+        quanity--;
 
-        return Quantity == 0;
+        return quanity == 0;
     }
 }
