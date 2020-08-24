@@ -14,7 +14,7 @@ public class Dialogue : MonoBehaviour
     }
 
     public void StartDialogue (dialoguedictionary dialogue){
-        nameText.text = dialogue.name;
+        //nameText.text = dialogue.name;
         sentences.Clear();
         foreach(string sentence in dialogue.sentences){
             sentences.Enqueue(sentence);
