@@ -62,10 +62,14 @@ public class SheathingCombatState : CombatState {
 
         //one done, determine outcome
         if(currAnimTime <= 0) {
-            animator.SetLayerWeight(1, 0);
+            animator.SetBool(Animator.StringToHash("midDraw"), false); //drawing is finished
             animator.SetBool(Animator.StringToHash("Combat"), false);
+            yield return new WaitForSeconds(.2f);
+
+            animator.SetLayerWeight(1, 0);
             character.SetStateDriver(new IdleMoveState(character, animator));
         } else {
+            animator.SetBool(Animator.StringToHash("midDraw"), false); //drawing is finished
             character.SetStateDriver(new DefaultCombatState(character, animator));
         }
 
@@ -86,9 +90,13 @@ public class SheathingCombatState : CombatState {
         if(currAnimTime <= 0) {
             character.SetStateDriver(new DefaultCombatState(character, animator));
         } else {
-            animator.SetLayerWeight(1, 0);
+            animator.SetBool(Animator.StringToHash("midDraw"), false); //drawing is finished
             animator.SetBool(Animator.StringToHash("Combat"), false);
-            if(crouchSheathing){
+            
+            yield return new WaitForSeconds(.2f);
+            animator.SetLayerWeight(1, 0);
+
+            if(crouchSheathing) {
                 character.SetStateDriver(new CrouchIdleMoveState(character, animator));
             } else {
                 character.SetStateDriver(new IdleMoveState(character, animator));
@@ -121,7 +129,6 @@ public class DefaultCombatState : CombatState {
     public override IEnumerator OnStateEnter() {
         try {
             (character as PlayerHandler).CurrMovementSpeed = (character.characterdata as PlayerData).combatMoveSpeed;
-            animator.SetBool(Animator.StringToHash("midDraw"), false); //drawing is finished
 
         } catch {
             //Debug.Log("not a player");
