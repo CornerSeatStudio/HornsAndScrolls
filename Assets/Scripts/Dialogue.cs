@@ -8,6 +8,7 @@ public class Dialogue : MonoBehaviour
 
     public Text dialogueText;
     public Text nameText;
+    public Animator animator;
     void Start()
     {
         sentences = new Queue<string>();
@@ -16,6 +17,7 @@ public class Dialogue : MonoBehaviour
     public void StartDialogue (dialoguedictionary dialogue){
         //nameText.text = dialogue.name;
         sentences.Clear();
+        animator.SetBool("IsOpen",true);
         foreach(string sentence in dialogue.sentences){
             sentences.Enqueue(sentence);
         }
@@ -30,6 +32,6 @@ public class Dialogue : MonoBehaviour
         dialogueText.text = sentence;
     }
     void EndDialogue(){
-
+        animator.SetBool("IsOpen",false);
     }
 }
