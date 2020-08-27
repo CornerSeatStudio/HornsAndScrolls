@@ -24,7 +24,8 @@ public class PlayerHandler : CharacterHandler {
 
     public delegate void PickupHandler();
     public event PickupHandler OnInteract;
-    public event Action<float> OnStanceChange; 
+    public event Action<float> OnStanceChangeTimer; 
+    public event Action<float> OnStanceSoundRing;
 
 
 
@@ -119,8 +120,9 @@ public class PlayerHandler : CharacterHandler {
         return Physics.Raycast(transform.position, Vector3.down, out hit, controller.height/2 * slopeForceRayLength) && hit.normal != Vector3.up;
     }
     //for stealth reactoin time
-    public void ChangeStanceTimer(float stanceModifier){
-        OnStanceChange?.Invoke(stanceModifier);
+    public void ChangeStanceStealthConsequences(float stanceModifier, float soundModify){
+        OnStanceChangeTimer?.Invoke(stanceModifier);
+        OnStanceSoundRing?.Invoke(soundModify);
     }
     
 

@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 342aba89d3ad23e4bab4a4801daa3852
+guid: 09a30f12006783c4298f120ce2e37c68
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable:
   - first:
-      74: 9128885920207887336
-    second: dodge back
+      74: 896188942311107492
+    second: polearm charge
   externalObjects: {}
   materials:
     materialImportMode: 1
@@ -35,23 +35,23 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: dodge back
-      takeName: Armature|Armature.002Action
+      name: polearm charge
+      takeName: Armature|Polearm_walk_agro
       internalID: 0
-      firstFrame: 12
-      lastFrame: 29
+      firstFrame: 0
+      lastFrame: 23
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
-      loopBlendOrientation: 0
+      loopBlendOrientation: 1
       loopBlendPositionY: 0
       loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
+      keepOriginalOrientation: 1
       keepOriginalPositionY: 1
       keepOriginalPositionXZ: 0
       heightFromFeet: 0
@@ -408,7 +408,7 @@ ModelImporter:
     upperLegTwist: 0.5
     legTwist: 0.5
     armStretch: 0.05
-    legStretch: 0.05
+    legStretch: 0
     feetSpacing: 0
     globalScale: 1
     rootMotionBoneName: 

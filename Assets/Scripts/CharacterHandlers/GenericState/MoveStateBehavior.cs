@@ -11,7 +11,7 @@ public class IdleMoveState : MoveState {
     public IdleMoveState(CharacterHandler character, Animator animator) : base(character, animator) {}
 
     public override IEnumerator OnStateEnter() {
-        (character as PlayerHandler).ChangeStanceTimer((character.characterdata as PlayerData).detectionTime);
+        (character as PlayerHandler).ChangeStanceStealthConsequences((character.characterdata as PlayerData).detectionTime, 0f);
         animator.SetBool(Animator.StringToHash("Crouching"), false);
 
    //     animator.SetBool(Animator.StringToHash("Idle"), true);
@@ -28,7 +28,7 @@ public class JogMoveState : MoveState {
     public JogMoveState(CharacterHandler character, Animator animator) : base(character, animator) {}
     
     public override IEnumerator OnStateEnter() {
-        (character as PlayerHandler).ChangeStanceTimer((character.characterdata as PlayerData).detectionTime /2);
+        (character as PlayerHandler).ChangeStanceStealthConsequences((character.characterdata as PlayerData).detectionTime /2, 6f);
         animator.SetBool(Animator.StringToHash("Crouching"), false);
 
        // animator.SetBool(Animator.StringToHash("Jogging"), true);
@@ -49,7 +49,7 @@ public class SprintMoveState : MoveState {
     public SprintMoveState(CharacterHandler character, Animator animator) : base(character, animator) {}
     
     public override IEnumerator OnStateEnter() {
-        (character as PlayerHandler).ChangeStanceTimer((character.characterdata as PlayerData).detectionTime /2);
+        (character as PlayerHandler).ChangeStanceStealthConsequences((character.characterdata as PlayerData).detectionTime /2, 12f);
         animator.SetBool(Animator.StringToHash("Crouching"), false);
        // animator.SetBool(Animator.StringToHash("Sprinting"), true);
         (character as PlayerHandler).CurrMovementSpeed = (character.characterdata as PlayerData).sprintSpeed;
@@ -77,7 +77,7 @@ public class WalkMoveState : MoveState {
     public WalkMoveState(CharacterHandler character, Animator animator) : base(character, animator) {}
     
     public override IEnumerator OnStateEnter() {
-        (character as PlayerHandler).ChangeStanceTimer((character.characterdata as PlayerData).detectionTime);
+        (character as PlayerHandler).ChangeStanceStealthConsequences((character.characterdata as PlayerData).detectionTime, 5f);
         animator.SetBool(Animator.StringToHash("Crouching"), false);
 
        // animator.SetBool(Animator.StringToHash("Walking"), true);
@@ -95,7 +95,7 @@ public class CrouchIdleMoveState : MoveState {
     public CrouchIdleMoveState(CharacterHandler character, Animator animator) : base(character, animator) {}
     
     public override IEnumerator OnStateEnter() {
-        (character as PlayerHandler).ChangeStanceTimer((character.characterdata as PlayerData).detectionTime * 2.5f);
+        (character as PlayerHandler).ChangeStanceStealthConsequences((character.characterdata as PlayerData).detectionTime * 2.5f, 0f);
         animator.SetBool(Animator.StringToHash("Crouching"), true);
         yield break;    
     }
@@ -111,7 +111,7 @@ public class CrouchWalkMoveState : MoveState {
     public CrouchWalkMoveState(CharacterHandler character, Animator animator) : base(character, animator) {}
     
     public override IEnumerator OnStateEnter() {
-        (character as PlayerHandler).ChangeStanceTimer((character.characterdata as PlayerData).detectionTime * 2.3f);
+        (character as PlayerHandler).ChangeStanceStealthConsequences((character.characterdata as PlayerData).detectionTime * 2.3f, 0f);
         animator.SetBool(Animator.StringToHash("Crouching"), true);
         (character as PlayerHandler).CurrMovementSpeed = (character.characterdata as PlayerData).crouchWalkSpeed;        
         yield break;    

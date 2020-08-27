@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
  
 public class Detection : MonoBehaviour
 {
@@ -17,7 +18,9 @@ public class Detection : MonoBehaviour
 
     public List<Transform> VisibleTargets {get; } = new List<Transform>();
 
-    public bool IsAlive {get; set; }= true;
+    private PlayerHandler player;
+    public bool IsAlive {get; set; } = true;
+    public float SoundRadius {get; private set; }= 0;
     //[Range(0, 0.25f)] public float meshResolution; //# of triangle divisions of FOV, larger == more circular
     //public MeshFilter viewMeshFilter; 
     //Mesh viewMesh; 
@@ -35,11 +38,18 @@ public class Detection : MonoBehaviour
 
         if(targetMask == -1 || obstacleMask == -1) Debug.LogWarning("LAYERMASKS NOT SET PROPERLY ON AI");
         //viewMesh.name = "View Visualization";
+        
+        player = FindObjectOfType<PlayerHandler>();
+        player.OnStanceSoundRing += OnSoundRingAdjustment;
+        
         StartCoroutine("FindTargetsWithDelay", coroutineDelay);
         //viewMeshFilter.mesh = viewMesh;
      
     } 
 
+    public void OnSoundRingAdjustment(float soundRingRad){
+
+    }
     //should be called AFTER dealing with movement
     /**
     void LateUpdate() {
@@ -62,15 +72,24 @@ public class Detection : MonoBehaviour
     private IEnumerator FindTargetsWithDelay(float delay){
         while (IsAlive){
             yield return new WaitForSeconds(delay); //only coroutine every delay seconds
-            findVisibleTargets();
+            VisibleTargets.Clear(); //reset list every time so no dupes
+            if(FindHeardTargets()) FindVisibleTargets();
         }
     }
 
 
+    private bool FindHeardTargets(){
+        Collider[] targetsInView = Physics.OverlapSphere(transform.position, SoundRadius, targetMask);
+        foreach(Collider col in targetsInView){
+            if(!Physics.Raycast(transform.position, (col.transform.position - transform.position).normalized, Vector3.Distance(transform.position, col.transform.position), obstacleMask)){ 
+                    VisibleTargets.Add(col.transform);
+            }
+        }
+        return (VisibleTargets.Count == 0);
+    }
 
     //for every target (via an array), lock on em, the core logic
-    private void findVisibleTargets(){
-        VisibleTargets.Clear(); //reset list every time so no dupes
+    private void FindVisibleTargets(){
         //cast a sphere over player, store everything inside col
         Collider[] targetsInView = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
         foreach(Collider col in targetsInView){

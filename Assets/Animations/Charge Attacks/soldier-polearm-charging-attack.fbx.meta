@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 2e5eeb0a0abf3364e95d0c9f1519fd41
+guid: ff590402ee24e07489f5e455deb2d0e8
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable:
   - first:
-      74: 9128885920207887336
-    second: dodge right
+      74: 896188942311107492
+    second: Armature|Polearm_walk_agro
   externalObjects: {}
   materials:
     materialImportMode: 1
@@ -35,11 +35,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: dodge right
-      takeName: Armature|Armature.002Action
+      name: Armature|Polearm_walk_agro
+      takeName: Armature|Polearm_walk_agro
       internalID: 0
-      firstFrame: 10
-      lastFrame: 29
+      firstFrame: 0
+      lastFrame: 18
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -48,10 +48,10 @@ ModelImporter:
       hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
-      loopBlendOrientation: 0
+      loopBlendOrientation: 1
       loopBlendPositionY: 0
       loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
+      keepOriginalOrientation: 1
       keepOriginalPositionY: 1
       keepOriginalPositionXZ: 0
       heightFromFeet: 0
@@ -408,7 +408,7 @@ ModelImporter:
     upperLegTwist: 0.5
     legTwist: 0.5
     armStretch: 0.05
-    legStretch: 0.05
+    legStretch: 0
     feetSpacing: 0
     globalScale: 1
     rootMotionBoneName: 

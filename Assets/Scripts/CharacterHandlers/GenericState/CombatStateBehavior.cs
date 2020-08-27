@@ -26,7 +26,7 @@ public class SheathingCombatState : CombatState {
         animator.SetLayerWeight(1, 1);
         
 
-        (character as PlayerHandler).ChangeStanceTimer((character.characterdata as PlayerData).detectionTime); //stealth stuff
+        (character as PlayerHandler).ChangeStanceStealthConsequences((character.characterdata as PlayerData).detectionTime, 9f); //stealth stuff
 
         animator.SetBool(Animator.StringToHash("Combat"), true); //for facing mouse animation
         animator.SetBool(Animator.StringToHash("midDraw"), true);//determines when to actually transition out
@@ -348,6 +348,10 @@ public class DeathState : CombatState {
             //ragdoll 
             (character as AIHandler).GetComponent<Collider>().enabled = false;
             (character as AIHandler).GetComponent<NavMeshAgent>().enabled = false;
+
+            //remove from combat list
+            AIHandler.CombatAI.Remove(character as AIHandler);
+
         } catch {
             Debug.LogWarning("player shouldnt use death state for now");
         }

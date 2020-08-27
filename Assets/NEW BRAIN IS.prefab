@@ -135,22 +135,16 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ad7002989c3e3f44cb1124be95026886, type: 2}
   - {fileID: 11400000, guid: 9ce87626a3ab3314bb8457bf503bef24, type: 2}
   weaponHitbox: {fileID: 6866468502108227982}
+  inventory: {fileID: 0}
   heathbar: {fileID: 8074898591226400479}
   staminabar: {fileID: 5645395180898940197}
   debugState: {fileID: 4068547277862800058}
   materials: []
-  targetMask:
-    serializedVersion: 2
-    m_Bits: 1024
-  obstacleMask:
-    serializedVersion: 2
-    m_Bits: 512
   startAsAggro: 0
   stealthBar: {fileID: 2307370322100467061}
   patrolWaypoints: []
   idleTimeAtWaypoint: 10
   AIGlobalStateCheckRange: 50
-  weaponMesh: {fileID: 8156893297062671393}
   tooFarFromPlayerDistance: 40
   backAwayDistance: 20
   shoveDistance: 5
@@ -821,7 +815,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -6478536213147159724, guid: b29c40eefda98834eaf1de84b5a3141a, type: 3}
+  - {fileID: -876546973899608171, guid: bfb9aa3d9ea6d104b8ac2594b8ac6c23, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -846,7 +840,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: -2296414042825767884, guid: b29c40eefda98834eaf1de84b5a3141a, type: 3}
+  m_Mesh: {fileID: -2296414042825767884, guid: bfb9aa3d9ea6d104b8ac2594b8ac6c23, type: 3}
   m_Bones:
   - {fileID: 9075442563368457419}
   - {fileID: 9075442561453533538}
