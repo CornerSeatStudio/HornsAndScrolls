@@ -39,7 +39,12 @@ public class AIHandler : CharacterHandler {
     public Detection Detection {get; private set; }
     public GlobalState GlobalState {get; set; } = GlobalState.UNAGGRO; //spawn/start as aggro (todo unless otherwise stated)
     public Vector3 NextWaypointLocation {get; private set;} 
+    public Quaternion NextWaypointRotation {get; set;}
     private LayerMask AIMask;
+
+    //static
+    public static List<AIHandler> CombatAI {get; set;}
+
 
     #region callbacks
     protected override void Start() {
@@ -59,7 +64,9 @@ public class AIHandler : CharacterHandler {
 
         //event stuff
         CurrSpotTimerThreshold = (TargetPlayer.characterdata as PlayerData).detectionTime;
-        TargetPlayer.OnStanceChange += SpotTimerChange;
+        TargetPlayer.OnStanceChangeTimer += SpotTimerChange;
+
+        CombatAI = new List<AIHandler>();
 
         StartingCondition();
         
@@ -79,6 +86,7 @@ public class AIHandler : CharacterHandler {
             GlobalState = GlobalState.UNAGGRO; // temp
             if (patrolWaypoints.Count != 0) {
                 NextWaypointLocation = patrolWaypoints[0].transform.position; //set first patrol waypoint
+                NextWaypointRotation = patrolWaypoints[0].transform.rotation;
             }else {
                 Debug.Log("this ai dont have waypoint for patrols, should be at least one probs");
             }
@@ -132,9 +140,12 @@ public class AIHandler : CharacterHandler {
 
     }
 
-    private void PivotToAggro() {
+    public void PivotToAggro() {
         GlobalState = GlobalState.AGGRO;
         animator.SetBool(Animator.StringToHash("Combat"), true); //todo: to be put in separate class    
+
+        //add to static list of all combat AI
+        CombatAI.Add(this);
 
         StartCoroutine(OffenseScheduler());
         SetStateDriver(new DefaultAIAggroState(this, animator, agent));
@@ -156,13 +167,18 @@ public class AIHandler : CharacterHandler {
                     //if player is healing
             yield return new WaitForSeconds(Random.Range(minWaitBetweenAttacks-1f, minWaitBetweenAttacks+1f));
 
+            //check once if there arent too many ai attacking
             int offenseAI = 0;
-            Collider[] aiInRange = Physics.OverlapSphere(transform.position, AIGlobalStateCheckRange, AIMask);
-            foreach (Collider col in aiInRange) if(col.GetComponent<AIHandler>().thinkState is OffenseState) ++offenseAI;
-            
+            foreach(AIHandler ai in CombatAI){
+                if(ai.thinkState is OffenseState) offenseAI++;
+            }
+
+            //if too many ai attacking, loop until theres a spot
             while (offenseAI > 3) {
-                aiInRange = Physics.OverlapSphere(transform.position, AIGlobalStateCheckRange, AIMask);
-                foreach (Collider col in aiInRange) if(!(col.GetComponent<AIHandler>().thinkState is OffenseState)) ++offenseAI;
+                offenseAI = 0;
+                foreach(AIHandler ai in CombatAI){
+                    if(ai.thinkState is OffenseState) offenseAI++;
+                }
                 yield return new WaitForSeconds(1f); //wait between each check until an attack is available
             }
 
@@ -220,6 +236,7 @@ public class AIHandler : CharacterHandler {
     public void SetNextPatrolDestination() { 
         currPatrolIndex = (currPatrolIndex + 1) % patrolWaypoints.Count;
         NextWaypointLocation = patrolWaypoints[currPatrolIndex].transform.position;
+        NextWaypointRotation = patrolWaypoints[currPatrolIndex].transform.rotation;
     }
     #endregion
     
@@ -243,34 +260,13 @@ public class AIHandler : CharacterHandler {
         && !(genericState is AttackState) //im not already mid attack  
         && Stamina > 0;     
 
-        // return TargetPlayer.genericState is AttackState //player is attacking
-        // && TargetPlayer.FindTarget((TargetPlayer.genericState as AttackState).chosenMove) == this //player is attacking me in particular
-        // && !(genericState is AttackState) //im not already mid attack  
-        // && Stamina > 0;     
     }
 
     //returns if player is too far
     public bool CloseDistanceConditional() => (TargetPlayer.transform.position - transform.position).sqrMagnitude > tooFarFromPlayerDistance * tooFarFromPlayerDistance;
 
-    public Vector3 currProximateAIPosition {get; private set;}
     public bool SpacingConditional() {
         //if i am currently spacing
-        if(thinkState is SpacingState) return true;
-
-        //first check if i am too close to another AI, 
-         Collider[] aiInRange = Physics.OverlapSphere(transform.position, AIGlobalStateCheckRange, AIMask);
-            foreach(Collider col in aiInRange) {
-                if(col != this 
-                    && (col.transform.position - transform.position).sqrMagnitude < backAwayDistance * backAwayDistance 
-                    && (col.transform.position - TargetPlayer.transform.position).sqrMagnitude > (transform.position - TargetPlayer.transform.position).sqrMagnitude) {// and of the two, i am closer to the player, proceed with a spacing method
-                    
-                    currProximateAIPosition = col.transform.position;
-                    return true;
-                }
-                
-            }
-
-        currProximateAIPosition = transform.position; //temp reset
         return false;
         
     }
@@ -328,22 +324,18 @@ public class AIHandler : CharacterHandler {
     }
 
     public BTStatus BackAwayTask() {// Debug.Log("back away");\
-        //options
-            //go for a prod
-            //fancy a dodge of sorts
-            //back away - slowly
-            //stand still
 
        // Debug.Log("back away tasking");
         //implication: cannot be in offense state if this area is reached
         if(!(thinkState is BackAwayState)) {
-            //if im NOT in an offense cooldown AND I can offend (via probabillity check)
-            if(false) { //if(CanOffend) {
+            if(CanOffend) {
                 SetStateDriver(new OffenseState(this, animator, agent));
             } else {
-                SetStateDriver(new BackAwayState(this, animator, agent));
+                bool f = Random.Range(0, 1) == 0;
+                if(f) SetStateDriver(new BackAwayState(this, animator, agent));
             }
         }
+        
         return BTStatus.RUNNING;
     }
 
@@ -354,12 +346,12 @@ public class AIHandler : CharacterHandler {
         return BTStatus.RUNNING;
     }
 
-    public BTStatus SpacingTask() {
-        if(!(thinkState is SpacingState)) { 
-            SetStateDriver(new SpacingState(this, animator, agent));
-        }
-        return BTStatus.RUNNING;
-    }
+    // public BTStatus SpacingTask() {
+    //     if(!(thinkState is SpacingState)) { 
+    //         SetStateDriver(new SpacingState(this, animator, agent));
+    //     }
+    //     return BTStatus.RUNNING;
+    // }
 
 
     //memthods used by think state behavior

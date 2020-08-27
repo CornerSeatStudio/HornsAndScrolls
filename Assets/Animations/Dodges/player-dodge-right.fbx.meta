@@ -1,11 +1,14 @@
 fileFormatVersion: 2
-guid: 9249a2b7364b49c4da6d165105e2adf9
+guid: cf3e69086f4446d4db0b592ce18410b8
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable:
   - first:
       74: 9128885920207887336
-    second: dodge front
+    second: new right dodge
+  - first:
+      74: 3590016115411608137
+    second: Armature|Armature.002Action.001
   externalObjects: {}
   materials:
     materialImportMode: 1
@@ -35,10 +38,10 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: dodge front
+      name: new right dodge
       takeName: Armature|Armature.002Action
       internalID: 0
-      firstFrame: 6.8
+      firstFrame: 10.6
       lastFrame: 30
       wrapMode: 0
       orientationOffsetY: 0
@@ -48,10 +51,10 @@ ModelImporter:
       hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
       loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
+      keepOriginalOrientation: 1
       keepOriginalPositionY: 1
       keepOriginalPositionXZ: 0
       heightFromFeet: 0

@@ -23,6 +23,10 @@ public class DetectionEditor : Editor
         Handles.DrawLine(fov.transform.position, fov.transform.position + viewAngleA * fov.viewRadius);
         Handles.DrawLine(fov.transform.position, fov.transform.position + viewAngleB * fov.viewRadius);
 
+        //sound arc
+        Handles.color = Color.grey;
+        Handles.DrawWireArc(fov.transform.position, Vector3.up, Vector3.forward, 360, fov.SoundRadius);
+
         //target identification debug
         Handles.color = Color.red;
         foreach(Transform visibleTarget in fov.VisibleTargets){

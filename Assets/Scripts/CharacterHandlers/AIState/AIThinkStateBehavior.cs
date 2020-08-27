@@ -1,17 +1,29 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class IdleState : AIThinkState {
     private IEnumerator idleCoroutine, LOSCoroutine;
-
+    
     public IdleState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
     
     public override IEnumerator OnStateEnter() { //Debug.Log("enteredIdle, timer: " + character.idleTimeAtWaypoint);
+        
+        idleCoroutine = OrientToWaypointRotation();
+        yield return character.StartCoroutine(idleCoroutine);
         idleCoroutine = IdleTimer(character.idleTimeAtWaypoint);
         yield return character.StartCoroutine(idleCoroutine);
+    }
+
+    private IEnumerator OrientToWaypointRotation(){
+        Quaternion newRotation = character.NextWaypointRotation;
+        float timeCount = 0;
+        while(timeCount < 1){
+            agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, newRotation, timeCount);
+            timeCount += Time.fixedDeltaTime;
+            yield return new WaitForFixedUpdate();
+        }
     }
 
     private IEnumerator LOSOnPlayerCheck() { //once spotted, go to investigate
@@ -129,10 +141,7 @@ public class InvestigationState : AIThinkState {
                 yield break;
             }
         } else { //caught, change global state, let mono behavior handle the rest
-            animator.SetBool(Animator.StringToHash("Combat"), true); //todo: to be put in separate class
-
-            character.GlobalState = GlobalState.AGGRO;
-            character.SetStateDriver(new DefaultAIAggroState(character, animator, agent));
+            character.PivotToAggro();
         }
 
     }
@@ -316,9 +325,14 @@ public class ChaseState : AIThinkState {
 public class BackAwayState : AIThinkState {
     IEnumerator backAwayRoutine, facePlayerRoutine;
 
+    float originSpeed;
+
     public BackAwayState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) { }
 
     public override IEnumerator OnStateEnter() {
+        originSpeed = agent.speed;
+        agent.speed *= UnityEngine.Random.Range(0.3f, 1);
+
         facePlayerRoutine = character.FacePlayer();
         character.StartCoroutine(facePlayerRoutine);
         backAwayRoutine = character.SpaceFromPlayer(character.backAwayDistance);
@@ -327,6 +341,7 @@ public class BackAwayState : AIThinkState {
     }
 
     public override IEnumerator OnStateExit() {
+        agent.speed = originSpeed;
         if(backAwayRoutine != null) character.StopCoroutine(backAwayRoutine);
         if(facePlayerRoutine != null) character.StopCoroutine(facePlayerRoutine);
         yield break;
@@ -356,18 +371,26 @@ public class ShoveState : AIThinkState {
 }
 
 //approach and shank
+//todo: make charge a unique state
 public class OffenseState : AIThinkState {
 
     MeleeMove chosenAttack;
     IEnumerator offenseRoutine;
     IEnumerator subRoutine;
     IEnumerator facePlayerRoutine;
+    public bool charge {get; private set; } = false;
+    float mainSpeed;
     public OffenseState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {
         try { this.chosenAttack = character.MeleeAttacks["default"]; } catch { Debug.LogWarning("some cunt don't have default attack"); }
     }
 
     public OffenseState(AIHandler character, Animator animator, NavMeshAgent agent, MeleeMove chosenAttack) : base(character, animator, agent) {
         this.chosenAttack = chosenAttack;
+    }
+
+    public OffenseState(AIHandler character, Animator animator, NavMeshAgent agent, bool charge) : base(character, animator, agent) {
+        this.charge = charge;
+        mainSpeed = agent.speed;
     }
 
     public override IEnumerator OnStateEnter() {
@@ -379,23 +402,32 @@ public class OffenseState : AIThinkState {
     }
 
     private IEnumerator Offense(MeleeMove chosenAttack) {
+        if(charge) agent.speed *= 3;
+
         subRoutine = character.ChasePlayer(chosenAttack.range);
         yield return character.StartCoroutine(subRoutine);
 
         //Debug.Log("AI attempting an attack...");
         character.SetStateDriver(new AttackState(character, animator, chosenAttack));
         
-        //once attack is finished, cooldown a touch maybe
-        float timer = chosenAttack.endlag + chosenAttack.startup;
-        while(timer >= 0) {
-            if(character.genericState is StaggerState) { 
-                Debug.Log("offense interupted for stagger"); 
-                yield break; 
-            }
+        if(charge) {
+            agent.speed = mainSpeed;
+        } else {
+            //once attack is finished, cooldown a touch maybe
+            float timer = chosenAttack.endlag + chosenAttack.startup;
+            while(timer >= 0) {
+                if(character.genericState is StaggerState) { 
+                    Debug.Log("offense interupted for stagger"); 
+                    yield break; 
+                }
             
             yield return new WaitForSeconds(.1f);
             timer -= .1f;
         }
+        }
+
+
+        
 
     }
 
@@ -409,61 +441,61 @@ public class OffenseState : AIThinkState {
 
 }
 
-public class SpacingState : AIThinkState {
-    IEnumerator facePlayerRoutine;
-    IEnumerator spacingRoutine;
+// public class SpacingState : AIThinkState {
+//     IEnumerator facePlayerRoutine;
+//     IEnumerator spacingRoutine;
 
-    public SpacingState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
+//     public SpacingState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
 
-    public override IEnumerator OnStateEnter() {
-        facePlayerRoutine = character.FacePlayer();
-        character.StartCoroutine(facePlayerRoutine);
-        spacingRoutine = SpaceFromAI();
-        yield return character.StartCoroutine(spacingRoutine);
-        character.SetStateDriver(new DefaultAIAggroState(character, animator, agent));
-    }
+//     public override IEnumerator OnStateEnter() {
+//         facePlayerRoutine = character.FacePlayer();
+//         character.StartCoroutine(facePlayerRoutine);
+//         spacingRoutine = SpaceFromAI();
+//         yield return character.StartCoroutine(spacingRoutine);
+//         character.SetStateDriver(new DefaultAIAggroState(character, animator, agent));
+//     }
 
-    private IEnumerator SpaceFromAI(){
-        NavMeshHit hit;
-        Vector3 movePoint = FindMostViablePosition();
-        if(NavMesh.SamplePosition(movePoint, out hit, character.backAwayDistance + 5f, NavMesh.AllAreas)
-            || agent.FindClosestEdge(out hit)) {
-            agent.SetDestination(hit.position);
-        }
+//     private IEnumerator SpaceFromAI(){
+//         NavMeshHit hit;
+//         Vector3 movePoint = FindMostViablePosition();
+//         if(NavMesh.SamplePosition(movePoint, out hit, character.backAwayDistance + 5f, NavMesh.AllAreas)
+//             || agent.FindClosestEdge(out hit)) {
+//             agent.SetDestination(hit.position);
+//         }
 
-        yield return new WaitWhile(() => agent.stoppingDistance < agent.remainingDistance || agent.pathPending);
-    }
+//         yield return new WaitWhile(() => agent.stoppingDistance < agent.remainingDistance || agent.pathPending);
+//     }
 
-    private Vector3 FindMostViablePosition() {
-        //cast a circle around the player AND spacing ai of radiusbackAwayDistance
-        float circDistance = Vector3.Distance(character.transform.position, character.TargetPlayer.transform.position);
-        float selfToMid = (circDistance * circDistance) / (2 * circDistance);
-        float midToEdge = (5 + character.backAwayDistance) * (5 + character.backAwayDistance) - (selfToMid * selfToMid);
+//     private Vector3 FindMostViablePosition() {
+//         //cast a circle around the player AND spacing ai of radiusbackAwayDistance
+//         float circDistance = Vector3.Distance(character.transform.position, character.TargetPlayer.transform.position);
+//         float selfToMid = (circDistance * circDistance) / (2 * circDistance);
+//         float midToEdge = (5 + character.backAwayDistance) * (5 + character.backAwayDistance) - (selfToMid * selfToMid);
 
-        //find all RADIUS intersections between those circles
-        Vector3 intersectionPoint = character.transform.position + selfToMid * (character.TargetPlayer.transform.position - character.transform.position) / circDistance;
-        Vector3 pointCheck1 = new Vector3(intersectionPoint.x + midToEdge * (character.TargetPlayer.transform.position.z - character.transform.position.z) / circDistance, character.currProximateAIPosition.y, intersectionPoint.z - midToEdge * (character.TargetPlayer.transform.position.x - character.transform.position.x) / circDistance);
-        Vector3 pointCheck2 = new Vector3(intersectionPoint.x - midToEdge * (character.TargetPlayer.transform.position.z - character.transform.position.z) / circDistance, character.currProximateAIPosition.y, intersectionPoint.z + midToEdge * (character.TargetPlayer.transform.position.x - character.transform.position.x) / circDistance);
+//         //find all RADIUS intersections between those circles
+//         Vector3 intersectionPoint = character.transform.position + selfToMid * (character.TargetPlayer.transform.position - character.transform.position) / circDistance;
+//         Vector3 pointCheck1 = new Vector3(intersectionPoint.x + midToEdge * (character.TargetPlayer.transform.position.z - character.transform.position.z) / circDistance, character.currProximateAIPosition.y, intersectionPoint.z - midToEdge * (character.TargetPlayer.transform.position.x - character.transform.position.x) / circDistance);
+//         Vector3 pointCheck2 = new Vector3(intersectionPoint.x - midToEdge * (character.TargetPlayer.transform.position.z - character.transform.position.z) / circDistance, character.currProximateAIPosition.y, intersectionPoint.z + midToEdge * (character.TargetPlayer.transform.position.x - character.transform.position.x) / circDistance);
 
-        //pick the intersection FURTHEST from the AI being spaced from
-        return (pointCheck1 - character.currProximateAIPosition).sqrMagnitude > (pointCheck2 - character.currProximateAIPosition).sqrMagnitude ? pointCheck1 : pointCheck2;
-        //store this point as closestPoint;
+//         //pick the intersection FURTHEST from the AI being spaced from
+//         return (pointCheck1 - character.currProximateAIPosition).sqrMagnitude > (pointCheck2 - character.currProximateAIPosition).sqrMagnitude ? pointCheck1 : pointCheck2;
+//         //store this point as closestPoint;
 
-        //cast another circle around the player  AND spacing of chase distance (within ucnertainty)
-        //find all RADIUS intersections between those circles
-        //pick the intersection FURTHEST from the AI being spaced from
-        //store this point as furthestPoint;
+//         //cast another circle around the player  AND spacing of chase distance (within ucnertainty)
+//         //find all RADIUS intersections between those circles
+//         //pick the intersection FURTHEST from the AI being spaced from
+//         //store this point as furthestPoint;
 
-        //create a line between closestPoint and furthestPoint, 
-        //then return a random point on it
+//         //create a line between closestPoint and furthestPoint, 
+//         //then return a random point on it
 
-    }    
+//     }    
 
-    public override IEnumerator OnStateExit() {
-        agent.SetDestination(character.transform.position);
-        if(facePlayerRoutine != null) character.StopCoroutine(facePlayerRoutine);
-        if(spacingRoutine != null) character.StopCoroutine(spacingRoutine);
-        yield break;
-    }
+//     public override IEnumerator OnStateExit() {
+//         agent.SetDestination(character.transform.position);
+//         if(facePlayerRoutine != null) character.StopCoroutine(facePlayerRoutine);
+//         if(spacingRoutine != null) character.StopCoroutine(spacingRoutine);
+//         yield break;
+//     }
 
-}
+// }

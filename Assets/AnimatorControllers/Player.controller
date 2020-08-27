@@ -210,8 +210,8 @@ AnimatorStateTransition:
   m_IsExit: 0
   serializedVersion: 3
   m_TransitionDuration: 0.3699503
-  m_TransitionOffset: 0.13927466
-  m_ExitTime: 0.87880605
+  m_TransitionOffset: 0.18056063
+  m_ExitTime: 0.9718245
   m_HasExitTime: 0
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -244,7 +244,7 @@ BlendTree:
     m_DirectBlendParameter: Blend
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 2818750684249308878, guid: 20bc2347e344b094980b1282d5bd1f49,
+    m_Motion: {fileID: 2818750684249308878, guid: cb84d008a6e5bda4492b8b0066207f99,
       type: 3}
     m_Threshold: 20
     m_Position: {x: 0, y: 0}
@@ -286,7 +286,7 @@ BlendTree:
     m_DirectBlendParameter: PlayerSpeed
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: -6848554733567604879, guid: d1465011ea71f6045847ce4c6c06a4dd,
+    m_Motion: {fileID: -6848554733567604879, guid: 5d32de8485de7f44b9b4a2002d95e4d5,
       type: 3}
     m_Threshold: 1
     m_Position: {x: 0, y: 0}
@@ -600,7 +600,7 @@ BlendTree:
     m_DirectBlendParameter: XCombatMove
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 9128885920207887336, guid: 720e3b4e334c7034dbd5303fe3c54ada,
+    m_Motion: {fileID: 9128885920207887336, guid: cf3e69086f4446d4db0b592ce18410b8,
       type: 3}
     m_Threshold: 0.33333334
     m_Position: {x: 1, y: 0}
@@ -609,7 +609,7 @@ BlendTree:
     m_DirectBlendParameter: XCombatMove
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 3590016115411608137, guid: 9ef4cf95fbca2bf47a39531ea7129ac1,
+    m_Motion: {fileID: 9128885920207887336, guid: d03f0c434a3a51f459a791f5f73cc938,
       type: 3}
     m_Threshold: 0.6666667
     m_Position: {x: 0, y: -1}
@@ -618,7 +618,7 @@ BlendTree:
     m_DirectBlendParameter: XCombatMove
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 844688330495865900, guid: 720e3b4e334c7034dbd5303fe3c54ada,
+    m_Motion: {fileID: 9128885920207887336, guid: f76490c58bf51334ba04455b1bbb4366,
       type: 3}
     m_Threshold: 1
     m_Position: {x: -1, y: 0}
@@ -1780,7 +1780,7 @@ BlendTree:
     m_DirectBlendParameter: XCombatMove
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 9128885920207887336, guid: 720e3b4e334c7034dbd5303fe3c54ada,
+    m_Motion: {fileID: 9128885920207887336, guid: cf3e69086f4446d4db0b592ce18410b8,
       type: 3}
     m_Threshold: 0.33333334
     m_Position: {x: 1, y: 0}
@@ -1789,7 +1789,7 @@ BlendTree:
     m_DirectBlendParameter: XCombatMove
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 3590016115411608137, guid: 9ef4cf95fbca2bf47a39531ea7129ac1,
+    m_Motion: {fileID: 9128885920207887336, guid: d03f0c434a3a51f459a791f5f73cc938,
       type: 3}
     m_Threshold: 0.6666667
     m_Position: {x: 0, y: -1}
@@ -1798,7 +1798,7 @@ BlendTree:
     m_DirectBlendParameter: XCombatMove
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 844688330495865900, guid: 720e3b4e334c7034dbd5303fe3c54ada,
+    m_Motion: {fileID: 9128885920207887336, guid: f76490c58bf51334ba04455b1bbb4366,
       type: 3}
     m_Threshold: 1
     m_Position: {x: -1, y: 0}
