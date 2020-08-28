@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class dialoguedictionary
+[System.Serializable] 
+public class Dialoguedictionary
 {
     public string name;
     [TextArea(3,10)]
     public string[] sentences;
 }
+ 

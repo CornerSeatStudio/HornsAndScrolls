@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 public class Dialogue : MonoBehaviour
-{
+{ 
     private Queue<string> sentences;
-
     public Text dialogueText;
     public Text nameText;
     public Animator animator;
@@ -14,7 +13,7 @@ public class Dialogue : MonoBehaviour
         sentences = new Queue<string>();
     }
 
-    public void StartDialogue (dialoguedictionary dialogue){
+    public void StartDialogue (Dialoguedictionary dialogue){
         //nameText.text = dialogue.name;
         sentences.Clear();
         animator.SetBool("IsOpen",true);
