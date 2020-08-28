@@ -106,7 +106,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bce9c7c0a1986a04085775cd53e29d30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onObjectiveCompletion:
+    m_PersistentCalls:
+      m_Calls: []
   itemAttachTransform: {fileID: 0}
-  pickupPosition: {x: 0.01, y: 0.01, z: -0.006}
-  pickupEulerAngle: {x: 180, y: -112, z: -16}
-  pickupScale: {x: 0.3, y: 0.3, z: 1.2}
+  item: {fileID: 11400000, guid: b2efdbbee598a1442bf4e529d3bd4964, type: 2}
