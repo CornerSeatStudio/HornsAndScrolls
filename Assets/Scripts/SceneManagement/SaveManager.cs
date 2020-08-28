@@ -48,7 +48,7 @@ public class SaveManager : MonoBehaviour
         Saving.Save(this);
 
         //RETURN TO CAMP CAMP
-        ChooseLevel(2);
+        ChooseAndLoadLevel(2);
           
     }
 
@@ -58,7 +58,7 @@ public class SaveManager : MonoBehaviour
         SceneManager.LoadScene(CurrentLevelIndex);
     }
 
-    public void ChooseLevel(int buildIndex){
+    public void ChooseAndLoadLevel(int buildIndex){
         SceneManager.LoadScene(buildIndex);
     }
 
