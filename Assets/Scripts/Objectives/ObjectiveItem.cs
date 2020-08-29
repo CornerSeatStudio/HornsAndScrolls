@@ -8,7 +8,8 @@ public class ObjectiveItem : Objective
 {
     private PlayerHandler player;
     public Transform itemAttachTransform;
-
+    public Animator animator;
+    public Animator otherdoor;
     public ObjectiveObject item;
     
     public void OnDrawGizmos() {
@@ -45,7 +46,8 @@ public class ObjectiveItem : Objective
         transform.localPosition = item.pickupPosition;
         transform.localEulerAngles = item.pickupEulerAngle;
         transform.localScale = item.pickupScale;
-
+        animator.SetBool("IsOpen",true);
+        otherdoor.SetBool("IsOpens",true);
         StartCoroutine(OnObjectiveIncrement());
     }
 
