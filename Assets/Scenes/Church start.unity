@@ -299,7 +299,6 @@ GameObject:
   m_Component:
   - component: {fileID: 125131502}
   - component: {fileID: 125131501}
-  - component: {fileID: 125131503}
   m_Layer: 0
   m_Name: dialoguemanager
   m_TagString: Untagged
@@ -336,31 +335,6 @@ Transform:
   m_Father: {fileID: 2048862681}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &125131503
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 125131500}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c448ce58581b4b64589e801a38c5be6a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dialogue:
-    name: dwyane
-    sentences:
-    - There you are Peasant.
-    - The festival is coming up soon and to appease the gods I need three items from
-      outside the village.
-    - All three items are of vital importance to the success of the festival.
-    - It is a BUCKET from the nearby village.
-    - The second item is a WARHORN from a camp full of heretics.
-    - The final item is a important piece of SCRIPTURE, lost on the walls of a nearby
-      castle.
-    - Remeber these items are of vital importance to the festival.
-    - Now go forth, and do the bidding of the gods.
 --- !u!1 &133822383
 GameObject:
   m_ObjectHideFlags: 0
@@ -550,7 +524,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 125131501}
+      - m_Target: {fileID: 0}
         m_MethodName: DisplayNextSentence
         m_Mode: 1
         m_Arguments:
@@ -1738,7 +1712,7 @@ PrefabInstance:
     - target: {fileID: 6911336143338049680, guid: 2eeef80d784a9a04cbcadaa27da969ee,
         type: 3}
       propertyPath: onObjectiveCompletion.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6911336143338049680, guid: 2eeef80d784a9a04cbcadaa27da969ee,
         type: 3}
@@ -1749,17 +1723,23 @@ PrefabInstance:
         type: 3}
       propertyPath: onObjectiveCompletion.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 125131503}
+      objectReference: {fileID: 125131501}
     - target: {fileID: 6911336143338049680, guid: 2eeef80d784a9a04cbcadaa27da969ee,
         type: 3}
       propertyPath: onObjectiveCompletion.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: TriggerDialogue
+      value: DialogueOnTrigger
       objectReference: {fileID: 0}
     - target: {fileID: 6911336143338049680, guid: 2eeef80d784a9a04cbcadaa27da969ee,
         type: 3}
       propertyPath: onObjectiveCompletion.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
+      value: Dialoguedictionary, Assembly-CSharp
       objectReference: {fileID: 0}
+    - target: {fileID: 6911336143338049680, guid: 2eeef80d784a9a04cbcadaa27da969ee,
+        type: 3}
+      propertyPath: onObjectiveCompletion.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
+      value: 
+      objectReference: {fileID: 11400000, guid: 9653a85834ba619459be932484b802d3,
+        type: 2}
     - target: {fileID: 6911336143338049682, guid: 2eeef80d784a9a04cbcadaa27da969ee,
         type: 3}
       propertyPath: m_LocalPosition.x

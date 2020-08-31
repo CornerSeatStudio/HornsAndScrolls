@@ -10,6 +10,7 @@ public class PlayerHandler : CharacterHandler {
     private CharacterController controller;
     public bool ToggledWalk {get; private set; } = false;
     public float CurrMovementSpeed {get; set; }
+    public bool InDialogue {get; set; } = false;
 
 
     [Header("Player Movement Variables")]
@@ -50,12 +51,13 @@ public class PlayerHandler : CharacterHandler {
     protected override void Update() {
         base.Update(); 
 
-        //core move stuff
-        inputVector = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
-        inputVector = Camera.main.transform.TransformDirection(inputVector);
-        inputVector.y = 0f;
-
-        DetermineInputOutcome();
+        if(!InDialogue){
+            //core move stuff
+            inputVector = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
+            inputVector = Camera.main.transform.TransformDirection(inputVector);
+            inputVector.y = 0f;
+            DetermineInputOutcome();
+        }
     }
 
     void FixedUpdate() {
