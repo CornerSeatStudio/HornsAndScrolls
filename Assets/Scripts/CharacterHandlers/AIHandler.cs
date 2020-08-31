@@ -265,6 +265,10 @@ public class AIHandler : CharacterHandler {
     //returns if player is too far
     public bool CloseDistanceConditional() => (TargetPlayer.transform.position - transform.position).sqrMagnitude > tooFarFromPlayerDistance * tooFarFromPlayerDistance;
 
+    //determine if ai should charge
+    public bool WorthCharging() => CloseDistanceConditional() && CanOffend;
+    
+
     public bool SpacingConditional() {
         //if i am currently spacing
         return false;
@@ -296,6 +300,13 @@ public class AIHandler : CharacterHandler {
     public BTStatus DefenseTask() { //Debug.Log("defend task");
         if(!(thinkState is DefenseState)) { //if im not already defending
             SetStateDriver(new DefenseState(this, animator, agent));
+        }
+        return BTStatus.RUNNING;
+    }
+
+    public BTStatus ChargingTask(){
+        if(!(thinkState is ChargeState)){
+            SetStateDriver(new ChargeState(this, animator, agent));
         }
         return BTStatus.RUNNING;
     }
