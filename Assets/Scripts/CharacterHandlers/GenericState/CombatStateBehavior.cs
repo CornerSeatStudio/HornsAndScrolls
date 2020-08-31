@@ -287,11 +287,8 @@ public class CounterState : CombatState {
 }
 
 public class DodgeState : CombatState {
-    Vector3 direction;
 
-    public DodgeState(CharacterHandler character, Animator animator, Vector3 direction) : base(character, animator) {
-        this.direction = direction;
-    }
+    public DodgeState(CharacterHandler character, Animator animator) : base(character, animator) {}
 
 
     public override IEnumerator OnStateEnter() {
