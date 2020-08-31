@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public class Dialogue : MonoBehaviour
 { 
+    private PlayerHandler player;
     private Queue<string> sentences;
     public Text dialogueText;
     public Text nameText;
@@ -11,6 +12,14 @@ public class Dialogue : MonoBehaviour
     void Start()
     {
         sentences = new Queue<string>();
+        player = FindObjectOfType<PlayerHandler>();
+    }
+
+    public void DialogueOnTrigger(Dialoguedictionary dialogue){
+        StartDialogue(dialogue);
+
+        //lock player out of movement
+        player.InDialogue = true;
     }
 
     public void StartDialogue (Dialoguedictionary dialogue){
@@ -31,6 +40,7 @@ public class Dialogue : MonoBehaviour
         dialogueText.text = sentence;
     }
     void EndDialogue(){
+        player.InDialogue = false;
         animator.SetBool("IsOpen",false);
     }
 }

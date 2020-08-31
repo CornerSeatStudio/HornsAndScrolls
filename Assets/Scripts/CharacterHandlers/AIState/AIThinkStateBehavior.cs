@@ -378,8 +378,6 @@ public class OffenseState : AIThinkState {
     IEnumerator offenseRoutine;
     IEnumerator subRoutine;
     IEnumerator facePlayerRoutine;
-    public bool charge {get; private set; } = false;
-    float mainSpeed;
     public OffenseState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {
         try { this.chosenAttack = character.MeleeAttacks["default"]; } catch { Debug.LogWarning("some cunt don't have default attack"); }
     }
@@ -388,10 +386,6 @@ public class OffenseState : AIThinkState {
         this.chosenAttack = chosenAttack;
     }
 
-    public OffenseState(AIHandler character, Animator animator, NavMeshAgent agent, bool charge) : base(character, animator, agent) {
-        this.charge = charge;
-        mainSpeed = agent.speed;
-    }
 
     public override IEnumerator OnStateEnter() {
         facePlayerRoutine = character.FacePlayer();
@@ -402,7 +396,6 @@ public class OffenseState : AIThinkState {
     }
 
     private IEnumerator Offense(MeleeMove chosenAttack) {
-        if(charge) agent.speed *= 3;
 
         subRoutine = character.ChasePlayer(chosenAttack.range);
         yield return character.StartCoroutine(subRoutine);
@@ -410,23 +403,17 @@ public class OffenseState : AIThinkState {
         //Debug.Log("AI attempting an attack...");
         character.SetStateDriver(new AttackState(character, animator, chosenAttack));
         
-        if(charge) {
-            agent.speed = mainSpeed;
-        } else {
-            //once attack is finished, cooldown a touch maybe
-            float timer = chosenAttack.endlag + chosenAttack.startup;
-            while(timer >= 0) {
-                if(character.genericState is StaggerState) { 
-                    Debug.Log("offense interupted for stagger"); 
-                    yield break; 
-                }
+        //once attack is finished, cooldown a touch maybe
+        float timer = chosenAttack.endlag + chosenAttack.startup;
+        while(timer >= 0) {
+            if(character.genericState is StaggerState) { 
+                Debug.Log("offense interupted for stagger"); 
+                yield break; 
+            }
             
             yield return new WaitForSeconds(.1f);
             timer -= .1f;
         }
-        }
-
-
         
 
     }
@@ -437,6 +424,27 @@ public class OffenseState : AIThinkState {
         if(offenseRoutine != null) character.StopCoroutine(offenseRoutine);
         agent.SetDestination(character.transform.position);
         yield break;
+    }
+
+}
+
+//special offense - charge
+public class ChargeState : OffenseState {
+    float chargeSpeedMult;
+    public ChargeState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {
+        chargeSpeedMult = 3f;
+    }
+
+    public override IEnumerator OnStateEnter(){
+        animator.SetTrigger(Animator.StringToHash("charge"));
+        agent.speed *= chargeSpeedMult;
+        yield return base.OnStateEnter();
+    }
+
+    public override IEnumerator OnStateExit(){
+        agent.speed /= chargeSpeedMult;
+        yield return base.OnStateExit();
+
     }
 
 }

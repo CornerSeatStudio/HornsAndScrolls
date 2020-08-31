@@ -35,6 +35,7 @@ public class CharacterHandler : MonoBehaviour {
     private LayerMask foliageMask;
     public bool CanAttack {get; set;} = false; //checks if weapon is in contact with target (via weapon script on weapon)
     public GameObject AttackReceiver {get; set; }
+    public TrailRenderer WeaponTrail {get; private set;}
     
 
     #region Callbacks
@@ -52,6 +53,9 @@ public class CharacterHandler : MonoBehaviour {
         foliageMask = LayerMask.GetMask("Foliage");
         StartCoroutine(GrassHandle()); 
         
+        //weapon trail
+        WeaponTrail = GetComponentInChildren<TrailRenderer>();
+        WeaponTrail.enabled = false;
 
     }
 

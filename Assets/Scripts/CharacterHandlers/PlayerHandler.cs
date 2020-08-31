@@ -10,6 +10,7 @@ public class PlayerHandler : CharacterHandler {
     private CharacterController controller;
     public bool ToggledWalk {get; private set; } = false;
     public float CurrMovementSpeed {get; set; }
+    public bool InDialogue {get; set; } = false;
 
 
     [Header("Player Movement Variables")]
@@ -50,12 +51,13 @@ public class PlayerHandler : CharacterHandler {
     protected override void Update() {
         base.Update(); 
 
-        //core move stuff
-        inputVector = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
-        inputVector = Camera.main.transform.TransformDirection(inputVector);
-        inputVector.y = 0f;
-
-        DetermineInputOutcome();
+        if(!InDialogue){
+            //core move stuff
+            inputVector = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
+            inputVector = Camera.main.transform.TransformDirection(inputVector);
+            inputVector.y = 0f;
+            DetermineInputOutcome();
+        }
     }
 
     void FixedUpdate() {
@@ -156,18 +158,19 @@ public class PlayerHandler : CharacterHandler {
                         SetStateDriver(new SheathingCombatState(this, animator, true, true));
                     }
                 }
-            } else if (!(genericState is DodgeState)) {
-                if(!(genericState is AttackState) && !(genericState is FollowUpState)) { 
-                    if(animator.GetBool(Animator.StringToHash("Crouching"))) {
-                        FaceKeyPress();
-                    } else {
-                        HandleCombatMovement(); //feet direction info
-                        FaceMouseDirection();
-                        HandleCombatInteractions(); 
+            } else if(!(genericState is AttackState) && !(genericState is FollowUpState)) { 
+                    if(!(genericState is DodgeState)){
+                        if(animator.GetBool(Animator.StringToHash("Crouching"))) {
+                            FaceKeyPress();
+                        } else {
+                            FaceMouseDirection();
+                            HandleCombatInteractions(); 
+                        }
                     }
+                    HandleCombatMovement(); //feet direction info - HAS TO HAPPEN IN DODGE
                 }
+            
             }
-        }
 
         HandleNormalInteractions();  
     }
@@ -244,17 +247,45 @@ public class PlayerHandler : CharacterHandler {
 
         if(genericState is DodgeState) { //if i am dodging already, keep dodging in the dodge direction
             //localDir = transform.InverseTransformDirection(dodgeDirection).normalized;
-            localDir = dodgeDirection;
+            animator.SetFloat(Animator.StringToHash("XMove"), dodgeDirection.x);
+            animator.SetFloat(Animator.StringToHash("ZMove"), dodgeDirection.z);
+
         } else { //if i am not dodging
             //if i have jumped, do the appropriate setup
-            if(Input.GetButtonDown("Jump") && (inputVector.x != 0 || inputVector.z != 0) && Stamina > 0) {
-                localDir = Camera.main.transform.TransformDirection(inputVector).normalized; //get dodge based off of INPUT instead (more responsive)
-                dodgeDirection = localDir; //save info for movement during dodge
-                SetStateDriver(new DodgeState(this, animator, dodgeDirection));                
+            if(Input.GetButtonDown("Jump") && (inputVector.x != 0 || inputVector.z != 0) && Stamina > 0) {                
+                //get the GLOBAL direction the player is facing
+                //from this, derive the four PLAYER DIRECTION RELATIVE dodge directions
+                Vector3[] possibleDodgeDirs = new Vector3[4];
+
+                possibleDodgeDirs[0] = transform.forward;
+                possibleDodgeDirs[1] = transform.right;
+                possibleDodgeDirs[2] = -transform.forward;
+                possibleDodgeDirs[3] = -transform.right;
+
+                //compare CAMERA RELATIVE input direction to the four, find the closest one
+                localDir = transform.InverseTransformDirection(inputVector).normalized;
+                
+                int maxDotIndex = 0;
+                float maxDot = Vector3.Dot(localDir, possibleDodgeDirs[0]);
+                for(int i = 1; i < 4; ++i){
+                    float tempDot = Vector3.Dot(localDir, possibleDodgeDirs[i]);
+                    if(tempDot > maxDot) {
+                        maxDot = tempDot;
+                        maxDotIndex = i;
+                    }
+                }
+                //go that way
+
+
+                Debug.Log(possibleDodgeDirs[maxDotIndex]);
+                dodgeDirection = possibleDodgeDirs[maxDotIndex]; //save info for movement during dodge
+                SetStateDriver(new DodgeState(this, animator));                
                 
                 //set dodge dirs
-                animator.SetFloat(Animator.StringToHash("XMove"), localDir.x);
-                animator.SetFloat(Animator.StringToHash("ZMove"), localDir.z);
+                animator.SetFloat(Animator.StringToHash("XMove"), dodgeDirection.x);
+                animator.SetFloat(Animator.StringToHash("ZMove"), dodgeDirection.z);
+
+
             } else {
                 //get local dir from currVelocity instead
                 localDir = transform.InverseTransformDirection(currVelocity).normalized;

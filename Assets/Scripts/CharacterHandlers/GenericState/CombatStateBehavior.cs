@@ -170,15 +170,15 @@ public class AttackState : CombatState {
     private IEnumerator Attack(){
         //begin animation
         animator.applyRootMotion = true; //cleaner maybe
-        //yield return new WaitForSeconds(.5f);
-
         animator.SetTrigger(Animator.StringToHash(chosenMove.name));
-
+        character.WeaponTrail.enabled = true;
         //sound
-        try { Array.Find(character.audioData, AudioData => AudioData.name == "woosh").Play(character.AudioSource); } catch {} //temp todo
         
         //time it takes before weapon trigger is allowed to do damage
         yield return new WaitForSeconds(chosenMove.startup);
+
+        try { Array.Find(character.audioData, AudioData => AudioData.name == "woosh").Play(character.AudioSource); } catch {} //temp todo
+
         //timer to finish attack if no contact
         timerRoutine = AttackTime();
         character.StartCoroutine(timerRoutine);
@@ -191,7 +191,8 @@ public class AttackState : CombatState {
 
     }
     public override IEnumerator OnStateExit() {
-      
+        character.WeaponTrail.enabled = false;
+
         if(timerRoutine != null) character.StopCoroutine(timerRoutine);
         if(currAttackCoroutine != null) character.StopCoroutine(currAttackCoroutine); 
         yield break;
@@ -287,11 +288,8 @@ public class CounterState : CombatState {
 }
 
 public class DodgeState : CombatState {
-    Vector3 direction;
 
-    public DodgeState(CharacterHandler character, Animator animator, Vector3 direction) : base(character, animator) {
-        this.direction = direction;
-    }
+    public DodgeState(CharacterHandler character, Animator animator) : base(character, animator) {}
 
 
     public override IEnumerator OnStateEnter() {
