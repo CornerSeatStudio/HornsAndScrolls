@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7807055945745899952}
   - component: {fileID: 5833777215871744521}
   - component: {fileID: 3988180773981568690}
-  - component: {fileID: 6977709770387615024}
+  - component: {fileID: 7297423010545236949}
   m_Layer: 11
   m_Name: Camera
   m_TagString: MainCamera
@@ -128,7 +128,7 @@ MonoBehaviour:
   freeLookSensitivity: 3
   zoomSensitivity: 10
   fastZoomSensitivity: 50
---- !u!114 &6977709770387615024
+--- !u!114 &7297423010545236949
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -140,13 +140,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 948f4100a11a5c24981795d21301da5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  volumeTrigger: {fileID: 0}
+  volumeTrigger: {fileID: 3728582126051497633}
   volumeLayer:
     serializedVersion: 2
     m_Bits: 2048
   stopNaNPropagation: 1
   finalBlitToCameraTarget: 0
-  antialiasingMode: 1
+  antialiasingMode: 0
   temporalAntialiasing:
     jitterSpread: 0.75
     sharpness: 0.25
