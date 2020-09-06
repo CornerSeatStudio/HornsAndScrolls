@@ -23,6 +23,9 @@ public class InventoryObject : ScriptableObject
         } else {
             slotRef.IncrementItemCount();
         }
+
+        //update UI
+
     }
     public void AddItem(ItemObject item, int quantity){
         InventorySlot slotRef = FindInInventory(item);
@@ -41,29 +44,35 @@ public class InventoryObject : ScriptableObject
 
 }
 
-[System.Serializable] public class InventorySlot {
+[System.Serializable] public class InventorySlot { 
     [SerializeField] public ItemObject item;
-    [SerializeField] public int quanity;
+    [SerializeField] public int quantity;
 
     public InventorySlot(ItemObject item, int quantity) {
         this.item = item;
-        this.quanity = quantity;
+        this.quantity = quantity;
+
+        //update inventory ui
     }
 
     //if picks up another one of those motherfucks
     public void IncrementItemCount(){
-        quanity++;
+        quantity++;
+
+        //update inventory ui
     }
 
-    public void IncreaseItemCount(int quant){
-        quanity += quant;
+    public void IncreaseItemCount(int quantity) {
+        this.quantity += quantity;
+
+        //update inventory ui
     }
 
     //use item, reduce quanity, returns true if quantity has hit 0
     public bool UsedItem(CharacterHandler character){
         item.OnUse(character);
-        quanity--;
+        quantity--;
 
-        return quanity == 0;
+        return quantity == 0;
     }
 }

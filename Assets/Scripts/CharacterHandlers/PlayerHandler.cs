@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
+using TMPro;
 
 public class PlayerHandler : CharacterHandler {
 
@@ -23,6 +25,13 @@ public class PlayerHandler : CharacterHandler {
     public Transform sheatheTransform;
     public Transform unsheatheTransform;
 
+    [Header("Inventory UI stuff")]
+    public TextMeshProUGUI healthPotCount;
+    public TextMeshProUGUI staminaPotCount;
+
+    [Header("Stealth Stuff")]
+    public GameObject stealthRing;
+
     public delegate void PickupHandler();
     public event PickupHandler OnInteract;
     public event Action<float> OnStanceChangeTimer; 
@@ -41,15 +50,26 @@ public class PlayerHandler : CharacterHandler {
 
         if(gameObject.layer != LayerMask.NameToLayer("Player")) Debug.LogWarning ("layer should be set to Player, not " + LayerMask.LayerToName(gameObject.layer));
 
-      //  preVelocity = 0f;
+
+        //load ui stuff
+
+        //stealth ring stuff
+        stealthRing.SetActive(false);
         
     }
 
     
-
+    protected void OnInventoryUpdate(){
+        InventorySlot healthSlot = inventory.FindInInventory("HealthPot");
+        InventorySlot staminaSlot = inventory.FindInInventory("StaminaPot");
+        healthPotCount.SetText(healthSlot == null ? "0" : healthSlot.quantity.ToString());
+        staminaPotCount.SetText(staminaSlot == null ? "0" : staminaSlot.quantity.ToString());
+    }
 
     protected override void Update() {
         base.Update(); 
+
+        OnInventoryUpdate(); //idk how performant
 
         if(!InDialogue){
             //core move stuff
@@ -387,4 +407,5 @@ public class PlayerHandler : CharacterHandler {
 
 
     #endregion
+
 }

@@ -86,7 +86,7 @@ public class InvestigationState : AIThinkState {
     public float CurrInvestigationTimer {get; private set;}
     private Vector3 lastSeenPlayerLocation;
     private IEnumerator timerCoroutine, investigationCoroutine, lookCoroutine;
-    private bool isDecreasingDetection = false;
+    private bool isDecreasingDetection, ringUp = false;
 
     public InvestigationState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
 
@@ -96,11 +96,24 @@ public class InvestigationState : AIThinkState {
         timerCoroutine = null; //reset timer as appropriate
         CurrInvestigationTimer = 0.1f; 
 
+        character.StartCoroutine(DisplayAndUpdateRing());
+        //display ring around player here
         investigationCoroutine = StareAndFacePlayer(); //always begins here
         yield return character.StartCoroutine(investigationCoroutine);
     }
 
-    
+    public IEnumerator DisplayAndUpdateRing(){
+        character.TargetPlayer.stealthRing.SetActive(true);
+        ringUp = true;
+        while(ringUp){
+            //update direction
+            // Vector3 dir = (character.transform.position - character.TargetPlayer.transform.position).normalized;
+            character.TargetPlayer.stealthRing.transform.LookAt(character.transform.position, Vector3.up);
+            yield return new WaitForEndOfFrame();
+        }
+
+        character.TargetPlayer.stealthRing.SetActive(false);
+    }
 
     //stare at player, stationary while IN LOS
     private IEnumerator StareAndFacePlayer() {
@@ -243,6 +256,9 @@ public class InvestigationState : AIThinkState {
     }
 
     public override IEnumerator OnStateExit() { 
+        //stop displaying ring
+        ringUp = false;
+
         //disable to exit possibilites (being to aggro and to patrol)
         if(lookCoroutine != null) character.StopCoroutine(lookCoroutine);
         if(timerCoroutine != null) character.StopCoroutine(timerCoroutine); 
