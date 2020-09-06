@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-
+using UnityEngine.Rendering.PostProcessing;
 public class CameraHandler : MonoBehaviour {
 
     private Transform target; //the player
@@ -35,6 +35,12 @@ public class CameraHandler : MonoBehaviour {
     [Range(0.01f, 3)] public float rotationSmoothness = .2f;
     public float camRotateSpeed = 500f;
 
+    [Header("DOF settings")]
+    public Vector2 focalDistanceRange;
+    public Vector2 apetureRange;
+    public Vector2 focalLengthRange;
+    
+
 
     private Camera cam; 
     private float scrollInput;
@@ -43,7 +49,8 @@ public class CameraHandler : MonoBehaviour {
     private float distVel, fovVel, angVel, inputVel;
     private float angle;
     private float tempAddAng; //for the transition between one angle to the next per x frames
-
+    public PostProcessVolume postProcessVolume;
+    private DepthOfField depthOfField;
 
     void Start() {
         try {
@@ -52,6 +59,11 @@ public class CameraHandler : MonoBehaviour {
             Debug.LogWarning("WHERE THE PLAYER AT FOOL");
         }
         cam = this.GetComponent<Camera>();
+
+        if (!postProcessVolume.sharedProfile.TryGetSettings<DepthOfField>(out depthOfField)) 
+            Debug.LogWarning("DOF MISSING ON CAM HANDLER");
+                
+             
     }
 
     //general rule: read data in update, handle data in fixed update
@@ -78,6 +90,13 @@ public class CameraHandler : MonoBehaviour {
         //angle change based on q/e
         angle = Mathf.SmoothDampAngle(angle, tempAddAng, ref angVel, rotationSmoothness);
         transform.rotation = Quaternion.Euler(camAng, angle, 0);
+
+        //ppv dof
+        if (postProcessVolume.sharedProfile.TryGetSettings<DepthOfField>(out depthOfField)) {
+            depthOfField.focusDistance.value = Mathf.Lerp(focalDistanceRange.x, focalDistanceRange.y, distanceDependency);
+            depthOfField.aperture.value = Mathf.Lerp(apetureRange.x, apetureRange.y, distanceDependency);
+            depthOfField.focalLength.value = Mathf.Lerp(focalLengthRange.x, focalLengthRange.y, distanceDependency);
+        }
     }
 
     private Vector3 DirectionGivenAngle(float angle){

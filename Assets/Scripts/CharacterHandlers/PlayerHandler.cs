@@ -65,7 +65,6 @@ public class PlayerHandler : CharacterHandler {
         healthPotCount.SetText(healthSlot == null ? "0" : healthSlot.quantity.ToString());
         staminaPotCount.SetText(staminaSlot == null ? "0" : staminaSlot.quantity.ToString());
     }
-
     protected override void Update() {
         base.Update(); 
 
