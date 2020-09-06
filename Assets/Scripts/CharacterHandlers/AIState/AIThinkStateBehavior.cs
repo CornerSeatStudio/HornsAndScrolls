@@ -103,16 +103,16 @@ public class InvestigationState : AIThinkState {
     }
 
     public IEnumerator DisplayAndUpdateRing(){
-        character.TargetPlayer.stealthRing.SetActive(true);
+        character.TargetPlayer.StealthRing.SetActive(true);
         ringUp = true;
         while(ringUp){
             //update direction
             // Vector3 dir = (character.transform.position - character.TargetPlayer.transform.position).normalized;
-            character.TargetPlayer.stealthRing.transform.LookAt(character.transform.position, Vector3.up);
+            character.TargetPlayer.StealthRing.transform.LookAt(character.transform.position, Vector3.up);
             yield return new WaitForEndOfFrame();
         }
 
-        character.TargetPlayer.stealthRing.SetActive(false);
+        character.TargetPlayer.StealthRing.SetActive(false);
     }
 
     //stare at player, stationary while IN LOS

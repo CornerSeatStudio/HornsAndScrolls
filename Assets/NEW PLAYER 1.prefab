@@ -5454,7 +5454,7 @@ GameObject:
   - component: {fileID: 4880106864849564971}
   m_Layer: 10
   m_Name: ringGO
-  m_TagString: Untagged
+  m_TagString: StealthRing
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6053,7 +6053,6 @@ MonoBehaviour:
   unsheatheTransform: {fileID: 5853976749670817601}
   healthPotCount: {fileID: 0}
   staminaPotCount: {fileID: 0}
-  stealthRing: {fileID: 0}
 --- !u!82 &8351403668023917730
 AudioSource:
   m_ObjectHideFlags: 0

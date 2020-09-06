@@ -29,9 +29,7 @@ public class PlayerHandler : CharacterHandler {
     public TextMeshProUGUI healthPotCount;
     public TextMeshProUGUI staminaPotCount;
 
-    [Header("Stealth Stuff")]
-    public GameObject stealthRing;
-
+    public GameObject StealthRing {get; private set; }
     public delegate void PickupHandler();
     public event PickupHandler OnInteract;
     public event Action<float> OnStanceChangeTimer; 
@@ -54,7 +52,8 @@ public class PlayerHandler : CharacterHandler {
         //load ui stuff
 
         //stealth ring stuff
-        stealthRing.SetActive(false);
+        StealthRing = GameObject.FindGameObjectWithTag("StealthRing");
+        StealthRing.SetActive(false);
         
     }
 
@@ -68,7 +67,9 @@ public class PlayerHandler : CharacterHandler {
     protected override void Update() {
         base.Update(); 
 
-        OnInventoryUpdate(); //idk how performant
+        try{ 
+            OnInventoryUpdate(); //idk how performant
+        } catch {} //temporarily ignore if no hud
 
         if(!InDialogue){
             //core move stuff

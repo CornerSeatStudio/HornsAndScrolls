@@ -49,7 +49,7 @@ public class CameraHandler : MonoBehaviour {
     private float distVel, fovVel, angVel, inputVel;
     private float angle;
     private float tempAddAng; //for the transition between one angle to the next per x frames
-    public PostProcessVolume postProcessVolume;
+    private PostProcessVolume postProcessVolume;
     private DepthOfField depthOfField;
 
     void Start() {
@@ -59,6 +59,8 @@ public class CameraHandler : MonoBehaviour {
             Debug.LogWarning("WHERE THE PLAYER AT FOOL");
         }
         cam = this.GetComponent<Camera>();
+
+        postProcessVolume = GameObject.FindGameObjectWithTag("DepthOfField").GetComponent<PostProcessVolume>();
 
         if (!postProcessVolume.sharedProfile.TryGetSettings<DepthOfField>(out depthOfField)) 
             Debug.LogWarning("DOF MISSING ON CAM HANDLER");
