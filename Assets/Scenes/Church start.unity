@@ -524,7 +524,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 125131501}
         m_MethodName: DisplayNextSentence
         m_Mode: 1
         m_Arguments:
@@ -1631,6 +1631,36 @@ PrefabInstance:
       propertyPath: m_Name
       value: Camera
       objectReference: {fileID: 0}
+    - target: {fileID: 5833777215871744521, guid: b374e7b01b2f4b843902214f688e6152,
+        type: 3}
+      propertyPath: focalDistanceRange.x
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5833777215871744521, guid: b374e7b01b2f4b843902214f688e6152,
+        type: 3}
+      propertyPath: focalDistanceRange.y
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 5833777215871744521, guid: b374e7b01b2f4b843902214f688e6152,
+        type: 3}
+      propertyPath: apetureRange.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5833777215871744521, guid: b374e7b01b2f4b843902214f688e6152,
+        type: 3}
+      propertyPath: apetureRange.y
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5833777215871744521, guid: b374e7b01b2f4b843902214f688e6152,
+        type: 3}
+      propertyPath: focalLengthRange.x
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5833777215871744521, guid: b374e7b01b2f4b843902214f688e6152,
+        type: 3}
+      propertyPath: focalLengthRange.y
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b374e7b01b2f4b843902214f688e6152, type: 3}
 --- !u!1 &1593935653 stripped
@@ -1812,7 +1842,7 @@ PrefabInstance:
         type: 3}
       propertyPath: onObjectiveCompletion.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
       value: 
-      objectReference: {fileID: 11400000, guid: 9653a85834ba619459be932484b802d3,
+      objectReference: {fileID: 11400000, guid: 4a5092084546da44b9ab35f5143750de,
         type: 2}
     - target: {fileID: 6911336143338049682, guid: 2eeef80d784a9a04cbcadaa27da969ee,
         type: 3}
