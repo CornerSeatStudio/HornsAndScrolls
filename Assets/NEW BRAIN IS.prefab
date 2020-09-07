@@ -840,7 +840,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: -2296414042825767884, guid: bfb9aa3d9ea6d104b8ac2594b8ac6c23, type: 3}
+  m_Mesh: {fileID: -2296414042825767884, guid: 05addc33bedc8764283bd5f46a65bd14, type: 3}
   m_Bones:
   - {fileID: 9075442563368457419}
   - {fileID: 9075442561453533538}
@@ -2413,6 +2413,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_TagString
       value: Weapon
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 95867475bc70dfd43842fae2448f36cb,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 95867475bc70dfd43842fae2448f36cb, type: 3}

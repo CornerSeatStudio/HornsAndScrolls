@@ -2127,7 +2127,7 @@ PrefabInstance:
     - target: {fileID: 4880106864849564971, guid: f37fb0cfe65c1e747906c765dc94a945,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8872939741732885664, guid: f37fb0cfe65c1e747906c765dc94a945,
         type: 3}
@@ -2276,12 +2276,12 @@ PrefabInstance:
     - target: {fileID: 5833777215871744521, guid: b374e7b01b2f4b843902214f688e6152,
         type: 3}
       propertyPath: scrollZoomSmoothing
-      value: 1
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 5833777215871744521, guid: b374e7b01b2f4b843902214f688e6152,
         type: 3}
       propertyPath: scrollMagnitude
-      value: 500
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5833777215871744521, guid: b374e7b01b2f4b843902214f688e6152,
         type: 3}
@@ -2371,12 +2371,17 @@ PrefabInstance:
     - target: {fileID: 5833777215871744521, guid: b374e7b01b2f4b843902214f688e6152,
         type: 3}
       propertyPath: focalDistanceRange.x
-      value: 1
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 5833777215871744521, guid: b374e7b01b2f4b843902214f688e6152,
         type: 3}
       propertyPath: focalDistanceRange.y
       value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 5833777215871744521, guid: b374e7b01b2f4b843902214f688e6152,
+        type: 3}
+      propertyPath: inputSmoothing
+      value: 0.1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b374e7b01b2f4b843902214f688e6152, type: 3}
@@ -4979,7 +4984,7 @@ PrefabInstance:
     - target: {fileID: 9075442561346592639, guid: be058e469e10e854e87801b004f8319b,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9075442561346592639, guid: be058e469e10e854e87801b004f8319b,
         type: 3}

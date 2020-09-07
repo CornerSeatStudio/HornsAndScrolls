@@ -4,14 +4,13 @@ public class CameraHandler : MonoBehaviour {
 
     private Transform target; //the player
     [Header("Core Smoothness (higher is longer time")]
-    [Range(0.01f, 1)] public float scrollInputSmoothness = 1f;
     [Range(0.01f, 3)] public float cameraSnapSmoothing = 2.5f; //camera snapping to player
 
+    [Range(0.01f, 3)] public float inputSmoothing = .01f;
 
     [Header("Scroll wheel stuff")]
-    [Range(0.01f, 3)] public float scrollZoomSmoothing = 4f;
+   // [Range(0.01f, 3)] public float scrollZoomSmoothing = 4f;
     public float scrollMagnitude = 5f;
-
 
     [Header("Default values")]
     public float camDist = 40f;
@@ -75,9 +74,6 @@ public class CameraHandler : MonoBehaviour {
         //move camera relative to player
         transform.position = Vector3.SmoothDamp(transform.position, target.position + OffsetAngleCalc(camDisp) + offset, ref moveVel, cameraSnapSmoothing * Time.fixedDeltaTime);
 
-        //camera zoom
-        camDist = Mathf.Clamp(Mathf.SmoothDamp(camDist, camDist + scrollInput * scrollMagnitude, ref distVel, scrollZoomSmoothing), distRange.x, distRange.y);
-
         float distanceDependency = Mathf.InverseLerp(distRange.x, distRange.y, camDist);
 
         //fov modification - should depend on cam dist
@@ -101,24 +97,18 @@ public class CameraHandler : MonoBehaviour {
         }
     }
 
-    private Vector3 DirectionGivenAngle(float angle){
-        return new Vector3(-camDist * Mathf.Sin(angle * Mathf.Deg2Rad), camDist, -camDist * Mathf.Cos(angle*Mathf.Deg2Rad));
-    }
-
-    private Vector3 OffsetAngleCalc(float offset){
-        return new Vector3(offset * Mathf.Sin(angle * Mathf.Deg2Rad), 0, offset * Mathf.Cos(angle*Mathf.Deg2Rad));
-    }
+    
     void Update() {
-       // Debug.Log(temp);
 
-        //scroll input for zoom
-        // float preScrollInput = scrollInput;
-        // float postScrollInput = Input.GetAxisRaw("Mouse ScrollWheel") != 0 ? RawCast(Input.GetAxisRaw("Mouse ScrollWheel")) : 0;
-        // postScrollInput *= scrollMagnitude;
-        // scrollInput = Mathf.SmoothDamp(preScrollInput, postScrollInput, ref inputVel, 3);
-        float tempScrollInput = Mathf.SmoothDamp(scrollInput, (Input.GetAxisRaw("Mouse ScrollWheel") != 0 ? RawCast(Input.GetAxisRaw("Mouse ScrollWheel")) : 0), ref inputVel, scrollInputSmoothness);
-        scrollInput = Mathf.Abs(tempScrollInput) < 0.03f ? 0 : tempScrollInput;
-        //Debug.Log(scrollInput);
+        float tsi = Input.GetAxis("Mouse ScrollWheel");
+        tsi = Mathf.Abs(tsi) > .03f ? tsi < 0 ? 1 : -1 : 0;
+
+        //lerp tsi for smoother shit
+        scrollInput = Mathf.SmoothDamp(scrollInput + tsi, 0, ref inputVel, inputSmoothing);
+
+
+        //camDist = Mathf.Clamp(Mathf.SmoothDamp(camDist, camDist + scrollInput * scrollMagnitude, ref distVel, scrollZoomSmoothing), distRange.x, distRange.y);
+        camDist = Mathf.Clamp(camDist + scrollInput * scrollMagnitude, distRange.x, distRange.y);
 
 
         //q/e input for angle
@@ -130,8 +120,12 @@ public class CameraHandler : MonoBehaviour {
         offset = DirectionGivenAngle(angle);
     }
 
-    private float RawCast(float currVal){
-        return currVal < 0 ? 1 : -1;
+    private Vector3 DirectionGivenAngle(float angle){
+        return new Vector3(-camDist * Mathf.Sin(angle * Mathf.Deg2Rad), camDist, -camDist * Mathf.Cos(angle*Mathf.Deg2Rad));
+    }
+
+    private Vector3 OffsetAngleCalc(float offset){
+        return new Vector3(offset * Mathf.Sin(angle * Mathf.Deg2Rad), 0, offset * Mathf.Cos(angle*Mathf.Deg2Rad));
     }
 
 }
