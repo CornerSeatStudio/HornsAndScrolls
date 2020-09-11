@@ -5,11 +5,11 @@ using UnityEngine;
 [System.Serializable]
 public class SaveData 
 {
-    public int currentLevelIndex;
+    public int highestLevelIndex;
 
-    public SaveData(SaveManager player){
-        currentLevelIndex = SaveManager.CurrentLevelIndex;
-        Debug.Log($"saved with index {currentLevelIndex}");
+    public SaveData(SaveManager player){ //upon construction, store the current level index
+        highestLevelIndex = SaveManager.HighestLevelIndex;
+        Debug.Log($"saved with index {highestLevelIndex}");
     }
 
 

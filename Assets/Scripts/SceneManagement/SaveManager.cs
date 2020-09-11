@@ -5,83 +5,86 @@ using UnityEngine.SceneManagement;
 
 public class SaveManager : MonoBehaviour
 {
-
+    #region callbacks
     public void Update(){
         //debug
         // if(Input.GetKeyDown(KeyCode.P)) {
         //     Debug.Log(CurrentLevelIndex);
-        // }
-
-     
+        // 
     }
 
     public void Start(){
-        //aka if on main menu
+        //aka if on main menu, load the current save.
         if(SceneManager.GetActiveScene().buildIndex == 0) {
             OnLoad();
         }
     }
+    #endregion
 
     //saving stuff
-    public static int CurrentLevelIndex {get; private set;}
+    public static int HighestLevelIndex {get; private set;} //STATIC LEVEL INDEX - aka the current level
 
-    public void OnLoad(){
-        CurrentLevelIndex = Saving.Load().currentLevelIndex;
 
+    #region core
+    //load the save - only occurs on game start up
+    public void OnLoad(){ 
+        HighestLevelIndex = Saving.Load().highestLevelIndex;
     }
 
+    //save the current level index - occurs everytime a level is completed
     public void OnSave() {
         Saving.Save(this);
     }
 
+    //reset current level index - irreversable
     public void ResetData() {
-        CurrentLevelIndex = 0;
-    }
-
-    public void OnLevelCompletion(){
-       // Debug.Log("saved?");
-
-        //update completed scene value
-        CurrentLevelIndex = Mathf.Max(CurrentLevelIndex, SceneManager.GetActiveScene().buildIndex + 1);
-
-       //save it
+        HighestLevelIndex = 0;
         Saving.Save(this);
-
-        //RETURN TO CAMP CAMP
-        ChooseAndLoadLevel(2);
-          
     }
 
-    //load most recent scene
-    public void OnContinue(){
-        if(CurrentLevelIndex == 0) OnCleanStart();
-        SceneManager.LoadScene(CurrentLevelIndex);
+    #endregion
+
+
+    #region scene transitions
+    //load most recent scene from main menu (include the case for new game)
+    public void OnGameStart(){
+        //if starting at 0, (aka a new game)
+        if(HighestLevelIndex == 0) {
+            OnCleanStart();
+        } else {
+            //load last saved scene
+            SceneManager.LoadScene(HighestLevelIndex);
+        }
     }
 
-    public void ChooseAndLoadLevel(int buildIndex){
-        SceneManager.LoadScene(buildIndex);
+    //everytime a normal level is completed, return to camp
+    public void OnStandardLevelCompletion(){
+        //update completed scene value with HIGHEST SCENE INDEX
+        HighestLevelIndex = Mathf.Max(HighestLevelIndex, SceneManager.GetActiveScene().buildIndex + 1);
+        Saving.Save(this);
+        ChooseAndLoadLevel(2); //RETURN TO CAMP CAMP (which is currently 2 (subject to change))
     }
 
-    //start from the beginning (without reseting data)
-    public void OnCleanStart(){
-        CurrentLevelIndex = 1;
-        IncrementScene();
+    //everytime camp is left, go to level selection
+    public void OnLevelSelectLoad(){
+        ChooseAndLoadLevel(3);
     }
 
-    //goes to next scene
-    private void IncrementScene(){
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-    }
+    //for manual selection (aka level selection) (mosly use this)
+    public void ChooseAndLoadLevel(int buildIndex) => SceneManager.LoadScene(buildIndex);
 
-    private void DecrementScene(){
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
+    //start from the beginning (without reseting data) //assuming 1 is church level
+    public void OnCleanStart() => SceneManager.LoadScene(1); 
+    #endregion
 
-    }
+    #region other
+    public void Quit() => Application.Quit();
 
-    public void Quit(){
-        Application.Quit();
-    }
-    //go to specific scene
+    //goes to next/prev scene(used sparingly, most will be manual)
+    // private void IncrementScene() => SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+    // private void DecrementScene() => SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
+
+    #endregion
 
      
 }
