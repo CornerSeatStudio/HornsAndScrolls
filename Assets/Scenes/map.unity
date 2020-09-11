@@ -2340,7 +2340,7 @@ PrefabInstance:
     - target: {fileID: 3988180773981568690, guid: b374e7b01b2f4b843902214f688e6152,
         type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5226415513237691861, guid: b374e7b01b2f4b843902214f688e6152,
         type: 3}
@@ -2381,8 +2381,8 @@ MonoBehaviour:
   camMoveMagnitude: 100
   camMoveSmoothness: 0.3
   mDelta: 5
-  xBounds: {x: -200, y: 440}
-  zBounds: {x: 190, y: 180}
+  xBounds: {x: -230, y: 150}
+  zBounds: {x: 130, y: 110}
 --- !u!1001 &1213538873
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2771,7 +2771,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1359605638}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -2785,7 +2785,7 @@ Transform:
   - {fileID: 543450652889694901}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &1360127456
 GameObject:
   m_ObjectHideFlags: 0
