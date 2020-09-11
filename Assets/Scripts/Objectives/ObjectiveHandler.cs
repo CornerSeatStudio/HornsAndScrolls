@@ -36,7 +36,7 @@ public class ObjectiveHandler : MonoBehaviour
         yield return new WaitForSeconds(3f);
 
         //save, then load the next scene
-        saveManager.OnLevelCompletion();
+        saveManager.OnStandardLevelCompletion();
     }
 
     
