@@ -184,7 +184,7 @@ public class PlayerHandler : CharacterHandler {
                             FaceKeyPress();
                         } else {
                             FaceMouseDirection();
-                            HandleCombatInteractions(); 
+                            if(!(genericState is SheathingCombatState)) HandleCombatInteractions(); 
                         }
                     }
                     HandleCombatMovement(); //feet direction info - HAS TO HAPPEN IN DODGE
