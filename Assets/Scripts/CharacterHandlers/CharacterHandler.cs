@@ -6,54 +6,59 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 
+
+//every HUMANOID CHARACTER uses this as the super class
+//contains core information on character stats, weapons, sounds, debug info, foliage handling etc
 public class CharacterHandler : MonoBehaviour {
 
     [Header("Core Components/SOs")]
-    public CharacterData characterdata;
+    public CharacterData characterdata; //contains critical character information (health, stamina, etc)
     public WeaponData weapon; 
-    public AudioData[] audioData;
-    public Collider weaponHitbox;
-    public InventoryObject inventory;
+    public AudioData[] audioData; //contains a list of ALL sounds a character would use. whenever a sound is needed, it is linear searched for(lmao) and then shoved into an audio source 
+    public Collider weaponHitbox; //specifically for hit detection
+    public InventoryObject inventory; //custom thing
 
-    [Header("Debug Members")]
+    [Header("Debug Members")] //only for debugging via shitty homemade UI that can be enabled/disabled in this characterhandler object
     public Image heathbar;
     public Image staminabar;
     public TextMeshProUGUI debugState; 
     
-    [Header ("Foliage Handling")]
+    [Header ("Foliage Handling")] //specifically for shader
     public Material[] materials;
 
 
     //private stuff
-    protected Animator animator;
-    public AudioSource AudioSource {get; private set;}
-    public Dictionary<string, MeleeMove> MeleeAttacks {get; private set;} 
-    public MeleeMove MeleeBlock {get; private set; }
-    public float Health {get; private set; }
+    protected Animator animator; //deals with all character animation
+    public AudioSource AudioSource {get; private set;} //where the sound comes from
+    public Dictionary<string, MeleeMove> MeleeAttacks {get; private set;} //easier to search later on
+    public MeleeMove MeleeBlock {get; private set; } //unique move
+    public float Health {get; private set; } 
     public float Stamina {get; private set; }
-    public GenericState genericState {get; protected set;}
-    private LayerMask foliageMask;
-    public bool CanAttack {get; set;} = false; //checks if weapon is in contact with target (via weapon script on weapon)
-    public GameObject AttackReceiver {get; set; }
-    public TrailRenderer WeaponTrail {get; private set;}
+    public GenericState genericState {get; protected set;} //very important -> look in GenericState folder
+    private LayerMask foliageMask; //to detect if collidnig with folliage
+    public bool CanAttack {get; set;} = false; //checks if weapon is in contact with target (via weapon script on weapon) - more on this later i think
+    public GameObject AttackReceiver {get; set; } //stores information whenever a weapon collider is in something i think
+    public TrailRenderer WeaponTrail {get; private set;} //for weapon effects
     
 
     #region Callbacks
     protected virtual void Start() {
         animator = this.GetComponent<Animator>();        
         AudioSource = this.GetComponent<AudioSource>();
+
+        //grab shit from characterdata
         Health = characterdata.maxHealth;
         Stamina = characterdata.maxStamina;
 
         
         DisableRagdoll(); //NECCESARY to a. disable ragdoll and b. not fuck up attack script
-        PopulateMeleeMoves();
+        PopulateMeleeMoves(); 
 
         //foliage stuff
         foliageMask = LayerMask.GetMask("Foliage");
         StartCoroutine(GrassHandle()); 
         
-        //weapon trail
+        //weapon trail, only enable when neccesary
         WeaponTrail = GetComponentInChildren<TrailRenderer>();
         WeaponTrail.enabled = false;
 
@@ -85,7 +90,7 @@ public class CharacterHandler : MonoBehaviour {
         }
     }
 
-    //organize ALL melee moves moves in dictionary
+    //organize ALL melee moves moves in dictionary (for ease of access)
     private void PopulateMeleeMoves() {
         //for attack
         MeleeAttacks = new Dictionary<string, MeleeMove>();
@@ -101,22 +106,24 @@ public class CharacterHandler : MonoBehaviour {
     #region Combat Core
 
     //upon contact with le weapon, this handles the appropriate response (such as tackign damage, stamina drain, counters etc)
+    //note: despair is measured via length if if statements
     public virtual void AttackRequest(float damage){
-        CharacterHandler receiver = AttackReceiver.GetComponent<CharacterHandler>();
+        CharacterHandler receiver = AttackReceiver.GetComponent<CharacterHandler>(); //first, get the appropriate character handler from the attackReceiver (to pass data)
+        //note: Attackreceiver is loaded in the Weapon.cs script (via collision trigger)
         
-        string result = "null";//for debug
+        string result = "null";// ONLY for debug
 
-        // try {
-        //     if ((this as AIHandler).GlobalState == GlobalState.DEAD) {
-        //         Debug.Log("hes already dead don't bother");
-        //         return;
-        //     }
-        // } catch {}
+        // thought process:
+        //as of this moment, I have information on a. myself and b. the character receiving my attack
+        //this information includes:
+            //the type of attack either of us MAY be doing
+            //the current state we're in (aka attacking, blocking, dodging, etc)
+        //by comparing the two, i can choose an outcome
 
         
 
         if(receiver.genericState is MoveState) { //target has no sword drawn and get hit, (todo - do a different stagger)
-            DealDamageAndCheckDeathDataManagement(damage, false, receiver); 
+            DealDamageAndCheckDeathDataManagement(damage, false, receiver);  //go to method to get info on this
             result = "cunt dont have sword out ";
         }
 
@@ -181,49 +188,47 @@ public class CharacterHandler : MonoBehaviour {
 
         }
 
-
+        //for debugging only - comment this out in actual run
         Debug.Log("REQUESTER: " + this.genericState.ToString() 
                 + ", REACTER: " + receiver.genericState.ToString()
                 + ", RESULT: " + result);
 
-        //clear out fields
+        //clear out fields 
         CanAttack = false;
         AttackReceiver = null;
 
     }
 
 
-    //upon taking damage
-    public void GainHealth(float healthGain) => Health = Mathf.Min(characterdata.maxHealth, Health + healthGain);
-        
+    public void GainHealth(float healthGain) => Health = Mathf.Min(characterdata.maxHealth, Health + healthGain); //for potions
+
+    
+    //i forgot why i did this, but something to do with having to do something after death
     protected void DealDamageAndCheckDeathDataManagement(float damage, bool isStaggerable, CharacterHandler receiver){
         if(receiver.TakeDamageAndCheckDeath(damage, isStaggerable, this)) {
             Debug.Log("death management goes here");
         }
     }
 
+
     protected virtual bool TakeDamageAndCheckDeath(float damage, bool isStaggerable, CharacterHandler attacker){ 
+        //lost health
         Health -= damage;
         heathbar.fillAmount = Health / characterdata.maxHealth;
 
-        Array.Find(attacker.audioData, AudioData => AudioData.name == "flesh").Play(attacker.AudioSource);
+        Array.Find(attacker.audioData, AudioData => AudioData.name == "flesh").Play(attacker.AudioSource); //by finding the soudn in a list of sounds loaded into the object, then play it providing any audiosource
 
-
+        //if i havent died and i should stagger
         if (isStaggerable && Health > 0) { 
             SetStateDriver(new StaggerState(this, animator)); 
         }
 
         return Health <= 0 ? true : false;
-        //if dead:
-            //change CombatState to death
-                //which in itself handels death stuff 
-                    //(including ragdolls, animations, enum)
-            //if AI (when overwritten), change AIstate 
 
     }
 
     //stamina management
-    public void GainStamina(float staminaGain) => Stamina = Mathf.Min(characterdata.maxStamina, Stamina + staminaGain);
+    public void GainStamina(float staminaGain) => Stamina = Mathf.Min(characterdata.maxStamina, Stamina + staminaGain); //for potion
         
     
 
@@ -231,6 +236,7 @@ public class CharacterHandler : MonoBehaviour {
     private IEnumerator staminaDrainAndCooldown; //for the drain, and short break before allowing cooldown
 
     //take stamina drain, stop and start appropriate coroutines
+    //use this anytime you have to reduce a character's stamina, below are just helper functions
     public void DealStamina(float staminaDrain) {
         //cancel the wait from current dealing of stamina
         if(staminaDrainAndCooldown != null) StopCoroutine(staminaDrainAndCooldown);
@@ -242,6 +248,7 @@ public class CharacterHandler : MonoBehaviour {
         StartCoroutine(staminaDrainAndCooldown); //TODO stop at death
     }
 
+    //regein until max stamina
     protected IEnumerator StaminaRegeneration() {
         //Debug.Log("in stam regen");
         while (Stamina < characterdata.maxStamina) {
@@ -252,6 +259,7 @@ public class CharacterHandler : MonoBehaviour {
         staminaRegenCoroutine = null;
     }
 
+    //drain stamina, wait a bit, then regen again
     protected IEnumerator TakeStaminaDrain(float staminaDrain){
         Stamina -= staminaDrain;
         staminabar.fillAmount = Stamina / characterdata.maxStamina;
@@ -267,7 +275,7 @@ public class CharacterHandler : MonoBehaviour {
     #endregion
 
     #region COMBATFSM
-    //everytime the state is changed, do an exit routine (if applicable), switch the state, then trigger start routine (if applicable)
+    //everytime the state is changed, do an exit routine (if applicable), switch the state, then trigger start routine (if applicable) - go to generic state folder to figure this out
     public void SetStateDriver(GenericState state) { 
         StartCoroutine(SetState(state));
     }
@@ -281,6 +289,7 @@ public class CharacterHandler : MonoBehaviour {
 
 
     #region foliage
+    //for shader business
     IEnumerator GrassHandle(){
         while (true){
             //Collider[] foliageInView = Physics.OverlapSphere(transform.position, radius+2f, foliageMask);

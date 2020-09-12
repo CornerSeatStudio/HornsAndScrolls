@@ -4,8 +4,9 @@ using UnityEngine;
 using UnityEngine.Events;
 using System;
 
-//send an event per stance change onStateEnter
-//listened in detection script
+//MoveState represents the current MOVEMENT status of a character
+//this is used exclusively by player handlers (which probably is why the constructur's character SHOULD BE a playerhandler, not a characterhandler), too lazy to change
+//CombatState and MoveState are switched between in the PlayerHandler
 
 public class IdleMoveState : MoveState {
     public IdleMoveState(CharacterHandler character, Animator animator) : base(character, animator) {}

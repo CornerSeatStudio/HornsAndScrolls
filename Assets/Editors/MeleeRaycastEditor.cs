@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+
+//LEGACY
 [CustomEditor (typeof (MeleeRaycastHandler))]
 public class MeleeRaycastEditor : Editor
 {        

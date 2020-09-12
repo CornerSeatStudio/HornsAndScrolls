@@ -2,7 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class MoveState : GenericState { //represents the current MOVEMENT status of a character
+
+//represents the current MOVEMENT status of a character
+//this is used exclusively by player handlers (which probably is why the constructur's character SHOULD BE a playerhandler, not a characterhandler), too lazy to change
+//CombatState and MoveState are switched between in the PlayerHandler
+
+public abstract class MoveState : GenericState { 
     
     protected readonly CharacterHandler character;
     protected Animator animator;

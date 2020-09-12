@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.AI;
 using System;
 
+//CombatState represents when a character is in a combat mode. 
+//CombatState and MoveState are switched between in the PlayerHandler
+
 public class SheathingCombatState : CombatState {
     IEnumerator sheath;
     float animTime = 1f; //sheath time

@@ -3,44 +3,43 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Events;
 using UnityEngine.UI;
 using TMPro;
 
-public enum GlobalState { UNAGGRO, AGGRO, DEAD }; //determines ai state tree area
+public enum GlobalState { UNAGGRO, AGGRO, DEAD }; //determines ai state tree area - has to be manually set (Cause why not ruin code with even more dependencies)
 
 [RequireComponent(typeof(Collider))] //cause hit registry requires colliders
 public class AIHandler : CharacterHandler {    
 
     [Header("AI Core Components/SOs")]
-    public bool startAsAggro = false;
+    public bool startAsAggro = false; //is tha ai patrolling, or is the ai fighting
 
     //stealth stuff
     [Header("Stealth stuff")]
-    public Image stealthBar;
-    public List<PatrolWaypoint> patrolWaypoints; //where ai walks
+    public List<PatrolWaypoint> patrolWaypoints; 
     public float idleTimeAtWaypoint; //how long ai stays at each patrol waypoint
-    public float AIGlobalStateCheckRange = 30f; //range ai can sense other AI and their states
+    public float AIGlobalStateCheckRange = 30f; //range ai can sense other AI and their states (should be tested)
 
-    [Header("Combat Stuff")]
-    public float tooFarFromPlayerDistance;
+    [Header("Combat Stuff")] //combat rings determine AI behavior (more below)
+    public float tooFarFromPlayerDistance; 
     public float backAwayDistance;
     public float shoveDistance;
     public float minWaitBetweenAttacks;
 
     [Header("debug")]
+    public Image stealthBar; //for debug i think
     public TextMeshProUGUI AIstate; 
 
     //private stuff
-    public PlayerHandler TargetPlayer {get; private set;} 
-    protected NavMeshAgent agent;
-    protected AIThinkState thinkState; 
-    public float CurrSpotTimerThreshold {get; private set; }
-    public Detection Detection {get; private set; }
+    public PlayerHandler TargetPlayer {get; private set;}  //always have a reference to the player
+    protected NavMeshAgent agent; //all AI stuff
+    protected AIThinkState thinkState;  //different from GenericState, this is an FSM for ai specific stuff
+    public float CurrSpotTimerThreshold {get; private set; } //aka time it takes when ai spots player to transition to full aggro - depends on the player's stance 
+    public Detection Detection {get; private set; } //detection rings (for stealth)
     public GlobalState GlobalState {get; set; } = GlobalState.UNAGGRO; //spawn/start as aggro (todo unless otherwise stated)
-    public Vector3 NextWaypointLocation {get; private set;} 
-    public Quaternion NextWaypointRotation {get; set;}
-    private LayerMask AIMask;
+    public Vector3 NextWaypointLocation {get; private set;}  //the next waypoint the ai goes to
+    public Quaternion NextWaypointRotation {get; set;} //manually change where the ai faces at each waypoint
+    private LayerMask AIMask; //for physics identification on other AI
 
     //static
     public static List<AIHandler> CombatAI {get; set;}
@@ -48,21 +47,22 @@ public class AIHandler : CharacterHandler {
 
     #region callbacks
     protected override void Start() {
-        base.Start(); //all character stuff
+        base.Start(); //all characterhandler stuff
         Detection = this.GetComponent<Detection>();
         agent = this.GetComponent<NavMeshAgent>();
       
         //auto find player finally
         try { TargetPlayer = FindObjectOfType<PlayerHandler>(); } catch { Debug.LogWarning("WHERE THE PLAYER AT FOOL"); }
 
+        //layers are currently hard coded my b
         AIMask = LayerMask.GetMask("Enemy");
         if(AIMask == -1) Debug.LogWarning("AI MASK NOT SET PROPERLY");
         if(gameObject.layer != LayerMask.NameToLayer("Enemy")) Debug.LogWarning ("layer should be set to Enemy, not " + LayerMask.LayerToName(gameObject.layer));
 
-        //AI should always be in default combat state
+        //AI should always be in default combat state - read more in generic state folder
         genericState = new DefaultCombatState(this, animator); //todo temp probably
 
-        //event stuff
+        //event stuff - the player changing stances triggers an event that effects the AI detection time
         CurrSpotTimerThreshold = (TargetPlayer.characterdata as PlayerData).detectionTime;
         TargetPlayer.OnStanceChangeTimer += SpotTimerChange;
 
@@ -74,10 +74,12 @@ public class AIHandler : CharacterHandler {
     }  
     #endregion
 
+    //invoked as a event in playerHandler
     public void SpotTimerChange(float spotModify){
         CurrSpotTimerThreshold = spotModify;
     }
 
+    //deals with starting as aggro or not
     private void StartingCondition(){
         if(startAsAggro) {
             PivotToAggro();
@@ -98,21 +100,21 @@ public class AIHandler : CharacterHandler {
     protected override void Update(){
         base.Update();
 
-        if(thinkState != null) AIstate.SetText(thinkState.ToString());
+        if(thinkState != null) AIstate.SetText(thinkState.ToString()); //only for debug
         //Debug.Log(GlobalState);
 
 
-        animator.SetBool(Animator.StringToHash("Combat"), GlobalState == GlobalState.AGGRO);
+        animator.SetBool(Animator.StringToHash("Combat"), GlobalState == GlobalState.AGGRO); //this shouldnt be here
         
     }
 
     void LateUpdate() {
-        HandleMovementAnim();
+        HandleMovementAnim(); 
     }
 
     #region core
     Vector3 preVelocity, velVel, currVelocity;
-    private void HandleMovementAnim() {
+    private void HandleMovementAnim() { //this tells the animation controller to blend between forward/backward/left/right based off of character velocity
         currVelocity = Vector3.SmoothDamp(preVelocity, agent.velocity, ref velVel, .12f);
         preVelocity = currVelocity;
 
@@ -129,6 +131,7 @@ public class AIHandler : CharacterHandler {
 
     }
 
+    //override cause AI is allowed to enter deathstate, and player isnt (for now)
     protected override bool TakeDamageAndCheckDeath(float damage, bool isStaggerable, CharacterHandler attacker) {
         if (base.TakeDamageAndCheckDeath(damage, isStaggerable, attacker)){
             SetStateDriver(new DeathState(this, animator)); 
@@ -140,6 +143,7 @@ public class AIHandler : CharacterHandler {
 
     }
 
+    //going from unaggro -> aggro
     public void PivotToAggro() {
         GlobalState = GlobalState.AGGRO;
         animator.SetBool(Animator.StringToHash("Combat"), true); //todo: to be put in separate class    
@@ -151,8 +155,11 @@ public class AIHandler : CharacterHandler {
         SetStateDriver(new DefaultAIAggroState(this, animator, agent));
     }
 
+    #endregion
 
+    #region AIFSM
     //upon combat start, begin actively calculating probabillity
+    //this is an arbritrary system we came up with trying to reverse engineer other games' AI
     public bool CanOffend {get; set; } = false;
     //private bool offenseCooldown = false;
     private IEnumerator OffenseScheduler() {
@@ -160,11 +167,13 @@ public class AIHandler : CharacterHandler {
         while (GlobalState != GlobalState.DEAD) {
             CanOffend = false;
 
-            //cooldown between each attack
+            //todo list:
                 //allow manipulation of this value:
                     //if player misses, speed this up
                     //dodges within the hot zone radius
                     //if player is healing
+
+            //cooldown between each attack
             yield return new WaitForSeconds(Random.Range(minWaitBetweenAttacks-1f, minWaitBetweenAttacks+1f));
 
             //check once if there arent too many ai attacking
@@ -189,13 +198,12 @@ public class AIHandler : CharacterHandler {
            yield return new WaitUntil(() => thinkState is OffenseState);
            yield return new WaitWhile(() => thinkState is OffenseState);
 
+            //the attack is over
         }
         yield break;
     }
 
-    #endregion
-
-    #region AIFSM
+    //aifsm helpers
     //everytime the state is changed, do an exit routine (if applicable), switch the state, then trigger start routine (if applicable)
     public void SetStateDriver(AIThinkState state) { 
         StartCoroutine(SetState(state));
@@ -209,16 +217,18 @@ public class AIHandler : CharacterHandler {
 
     #endregion
 
+    //note: all the functions below are invoked in the ThinkCycle class
+    //these serve to tell what the AI actually does, the ThinkCycle class determines when they should be used
+
     #region stealthstuff
 
     public BTStatus VerifyStealth() {
         if(GlobalState != GlobalState.UNAGGRO) return BTStatus.FAILURE; 
 
-        //cast a sphere, if any AI in that sphere is Aggro, turn into aggro as well
-        //require targetMask
+        //cast a sphere of AIGlobalStateCheckRange size, if any AI in that sphere is Aggro, turn into aggro as well
         Collider[] aiInRange = Physics.OverlapSphere(transform.position, AIGlobalStateCheckRange, AIMask);
             foreach(Collider col in aiInRange) {
-            if(col.GetComponent<AIHandler>().GlobalState == GlobalState.AGGRO){
+            if(col.GetComponent<AIHandler>().GlobalState == GlobalState.AGGRO){ //note: getcomponent in loops are bad cause slow
                 PivotToAggro();
                 return BTStatus.FAILURE;
             }

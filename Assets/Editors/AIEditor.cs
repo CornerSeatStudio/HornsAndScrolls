@@ -4,17 +4,22 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.AI;
 
+
+//simply displays AI "rings of detection" (implemented somewhere in Behavior tree), along with path finding debug
 [CustomEditor (typeof (AIHandler))]
 public class AIEditor : Editor
 {
     public virtual void OnSceneGUI() {
+        //get a reference to the target (member variable of editor which references object in question)
         AIHandler ai = (AIHandler)target;
 
+        //do the magic
         CombatZones(ai);
         PatrolRoutes(ai);
         DrawAIPathing(ai);
     }
 
+    //display bt rings
     private void CombatZones(AIHandler ai) {
         Handles.color = Color.red;
         Handles.DrawWireArc(ai.transform.position, Vector3.up, Vector3.forward, 360, ai.tooFarFromPlayerDistance);
