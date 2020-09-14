@@ -305,4 +305,8 @@ public class CharacterHandler : MonoBehaviour {
         }
     }
     #endregion
+
+    public void FootStepSound(){
+        Array.Find(audioData, AudioData => AudioData.name == "FootSteps").Play(AudioSource);
+    }
 }

@@ -698,6 +698,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: NEW PLAYER 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8351403668023917730, guid: f37fb0cfe65c1e747906c765dc94a945,
+        type: 3}
+      propertyPath: m_PlayOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f37fb0cfe65c1e747906c765dc94a945, type: 3}
 --- !u!1001 &836666933
@@ -1793,6 +1798,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1367335161547502659, guid: 8d5da9e549260dd47a200572d55bcd2a,
+        type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1367335161547502659, guid: 8d5da9e549260dd47a200572d55bcd2a,
+        type: 3}
+      propertyPath: m_FontData.m_MaxSize
+      value: 300
+      objectReference: {fileID: 0}
     - target: {fileID: 1367335161868176586, guid: 8d5da9e549260dd47a200572d55bcd2a,
         type: 3}
       propertyPath: m_Name
@@ -1902,6 +1917,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1367335162053123329, guid: 8d5da9e549260dd47a200572d55bcd2a,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30.9
       objectReference: {fileID: 0}
     - target: {fileID: 1367335162053123335, guid: 8d5da9e549260dd47a200572d55bcd2a,
         type: 3}
