@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+//note - ripped off online 
 [CustomEditor(typeof(AudioData), true)]
 public class AudioEditor : Editor
 {

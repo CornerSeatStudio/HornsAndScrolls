@@ -13,7 +13,7 @@ public class DetectionEditor : Editor
     }
 
     
-
+    //display rings via math
     public void setup(Detection fov){
         //view arc
         Handles.color = Color.white;

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public interface GenericState { //represents the current MOVEMENT status of a character
+
+//Finite state Machine for managing stances, combat modes, etc
+public interface GenericState { 
 
     IEnumerator OnStateEnter();
 

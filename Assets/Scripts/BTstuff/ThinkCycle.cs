@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using Unity.Collections;
-using Unity.Jobs; 
+
+//all ai behavior tree stuff lives here
+//hard coded cause why not lmao
+//includes functionality on selecotrs, sequencers, and tasks only - you can implement more if you want
 public class ThinkCycle : MonoBehaviour
 {
-    //private SlotOrganizer slotter;
     private BTNode root;
     private AIHandler ai;
     private IEnumerator tempRoutine;
@@ -15,18 +17,16 @@ public class ThinkCycle : MonoBehaviour
 
     void Start()
     {        
-        
-
-
+        //on ai start
         ai = this.GetComponent<AIHandler>();
-        buildTree();
-        //nce all trees are in, start thinking process
-        StartCoroutine("RunTree", thinkDelay);
+        buildTree(); 
+        StartCoroutine("RunTree", thinkDelay); 
 
     }
 
 
-    IEnumerator RunTree(float delay) {
+    //jsut runs the "think cycle" every delay until dead
+    IEnumerator RunTree(float delay) { 
         while (!isDead) {
             //Debug.Log("running");
 
@@ -36,6 +36,8 @@ public class ThinkCycle : MonoBehaviour
         }
     }
 
+    //this is the BT itself, will be changed a lot
+    //cause i didnt want to buy some shitty unity GUI for a BT, doing it by code is feasable
     public void buildTree() { 
         BTSetup builder = new BTSetup();
         this.root = builder
@@ -81,6 +83,7 @@ public class ThinkCycle : MonoBehaviour
 
     } 
 
+    //temp functions just to test shit out
     BTStatus alwaysRunning() {
         return BTStatus.RUNNING;
     }
@@ -89,6 +92,7 @@ public class ThinkCycle : MonoBehaviour
         return BTStatus.FAILURE;
     }
 
+    //specifically for stopping the trhink cycle coroutine
     BTStatus KillBrain() {
         Debug.Log("killing brain");
         isDead = true;

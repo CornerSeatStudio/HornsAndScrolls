@@ -4,9 +4,12 @@ using UnityEngine;
 using UnityEngine.AI;
 using System;
 
+//CombatState represents when a character is in a combat mode. 
+//CombatState and MoveState are switched between in the PlayerHandler
+
 public class SheathingCombatState : CombatState {
     IEnumerator sheath;
-    float animTime = 1.2f; //sheath time
+    float animTime = 1f; //sheath time
     float currAnimTime = 0f;
     bool isSheathing = false;
     bool crouchSheathing = false;
@@ -70,6 +73,9 @@ public class SheathingCombatState : CombatState {
             character.SetStateDriver(new IdleMoveState(character, animator));
         } else {
             animator.SetBool(Animator.StringToHash("midDraw"), false); //drawing is finished
+            animator.SetBool(Animator.StringToHash("Combat"), true); //drawing is finished
+            
+            yield return new WaitForSeconds(.2f); //allow anim transition to work a bit first god damn i hate this job
             character.SetStateDriver(new DefaultCombatState(character, animator));
         }
 

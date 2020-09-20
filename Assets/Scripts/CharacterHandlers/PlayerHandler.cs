@@ -6,33 +6,38 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using TMPro;
 
+
+//all player stuff is handled in a single script
+//whether doing it in one class - like here, or splitting it up based on components is a stylistic choice
+//i chose to shove it in one because i dont want a gameobject to have like 10 scripts
+//this comes with the disadvantage of having like a fuck ton of lines in one script
 public class PlayerHandler : CharacterHandler {
 
-    private Vector3 inputVector;
-    private CharacterController controller;
+    private Vector3 inputVector; //stores input
+    private CharacterController controller; //deals with collider and slopes - unity built in thing
     public bool ToggledWalk {get; private set; } = false;
     public float CurrMovementSpeed {get; set; }
     public bool InDialogue {get; set; } = false;
 
 
     [Header("Player Movement Variables")]
-    [Range(0, 1)] public float turnSmoothness;
-    public float slopeForceRayLength;
+    [Range(0, 1)] public float turnSmoothness; //how quickly player snaps when pressing wasd
+    public float slopeForceRayLength; //for slope velocity handling
     public float slopeForce;
 
     [Header("Weapon animation stuff")]
     public GameObject weaponMesh;
-    public Transform sheatheTransform;
+    public Transform sheatheTransform; 
     public Transform unsheatheTransform;
 
     [Header("Inventory UI stuff")]
     public TextMeshProUGUI healthPotCount;
     public TextMeshProUGUI staminaPotCount;
 
-    public GameObject StealthRing {get; private set; }
+    public GameObject StealthRing {get; private set; } //ui thing
     public delegate void PickupHandler();
-    public event PickupHandler OnInteract;
-    public event Action<float> OnStanceChangeTimer; 
+    public event PickupHandler OnInteract; //invoke an event everytime i interact with something applicable
+    public event Action<float> OnStanceChangeTimer;  
     public event Action<float> OnStanceSoundRing;
 
 
@@ -42,14 +47,12 @@ public class PlayerHandler : CharacterHandler {
         base.Start();
         controller = this.GetComponent<CharacterController>();
         
-        SetStateDriver(new IdleMoveState(this, animator)); //player starts unaggro move state
+        SetStateDriver(new IdleMoveState(this, animator)); //player starts unaggro idle move state
 
-        CurrMovementSpeed = (characterdata as PlayerData).jogSpeed;
+        CurrMovementSpeed = (characterdata as PlayerData).jogSpeed; 
 
         if(gameObject.layer != LayerMask.NameToLayer("Player")) Debug.LogWarning ("layer should be set to Player, not " + LayerMask.LayerToName(gameObject.layer));
 
-
-        //load ui stuff
 
         //stealth ring stuff
         StealthRing = GameObject.FindGameObjectWithTag("StealthRing");
@@ -57,57 +60,53 @@ public class PlayerHandler : CharacterHandler {
         
     }
 
-    
+    protected override void Update() {
+        base.Update(); 
+
+        try{ 
+            OnInventoryUpdate(); //idk how performant - maybe shouldnt be looped
+        } catch {} //temporarily ignore if no hud - this is terrible practice
+
+        if(!InDialogue){ //lock out any controlls if in dialogue
+            inputVector = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical")); //get actual input
+            inputVector = Camera.main.transform.TransformDirection(inputVector); //adjust based on rotated camera angle
+            inputVector.y = 0f; //no jumping and shit
+            DetermineInputOutcome(); 
+        }
+    }
+
+    //update inventory UI with current inventory information
     protected void OnInventoryUpdate(){
         InventorySlot healthSlot = inventory.FindInInventory("HealthPot");
         InventorySlot staminaSlot = inventory.FindInInventory("StaminaPot");
         healthPotCount.SetText(healthSlot == null ? "0" : healthSlot.quantity.ToString());
         staminaPotCount.SetText(staminaSlot == null ? "0" : staminaSlot.quantity.ToString());
     }
-    protected override void Update() {
-        base.Update(); 
-
-        try{ 
-            OnInventoryUpdate(); //idk how performant
-        } catch {} //temporarily ignore if no hud
-
-        if(!InDialogue){
-            //core move stuff
-            inputVector = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
-            inputVector = Camera.main.transform.TransformDirection(inputVector);
-            inputVector.y = 0f;
-            DetermineInputOutcome();
-        }
-    }
 
     void FixedUpdate() {
-        //fix directions -> all speed dependencies occur after this
+        //fix directions to be right length - all speed dependencies occur AFTER this
         inputVector.Normalize();
 
-        if(genericState is DodgeState) {
-            //controller.SimpleMove(dodgeDirection.normalized * (characterdata as PlayerData).dodgeSpeed );
-        } else if (genericState is AttackState || genericState is FollowUpState) {
-           // controller.SimpleMove(transform.forward * 6f);  
-        } else {
-            if((inputVector.x != 0 || inputVector.z != 0) && OnSlope()) {
+        //only move under these conditions
+        if (!(genericState is DodgeState) || !(genericState is AttackState) || !(genericState is FollowUpState)) {
+           if((inputVector.x != 0 || inputVector.z != 0) && OnSlope()) { //deals with slope velocity
                 controller.Move( (inputVector * CurrMovementSpeed * Time.fixedDeltaTime) + (Vector3.down * controller.height / 2 * slopeForce) );
             } else {
                 controller.SimpleMove(inputVector * CurrMovementSpeed);  
             }
-        }
-
-        
+        } 
 
     }
 
     void LateUpdate() {
-        CalculateVelocity(); 
+        CalculateVelocity(); //for the purpose of blending animations
         //TiltOnDelta();
         
     }
 
     Vector2 preDir, curDir; 
     float tiltVel;
+    //not used atm
     protected void TiltOnDelta() {
         //get neccesary info this time around
         Vector2 curDir = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
@@ -125,10 +124,7 @@ public class PlayerHandler : CharacterHandler {
     }
 
     Vector3 preVelocity, velVel, currVelocity;
-    protected void CalculateVelocity(){
-        //curPos = Vector3.SmoothDamp(prePos, transform.position, ref posVel, 2f);
-        //currVelocity = Vector3.SmoothDamp(preVelocity, (curPos - prePos) / Time.fixedDeltaTime, ref velVel, .12f);
-        //prePos = curPos;
+    protected void CalculateVelocity(){ //i clculate my own velocity cause unity's controller velocity is dogshit
         currVelocity = Vector3.SmoothDamp(preVelocity, controller.velocity, ref velVel, .2f);
 
         preVelocity = currVelocity;
@@ -152,6 +148,8 @@ public class PlayerHandler : CharacterHandler {
 
     #region chieftan fish
     //master if statement
+    //if anywhere, this is where u start crying
+    //all movement keys, stance changes, etc, occur here
     private void DetermineInputOutcome() {
          if(genericState is MoveState) { 
             //check for sheathing
@@ -161,7 +159,7 @@ public class PlayerHandler : CharacterHandler {
                 HandleNormalMovement();
                 FaceKeyPress();
             }
-        } else {  //combat state (implied already) but not dodge state
+        } else {  //combat state (implied)
             //check for sheathing  
             if(Input.GetKeyDown(KeyCode.X)) {
                 if(genericState is SheathingCombatState) {
@@ -169,7 +167,7 @@ public class PlayerHandler : CharacterHandler {
                 } else {
                     SetStateDriver(new SheathingCombatState(this, animator, true));
                 }
-
+            //check for crouch sheathing
             } else if(Input.GetKeyDown(KeyCode.C)) {
                 if(!animator.GetBool(Animator.StringToHash("Crouching"))){
                     if(genericState is SheathingCombatState) {
@@ -178,16 +176,16 @@ public class PlayerHandler : CharacterHandler {
                         SetStateDriver(new SheathingCombatState(this, animator, true, true));
                     }
                 }
-            } else if(!(genericState is AttackState) && !(genericState is FollowUpState)) { 
-                    if(!(genericState is DodgeState)){
-                        if(animator.GetBool(Animator.StringToHash("Crouching"))) {
+            } else if(!(genericState is AttackState) && !(genericState is FollowUpState)) {  //dont allow any movement if mid swing
+                    if(!(genericState is DodgeState)){ 
+                        if(animator.GetBool(Animator.StringToHash("Crouching"))) { //no blending crouch animations availbe so just face key press
                             FaceKeyPress();
                         } else {
                             FaceMouseDirection();
-                            HandleCombatInteractions(); 
+                            if(!(genericState is SheathingCombatState)) HandleCombatInteractions(); //no attacking when sheathing
                         }
                     }
-                    HandleCombatMovement(); //feet direction info - HAS TO HAPPEN IN DODGE
+                    HandleCombatMovement(); //feet direction info
                 }
             
             }
@@ -199,11 +197,13 @@ public class PlayerHandler : CharacterHandler {
 
     protected override bool TakeDamageAndCheckDeath(float damage, bool isStaggerable, CharacterHandler attacker){
         bool f = base.TakeDamageAndCheckDeath(damage, isStaggerable, attacker);
+        //store cause this method changes Health - probably terrible practice
 
-        if(Health <= 0) { //UPON DEATH
+        if(Health <= 0) { //UPON DEATH - destroy the player (temporary)
             this.gameObject.SetActive(false);
         }
 
+        
         return f;
     }
 
@@ -222,6 +222,14 @@ public class PlayerHandler : CharacterHandler {
             inventory.UseItem("StaminaPot", this);
         }
     }
+
+    //this looks more intimating that it actually is
+    //every genericState has an appropriate transition - 
+    //ex, 
+        //if im idle and press w, i should start jogging
+        //if im jogging and press shift, i should start sprinting
+        //if im crouching and press c, i should stand up 
+        //etc.
 
     private void HandleNormalMovement() {
         if(genericState is JogMoveState) { //if i am jogging
@@ -262,8 +270,6 @@ public class PlayerHandler : CharacterHandler {
 
         //if not dodging
         Vector3 localDir;
-        // Vector2 curDir = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-        // Camera.main.transform.TransformDirection(curDir);
 
         if(genericState is DodgeState) { //if i am dodging already, keep dodging in the dodge direction
             //localDir = transform.InverseTransformDirection(dodgeDirection).normalized;
@@ -271,7 +277,9 @@ public class PlayerHandler : CharacterHandler {
             animator.SetFloat(Animator.StringToHash("ZMove"), dodgeDirection.z);
 
         } else { //if i am not dodging
-            //if i have jumped, do the appropriate setup
+            //if i have activated dodged, do the appropriate setup
+
+            //note - the set 4 directions are by kevinG's behest - subject to change
             if(Input.GetButtonDown("Jump") && (inputVector.x != 0 || inputVector.z != 0) && Stamina > 0) {                
                 //get the GLOBAL direction the player is facing
                 //from this, derive the four PLAYER DIRECTION RELATIVE dodge directions
@@ -297,7 +305,7 @@ public class PlayerHandler : CharacterHandler {
                 //go that way
 
 
-                Debug.Log(possibleDodgeDirs[maxDotIndex]);
+                //Debug.Log(possibleDodgeDirs[maxDotIndex]);
                 dodgeDirection = possibleDodgeDirs[maxDotIndex]; //save info for movement during dodge
                 SetStateDriver(new DodgeState(this, animator));                
                 
@@ -323,6 +331,7 @@ public class PlayerHandler : CharacterHandler {
        // Debug.Log(currVelocity);
     }
 
+    //for attacking and blocking
     private void HandleCombatInteractions() {
         if(genericState is DefaultCombatState || genericState is FollowUpState) {
             if(Input.GetButtonDown("Fire1") == true) {
