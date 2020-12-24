@@ -48,6 +48,7 @@ public class AIHandler : CharacterHandler {
     #region callbacks
     protected override void Start() {
         base.Start(); //all characterhandler stuff
+        
         Detection = this.GetComponent<Detection>();
         agent = this.GetComponent<NavMeshAgent>();
       

@@ -96,7 +96,7 @@ public class CameraHandler : MonoBehaviour {
                 depthOfField.aperture.value = Mathf.Lerp(apetureRange.x, apetureRange.y, distanceDependency);
                 depthOfField.focalLength.value = Mathf.Lerp(focalLengthRange.x, focalLengthRange.y, distanceDependency);
             }
-        } catch { Debug.log("FIX POST PROCESSING LOL")}
+        } catch { Debug.Log("FIX POST PROCESSING LOL"); }
     }
 
     
