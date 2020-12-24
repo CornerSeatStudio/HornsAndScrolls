@@ -90,11 +90,13 @@ public class CameraHandler : MonoBehaviour {
         transform.rotation = Quaternion.Euler(camAng, angle, 0);
 
         //ppv dof
-        if (postProcessVolume.sharedProfile.TryGetSettings<DepthOfField>(out depthOfField)) {
-            depthOfField.focusDistance.value = Mathf.Lerp(focalDistanceRange.x, focalDistanceRange.y, distanceDependency);
-            depthOfField.aperture.value = Mathf.Lerp(apetureRange.x, apetureRange.y, distanceDependency);
-            depthOfField.focalLength.value = Mathf.Lerp(focalLengthRange.x, focalLengthRange.y, distanceDependency);
-        }
+        try{ 
+            if (postProcessVolume.sharedProfile.TryGetSettings<DepthOfField>(out depthOfField)) {
+                depthOfField.focusDistance.value = Mathf.Lerp(focalDistanceRange.x, focalDistanceRange.y, distanceDependency);
+                depthOfField.aperture.value = Mathf.Lerp(apetureRange.x, apetureRange.y, distanceDependency);
+                depthOfField.focalLength.value = Mathf.Lerp(focalLengthRange.x, focalLengthRange.y, distanceDependency);
+            }
+        } catch { Debug.log("FIX POST PROCESSING LOL")}
     }
 
     
