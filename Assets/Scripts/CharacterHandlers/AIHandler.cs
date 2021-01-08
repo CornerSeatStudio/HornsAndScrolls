@@ -120,7 +120,7 @@ public class AIHandler : CharacterHandler {
         preVelocity = currVelocity;
 
         Vector3 localDir = transform.InverseTransformDirection(currVelocity).normalized;
-
+        
         //Debug.Log(currVelocity.magnitude);
 
         float weight = Mathf.InverseLerp(0, agent.speed, currVelocity.magnitude);
@@ -349,13 +349,18 @@ public class AIHandler : CharacterHandler {
 
        // Debug.Log("back away tasking");
         //implication: cannot be in offense state if this area is reached
+        // if(!(thinkState is BackAwayState)) {
+        //     if(CanOffend) {
+        //         SetStateDriver(new OffenseState(this, animator, agent));
+        //     } else {
+        //         bool f = Random.Range(0, 1) == 0;
+        //         if(f) SetStateDriver(new BackAwayState(this, animator, agent));
+        //     }
+        // }
+
         if(!(thinkState is BackAwayState)) {
-            if(CanOffend) {
-                SetStateDriver(new OffenseState(this, animator, agent));
-            } else {
-                bool f = Random.Range(0, 1) == 0;
-                if(f) SetStateDriver(new BackAwayState(this, animator, agent));
-            }
+            SetStateDriver(new BackAwayState(this, animator, agent));
+            
         }
         
         return BTStatus.RUNNING;

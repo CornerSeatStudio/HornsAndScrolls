@@ -19,7 +19,6 @@ public class PlayerHandler : CharacterHandler {
     public float CurrMovementSpeed {get; set; }
     public bool InDialogue {get; set; } = false;
 
-
     [Header("Player Movement Variables")]
     [Range(0, 1)] public float turnSmoothness; //how quickly player snaps when pressing wasd
     public float slopeForceRayLength; //for slope velocity handling

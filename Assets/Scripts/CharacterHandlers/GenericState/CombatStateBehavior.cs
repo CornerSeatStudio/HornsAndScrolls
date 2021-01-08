@@ -9,7 +9,8 @@ using System;
 
 public class SheathingCombatState : CombatState {
     IEnumerator sheath;
-    float animTime = 1f; //sheath time
+    float animTime = .9f; //sheath time (MANUALLY CODED BUT WHY NOT LOL)
+    //ALSO NOTE: this has to be LONGEr than the ACTUAL ANIMATION cause COUPLING
     float currAnimTime = 0f;
     bool isSheathing = false;
     bool crouchSheathing = false;
