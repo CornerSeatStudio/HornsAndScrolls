@@ -83,11 +83,15 @@ public class PlayerHandler : CharacterHandler {
     }
 
     void FixedUpdate() {
-        //fix directions to be right length - all speed dependencies occur AFTER this
+        //fix directions to be right length - all speed modifications  should occur AFTER this
         inputVector.Normalize();
 
         //only move under these conditions
-        if (!(genericState is DodgeState) || !(genericState is AttackState) || !(genericState is FollowUpState)) {
+        if(genericState is DodgeState || genericState is AttackState || genericState is FollowUpState){
+            controller.SimpleMove(Vector3.zero);
+
+        } else{
+        // if (!(genericState is DodgeState) || !(genericState is AttackState) || !(genericState is FollowUpState)) {
            if((inputVector.x != 0 || inputVector.z != 0) && OnSlope()) { //deals with slope velocity
                 controller.Move( (inputVector * CurrMovementSpeed * Time.fixedDeltaTime) + (Vector3.down * controller.height / 2 * slopeForce) );
             } else {
