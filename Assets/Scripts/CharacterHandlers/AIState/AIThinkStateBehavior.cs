@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System;
 using UnityEngine;
 using UnityEngine.AI;
@@ -307,6 +307,7 @@ public class DefenseState : AIThinkState {
         yield return new WaitForSeconds(0.5f);
         character.SetStateDriver(new DefaultCombatState(character, animator));
         
+        
     }
 
     public override IEnumerator OnStateExit() {
@@ -346,8 +347,8 @@ public class BackAwayState : AIThinkState {
     public BackAwayState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) { }
 
     public override IEnumerator OnStateEnter() {
-        // originSpeed = agent.speed;
-        // agent.speed *= UnityEngine.Random.Range(0.3f, 1);
+        originSpeed = agent.speed;
+        agent.speed *= UnityEngine.Random.Range(0.3f, 1);
 
         facePlayerRoutine = character.FacePlayer();
         character.StartCoroutine(facePlayerRoutine);
@@ -357,7 +358,7 @@ public class BackAwayState : AIThinkState {
     }
 
     public override IEnumerator OnStateExit() {
-        // agent.speed = originSpeed;
+        agent.speed = originSpeed;
         if(backAwayRoutine != null) character.StopCoroutine(backAwayRoutine);
         if(facePlayerRoutine != null) character.StopCoroutine(facePlayerRoutine);
         yield break;
@@ -384,6 +385,75 @@ public class ShoveState : AIThinkState {
     }
 
 
+}
+
+//Circling State
+public class CirclingState : AIThinkState {
+    //basically worked off of spacing state
+
+    IEnumerator circlingRoutine, facePlayerRoutine;
+
+    float originSpeed;
+
+    public CirclingState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) { }
+
+    public override IEnumerator OnStateEnter() {
+        //So, the overarching idea is that there exists a circle around the player that the enemies would like to occupy a position on the radius
+        //As such, we will attempting to find such a space on the circle of the player, and move towards it. Of course, there are very many
+        //technical issues, esp when we have to consider the relative positioning of the other enemies on the circle, the movement of the player, etc.
+        //So, basically: When circling, we continue to find points on the circle, and we move towrads it. 
+        //So if the player is constantly moving, then the circling AIs are constantly attempting to reach a point on the circle, which should be fine enough for the
+        //'circling' aspect. 
+        facePlayerRoutine = character.FacePlayer();
+        character.StartCoroutine(facePlayerRoutine);
+        circlingRoutine = CirclingAIHelper();
+        yield return character.StartCoroutine(circlingRoutine);
+        character.SetStateDriver(new DefaultAIAggroState(character, animator, agent));
+    }
+
+    private IEnumerator CirclingAIHelper(){
+        NavMeshHit hit;
+        Vector3 targetmove = CirclingPositionHelper();
+        if(NavMesh.SamplePosition(targetmove, out hit, character.backAwayDistance + 5f, NavMesh.AllAreas)
+            || agent.FindClosestEdge(out hit)) {
+            agent.SetDestination(hit.position);
+            }
+
+        yield return new WaitWhile(() => agent.stoppingDistance < agent.remainingDistance || agent.pathPending);
+    }
+
+
+    private Vector3 CirclingPositionHelper() {
+        //Basically where all the acutal math happense, as much as Math.random or whatever the fuck can be called math
+        //inital thoughts, during the meeting, we had said that we intended towards writing code that will
+        //basically hive mind the enemies into evenly distributi9ng themselves around the player circle
+        //However, given that we cannot access the number of cirlcing AIs, (this might be false) and then also having the evenly distrubute themselves
+        //has made the first difficult, thus resulting in an abortion of said idea
+
+        //instead, we propose the following:
+        //Approach A: Just choose a random position on the circle/annulus around the player
+        //Pros: will be pretty fucking random, which more or less suits the 'circling' state of the AI
+        //Cons: Can very possibly cause enemy density
+
+        //I have thought of another approach, but am uncertain if it is possible, as such, will be implementing the one above
+        float minRadius = 10;
+        float maxRadius = 12;
+
+        var randomDirection = (UnityEngine.Random.insideUnitCircle * character.TargetPlayer.transform.position).normalized;
+        var randomDistance = UnityEngine.Random.Range(minRadius, maxRadius);
+        Vector3 changed = randomDirection * randomDistance;
+        Vector3 targetLocation = (character.TargetPlayer.transform.position + changed);
+        Debug.Log("Currently Circling Towards Pos: " + targetLocation); 
+
+        return targetLocation;
+    }    
+
+    public override IEnumerator OnStateExit() {
+        agent.SetDestination(character.transform.position);
+        if(facePlayerRoutine != null) character.StopCoroutine(facePlayerRoutine);
+        if(circlingRoutine != null) character.StopCoroutine(circlingRoutine);
+        yield break;
+    }
 }
 
 //approach and shank
