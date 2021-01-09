@@ -346,8 +346,8 @@ public class BackAwayState : AIThinkState {
     public BackAwayState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) { }
 
     public override IEnumerator OnStateEnter() {
-        originSpeed = agent.speed;
-        agent.speed *= UnityEngine.Random.Range(0.3f, 1);
+        // originSpeed = agent.speed;
+        // agent.speed *= UnityEngine.Random.Range(0.3f, 1);
 
         facePlayerRoutine = character.FacePlayer();
         character.StartCoroutine(facePlayerRoutine);
@@ -357,7 +357,7 @@ public class BackAwayState : AIThinkState {
     }
 
     public override IEnumerator OnStateExit() {
-        agent.speed = originSpeed;
+        // agent.speed = originSpeed;
         if(backAwayRoutine != null) character.StopCoroutine(backAwayRoutine);
         if(facePlayerRoutine != null) character.StopCoroutine(facePlayerRoutine);
         yield break;
