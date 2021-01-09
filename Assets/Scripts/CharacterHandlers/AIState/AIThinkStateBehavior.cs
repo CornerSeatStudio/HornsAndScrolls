@@ -347,8 +347,8 @@ public class BackAwayState : AIThinkState {
     public BackAwayState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) { }
 
     public override IEnumerator OnStateEnter() {
-        originSpeed = agent.speed;
-        agent.speed *= UnityEngine.Random.Range(0.3f, 1);
+        // originSpeed = agent.speed;
+        // agent.speed *= UnityEngine.Random.Range(0.3f, 1);
 
         facePlayerRoutine = character.FacePlayer();
         character.StartCoroutine(facePlayerRoutine);
@@ -358,7 +358,7 @@ public class BackAwayState : AIThinkState {
     }
 
     public override IEnumerator OnStateExit() {
-        agent.speed = originSpeed;
+        // agent.speed = originSpeed;
         if(backAwayRoutine != null) character.StopCoroutine(backAwayRoutine);
         if(facePlayerRoutine != null) character.StopCoroutine(facePlayerRoutine);
         yield break;
@@ -474,6 +474,7 @@ public class OffenseState : AIThinkState {
 
 
     public override IEnumerator OnStateEnter() {
+        Debug.Log(AIHandler.CombatAI.Count);
         facePlayerRoutine = character.FacePlayer();
         character.StartCoroutine(facePlayerRoutine);
         offenseRoutine = Offense(chosenAttack);
@@ -522,6 +523,10 @@ public class ChargeState : OffenseState {
     }
 
     public override IEnumerator OnStateEnter(){
+
+        //brief moment of pause- indicating to the player "he comin"
+        yield return new WaitForSeconds(1f); Debug.Log("charge incoming");
+
         animator.SetTrigger(Animator.StringToHash("charge"));
         agent.speed *= chargeSpeedMult;
         yield return base.OnStateEnter();

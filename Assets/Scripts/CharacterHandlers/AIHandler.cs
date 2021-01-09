@@ -69,8 +69,9 @@ public class AIHandler : CharacterHandler {
         CurrSpotTimerThreshold = (TargetPlayer.characterdata as PlayerData).detectionTime;
         TargetPlayer.OnStanceChangeTimer += SpotTimerChange;
 
-        CombatAI = new List<AIHandler>();
-
+        if(CombatAI == null){
+            CombatAI = new List<AIHandler>();
+        }
         StartingCondition();
         
         
