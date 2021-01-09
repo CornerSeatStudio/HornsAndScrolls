@@ -214,7 +214,7 @@ public class AIHandler : CharacterHandler {
     private IEnumerator CirclingAssistant() {
         while (GlobalState != GlobalState.DEAD) {
             CirclingIndicator = false;
-            yield return new WaitForSeconds(Random.Range(2-1f, 2+1f));
+            yield return new WaitForSeconds(Random.Range(6-1f, 6+1f));
             int currentCircling = 0;
             foreach(AIHandler ai in CombatAI){
                 if(ai.thinkState is CirclingState) currentCircling++;
@@ -339,7 +339,7 @@ public class AIHandler : CharacterHandler {
     public bool CloseDistanceConditional() => (TargetPlayer.transform.position - transform.position).sqrMagnitude > tooFarFromPlayerDistance * tooFarFromPlayerDistance;
 
     //determine if ai should charge
-    public bool WorthCharging() => CloseDistanceConditional() && CanOffend;
+    public bool WorthCharging() => CloseDistanceConditional() && CanOffend || thinkState is ChargeState;
     
 
     public bool SpacingConditional() {

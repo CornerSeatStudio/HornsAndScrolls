@@ -175,6 +175,8 @@ public class AttackState : CombatState {
     }
 
     private IEnumerator Attack(){
+                // Debug.Log(chosenMove.name);
+
         //begin animation
         animator.applyRootMotion = true; //cleaner maybe
         animator.SetTrigger(Animator.StringToHash(chosenMove.name));

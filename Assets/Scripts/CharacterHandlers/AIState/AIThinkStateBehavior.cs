@@ -443,7 +443,7 @@ public class CirclingState : AIThinkState {
         var randomDistance = UnityEngine.Random.Range(minRadius, maxRadius);
         Vector3 changed = randomDirection * randomDistance;
         Vector3 targetLocation = (character.TargetPlayer.transform.position + changed);
-        Debug.Log("Currently Circling Towards Pos: " + targetLocation); 
+        // Debug.Log("Currently Circling Towards Pos: " + targetLocation); 
 
         return targetLocation;
     }    
@@ -460,7 +460,7 @@ public class CirclingState : AIThinkState {
 //todo: make charge a unique state
 public class OffenseState : AIThinkState {
 
-    MeleeMove chosenAttack;
+    protected MeleeMove chosenAttack;
     IEnumerator offenseRoutine;
     IEnumerator subRoutine;
     IEnumerator facePlayerRoutine;
@@ -474,7 +474,7 @@ public class OffenseState : AIThinkState {
 
 
     public override IEnumerator OnStateEnter() {
-        Debug.Log(AIHandler.CombatAI.Count);
+        // Debug.Log(AIHandler.CombatAI.Count);
         facePlayerRoutine = character.FacePlayer();
         character.StartCoroutine(facePlayerRoutine);
         offenseRoutine = Offense(chosenAttack);
@@ -483,6 +483,7 @@ public class OffenseState : AIThinkState {
     }
 
     private IEnumerator Offense(MeleeMove chosenAttack) {
+
 
         subRoutine = character.ChasePlayer(chosenAttack.range);
         yield return character.StartCoroutine(subRoutine);
@@ -520,12 +521,14 @@ public class ChargeState : OffenseState {
     float chargeSpeedMult;
     public ChargeState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {
         chargeSpeedMult = 3f;
+        try { this.chosenAttack = character.MeleeAttacks["chargeMove"]; } catch { Debug.LogWarning("some cunt don't have charge attack"); }
+
     }
 
     public override IEnumerator OnStateEnter(){
-
+        Debug.Log("charge incoming");
         //brief moment of pause- indicating to the player "he comin"
-        yield return new WaitForSeconds(1f); Debug.Log("charge incoming");
+        yield return new WaitForSeconds(1f); 
 
         animator.SetTrigger(Animator.StringToHash("charge"));
         agent.speed *= chargeSpeedMult;
