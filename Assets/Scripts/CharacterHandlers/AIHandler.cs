@@ -25,6 +25,7 @@ public class AIHandler : CharacterHandler {
     public float backAwayDistance;
     public float shoveDistance;
     public float minWaitBetweenAttacks;
+    public float defenseRefresh;
 
     [Header("debug")]
     public Image stealthBar; //for debug i think
@@ -40,6 +41,7 @@ public class AIHandler : CharacterHandler {
     public Vector3 NextWaypointLocation {get; private set;}  //the next waypoint the ai goes to
     public Quaternion NextWaypointRotation {get; set;} //manually change where the ai faces at each waypoint
     private LayerMask AIMask; //for physics identification on other AI
+    private float recentHits;
 
     //static
     public static List<AIHandler> CombatAI {get; set;}
@@ -141,7 +143,7 @@ public class AIHandler : CharacterHandler {
             if(GlobalState != GlobalState.AGGRO) PivotToAggro();
             return false;
         }
-
+        recentHits += 1;
     }
 
     //going from unaggro -> aggro
@@ -153,6 +155,8 @@ public class AIHandler : CharacterHandler {
         CombatAI.Add(this);
 
         StartCoroutine(OffenseScheduler());
+        StartCoroutine(CirclingAssistant());
+        StartCoroutine(DefenseRefreshing());
         SetStateDriver(new DefaultAIAggroState(this, animator, agent));
     }
 
@@ -162,6 +166,7 @@ public class AIHandler : CharacterHandler {
     //upon combat start, begin actively calculating probabillity
     //this is an arbritrary system we came up with trying to reverse engineer other games' AI
     public bool CanOffend {get; set; } = false;
+    public bool CirclingIndicator {get; set; } = false;
     //private bool offenseCooldown = false;
     private IEnumerator OffenseScheduler() {
         //default offense chance
@@ -200,6 +205,32 @@ public class AIHandler : CharacterHandler {
            yield return new WaitWhile(() => thinkState is OffenseState);
 
             //the attack is over
+        }
+        yield break;
+    }
+
+
+    private IEnumerator CirclingAssistant() {
+        while (GlobalState != GlobalState.DEAD) {
+            CirclingIndicator = false;
+            yield return new WaitForSeconds(Random.Range(2-1f, 2+1f));
+            int currentCircling = 0;
+            foreach(AIHandler ai in CombatAI){
+                if(ai.thinkState is CirclingState) currentCircling++;
+            }
+            //Basically took the code for the offense scheduler, this code is largely for the purposes of limiting the number of enemies that can be
+            //circling the player at a time, currently, we are limiting it to 3 max enemies that can circle the player at once.
+            while (currentCircling > 3) {
+                currentCircling = 0;
+                foreach(AIHandler ai in CombatAI){
+                    if(ai.thinkState is CirclingState) currentCircling++;
+                }
+                yield return new WaitForSeconds(1f);
+            }
+
+           CirclingIndicator = true;
+           yield return new WaitUntil(() => thinkState is CirclingState);
+           yield return new WaitWhile(() => thinkState is CirclingState);
         }
         yield break;
     }
@@ -266,11 +297,41 @@ public class AIHandler : CharacterHandler {
 
     public bool DefenceConditional(){       //  Debug.Log("defense condi");
 
-        return TargetPlayer.genericState is AttackState //player is attacking
+        // return TargetPlayer.genericState is AttackState //player is attacking
+        // && (TargetPlayer.transform.position - transform.position).sqrMagnitude < TargetPlayer.weapon.Attacks.First().range * TargetPlayer.weapon.Attacks.First().range //player is close enough (temp)
+        // && !(genericState is AttackState) //im not already mid attack  
+        // && canDefend()
+        // && Stamina > 0;     
+        if (TargetPlayer.genericState is AttackState //player is attacking
         && (TargetPlayer.transform.position - transform.position).sqrMagnitude < TargetPlayer.weapon.Attacks.First().range * TargetPlayer.weapon.Attacks.First().range //player is close enough (temp)
         && !(genericState is AttackState) //im not already mid attack  
-        && Stamina > 0;     
+        && canDefend()
+        && Stamina > 0){
+            recentHits += 1;
+            return true;
+        }
+        else return false;
+    }
 
+    private bool canDefend(){
+        //probability is 0.33 per hit, so first hit has 1 chance of blocking, second is 0.66, third is 0.33, fourth is 0
+        double failBlock = recentHits * 0.33;
+        return Random.Range(0.001f, 1.0f) > failBlock;
+    }
+
+
+    private IEnumerator DefenseRefreshing() {
+        //default offense chance
+        //There exists a new parameter called defenseRefresh, basically, it counts from the first hit/defense, and reduces the recent hits to zero
+        //The higher recent hits is, the less likely the AI will be able to block
+        while (GlobalState != GlobalState.DEAD) {
+            yield return new WaitForSeconds(0.1f);
+            if (recentHits > 0) {
+                yield return new WaitForSeconds(defenseRefresh);
+                recentHits = 0;
+            }
+        }
+        yield break;
     }
 
     //returns if player is too far
@@ -287,6 +348,9 @@ public class AIHandler : CharacterHandler {
     }
 //canOffend initiates it, thinkState check ensures it goes through
     public bool OffenseConditional() => CanOffend || thinkState is OffenseState;
+
+    public bool CirclingConditional() => CirclingIndicator || thinkState is CirclingState;
+
 
     public bool BackAwayConditional() { //if too close AND CAN back away
         NavMeshHit hit;
@@ -363,6 +427,14 @@ public class AIHandler : CharacterHandler {
             
         }
         
+        return BTStatus.RUNNING;
+    }
+
+    public BTStatus CirclingTask() {
+        if(!(thinkState is CirclingState)) { 
+            SetStateDriver(new CirclingState(this, animator, agent)); //todo attack move selection
+        }
+
         return BTStatus.RUNNING;
     }
 
