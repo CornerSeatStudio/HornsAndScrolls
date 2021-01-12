@@ -9,7 +9,8 @@ using System;
 
 public class SheathingCombatState : CombatState {
     IEnumerator sheath;
-    float animTime = 1f; //sheath time
+    float animTime = .9f; //sheath time (MANUALLY CODED BUT WHY NOT LOL)
+    //ALSO NOTE: this has to be LONGEr than the ACTUAL ANIMATION cause COUPLING
     float currAnimTime = 0f;
     bool isSheathing = false;
     bool crouchSheathing = false;
@@ -322,7 +323,7 @@ public class StaggerState : CombatState {
     public override IEnumerator OnStateEnter() {  
         Array.Find(character.audioData, AudioData => AudioData.name == "stagger").Play(character.AudioSource);
  
-        animator.SetTrigger(Animator.StringToHash("Staggering"));
+        animator.SetTrigger(Animator.StringToHash("Stagger"));
         yield return new WaitForSeconds(.7f); //stagger time
         character.SetStateDriver(new DefaultCombatState(character, animator));      
     }
