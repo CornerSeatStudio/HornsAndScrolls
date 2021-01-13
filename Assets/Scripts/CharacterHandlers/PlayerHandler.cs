@@ -71,7 +71,9 @@ public class PlayerHandler : CharacterHandler {
             inputVector = Camera.main.transform.TransformDirection(inputVector); //adjust based on rotated camera angle
             inputVector.y = 0f; //no jumping and shit
             DetermineInputOutcome(); 
-        }
+        } 
+
+
     }
 
     //update inventory UI with current inventory information
@@ -87,7 +89,7 @@ public class PlayerHandler : CharacterHandler {
         inputVector.Normalize();
 
         //only move under these conditions
-        if(genericState is DodgeState || genericState is AttackState || genericState is FollowUpState){
+        if(genericState is DodgeState || genericState is AttackState || genericState is FollowUpState || InDialogue){
             controller.SimpleMove(Vector3.zero);
 
         } else{
