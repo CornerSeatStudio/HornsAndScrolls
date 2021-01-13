@@ -264,7 +264,7 @@ public class BlockState : CombatState {
     public override IEnumerator OnStateExit() { 
        if(blockStaminaDrain != null) character.StopCoroutine(blockStaminaDrain);
         animator.SetBool(Animator.StringToHash("Blocking"), false);
-        yield return new WaitForSeconds(.2f);
+        yield return new WaitForSeconds(.05f);
         yield break;
     } 
 

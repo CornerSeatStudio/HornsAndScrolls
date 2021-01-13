@@ -137,6 +137,8 @@ public class AIHandler : CharacterHandler {
 
     //override cause AI is allowed to enter deathstate, and player isnt (for now)
     protected override bool TakeDamageAndCheckDeath(float damage, bool isStaggerable, CharacterHandler attacker) {
+        recentHits += 1;
+        
         if (base.TakeDamageAndCheckDeath(damage, isStaggerable, attacker)){
             SetStateDriver(new DeathState(this, animator)); 
             return true;
@@ -144,7 +146,7 @@ public class AIHandler : CharacterHandler {
             if(GlobalState != GlobalState.AGGRO) PivotToAggro();
             return false;
         }
-        recentHits += 1;
+        
     }
 
     //going from unaggro -> aggro
