@@ -17,6 +17,7 @@ public class CharacterHandler : MonoBehaviour {
     public AudioData[] audioData; //contains a list of ALL sounds a character would use. whenever a sound is needed, it is linear searched for(lmao) and then shoved into an audio source 
     public Collider weaponHitbox; //specifically for hit detection
     public InventoryObject inventory; //custom thing
+    public AudioSource feetSource;
 
     [Header("Debug Members")] //only for debugging via shitty homemade UI that can be enabled/disabled in this characterhandler object
     public Image heathbar;
@@ -288,7 +289,7 @@ public class CharacterHandler : MonoBehaviour {
     #endregion
 
 
-    #region foliage
+    #region Feet
     //for shader business
     IEnumerator GrassHandle(){
         while (true){
@@ -304,9 +305,25 @@ public class CharacterHandler : MonoBehaviour {
             yield return new WaitForFixedUpdate();
         }
     }
+
+    void FootstepSoundHandler(){
+
+    }
+
+    IEnumerator feetRoutine;
+    public void FootStepSound(){
+        if(feetRoutine != null){
+            feetRoutine = FeetHandle();
+            StartCoroutine(feetRoutine);
+        }
+    }
+
+    public IEnumerator FeetHandle(){
+        Array.Find(audioData, AudioData => AudioData.name == "FootSteps").Play(feetSource);
+        yield return new WaitForSeconds(.3f);
+        feetRoutine = null;
+    }
+
     #endregion
 
-    public void FootStepSound(){
-        Array.Find(audioData, AudioData => AudioData.name == "FootSteps").Play(AudioSource);
-    }
 }
