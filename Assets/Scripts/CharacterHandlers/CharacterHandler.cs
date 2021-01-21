@@ -17,6 +17,7 @@ public class CharacterHandler : MonoBehaviour {
     public AudioData[] audioData; //contains a list of ALL sounds a character would use. whenever a sound is needed, it is linear searched for(lmao) and then shoved into an audio source 
     public Collider weaponHitbox; //specifically for hit detection
     public InventoryObject inventory; //custom thing
+    public AudioSource feetSource;
 
     [Header("Debug Members")] //only for debugging via shitty homemade UI that can be enabled/disabled in this characterhandler object
     public Image heathbar;
@@ -39,7 +40,8 @@ public class CharacterHandler : MonoBehaviour {
     public bool CanAttack {get; set;} = false; //checks if weapon is in contact with target (via weapon script on weapon) - more on this later i think
     public GameObject AttackReceiver {get; set; } //stores information whenever a weapon collider is in something i think
     public TrailRenderer WeaponTrail {get; private set;} //for weapon effects
-    
+    IEnumerator feetRoutine;
+
 
     #region Callbacks
     protected virtual void Start() {
@@ -61,6 +63,9 @@ public class CharacterHandler : MonoBehaviour {
         //weapon trail, only enable when neccesary
         WeaponTrail = GetComponentInChildren<TrailRenderer>();
         WeaponTrail.enabled = false;
+
+        //feet sounds
+        feetRoutine = null;
 
     }
 
@@ -288,7 +293,7 @@ public class CharacterHandler : MonoBehaviour {
     #endregion
 
 
-    #region foliage
+    #region Feet
     //for shader business
     IEnumerator GrassHandle(){
         while (true){
@@ -304,9 +309,26 @@ public class CharacterHandler : MonoBehaviour {
             yield return new WaitForFixedUpdate();
         }
     }
-    #endregion
+
+    void FootstepSoundHandler(){
+
+    }
 
     public void FootStepSound(){
-        Array.Find(audioData, AudioData => AudioData.name == "FootSteps").Play(AudioSource);
+        // Debug.Log("yewot");
+        if(feetRoutine == null){
+            feetRoutine = FeetHandle();
+            StartCoroutine(feetRoutine);
+        }
     }
+
+    public IEnumerator FeetHandle(){
+        Array.Find(audioData, AudioData => AudioData.name == "FootSteps").Play(feetSource);
+        float temp = genericState is CombatState ? .1f : .35f;
+        yield return new WaitForSeconds(temp);
+        feetRoutine = null;
+    }
+
+    #endregion
+
 }

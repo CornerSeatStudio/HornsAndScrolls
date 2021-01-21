@@ -133,7 +133,7 @@ public class PlayerHandler : CharacterHandler {
         currVelocity = Vector3.SmoothDamp(preVelocity, controller.velocity, ref velVel, .2f);
 
         preVelocity = currVelocity;
-        animator.SetFloat(Animator.StringToHash("PlayerSpeed"), currVelocity.magnitude);
+        animator.SetFloat(Animator.StringToHash("PlayerSpeed"), (float)Math.Round(currVelocity.magnitude * 100f) / 100);
 
        // Debug.Log(currVelocity + ", old: " + preVelocity);
     }

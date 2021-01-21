@@ -780,18 +780,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eec8ff6b36528564ab479b002a6cc956, type: 3}
---- !u!114 &965094918 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6911336143338049680, guid: 2eeef80d784a9a04cbcadaa27da969ee,
-    type: 3}
-  m_PrefabInstance: {fileID: 1738328399}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 063ad0bd0d4fa9f4f8e6a1f918197093, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &968897423
 GameObject:
   m_ObjectHideFlags: 0
@@ -1056,7 +1044,7 @@ PrefabInstance:
         type: 3}
       propertyPath: objectives.Array.data[0]
       value: 
-      objectReference: {fileID: 965094918}
+      objectReference: {fileID: 1765594512}
     - target: {fileID: 3141053316768160544, guid: 656dc07e7b8187d4caa3d6ec47d740de,
         type: 3}
       propertyPath: objectives.Array.data[1]
@@ -1443,7 +1431,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: priest obj
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6911336143338049680, guid: 2eeef80d784a9a04cbcadaa27da969ee, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 2eeef80d784a9a04cbcadaa27da969ee, type: 3}
 --- !u!4 &1738328400 stripped
 Transform:
@@ -1451,6 +1440,39 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1738328399}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1765594510 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6911336143338049687, guid: 2eeef80d784a9a04cbcadaa27da969ee,
+    type: 3}
+  m_PrefabInstance: {fileID: 1738328399}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1765594512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1765594510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fee894c543e984e42a798b76fff1bac0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onObjectiveCompletion:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 125131501}
+        m_MethodName: DialogueOnTrigger
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 11400000, guid: 4a5092084546da44b9ab35f5143750de,
+            type: 2}
+          m_ObjectArgumentAssemblyTypeName: Dialoguedictionary, Assembly-CSharp
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1001 &1790483570
 PrefabInstance:
   m_ObjectHideFlags: 0
