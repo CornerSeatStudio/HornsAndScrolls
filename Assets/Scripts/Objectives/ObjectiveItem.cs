@@ -7,10 +7,9 @@ using UnityEngine.Events;
 public class ObjectiveItem : Objective
 {
     private PlayerHandler player;
-    public Transform itemAttachTransform;
     public Animator animator;
     public Animator otherdoor;
-    public ObjectiveObject item;
+    public GameObject onPlayerPrefab;
     
     public void OnDrawGizmos() {
         Gizmos.color = Color.yellow;
@@ -38,15 +37,19 @@ public class ObjectiveItem : Objective
         //remove from listener
         player.OnInteract -= OnPickup;
 
-        //remove it from the scene and parent it to the player (temporary for horn)
+        //grab item placeholder thing (if exists)
+        if(onPlayerPrefab != null) onPlayerPrefab.SetActive(true);
+
+        //remove it from the scene
         GetComponent<Collider>().enabled = false;
-    
-        transform.parent = itemAttachTransform;
-        transform.localPosition = item.pickupPosition;
-        transform.localEulerAngles = item.pickupEulerAngle;
-        transform.localScale = item.pickupScale;
+        this.gameObject.SetActive(false);
+
+
+        //KEVIN STUFF
         animator.SetBool("IsOpen",true);
         otherdoor.SetBool("IsOpens",true);
+
+
         StartCoroutine(OnObjectiveIncrement());
     }
 

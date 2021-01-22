@@ -59,10 +59,14 @@ public class CameraHandler : MonoBehaviour {
         }
         cam = this.GetComponent<Camera>();
 
+        try { 
         postProcessVolume = GameObject.FindGameObjectWithTag("DepthOfField").GetComponent<PostProcessVolume>();
-
         if (!postProcessVolume.sharedProfile.TryGetSettings<DepthOfField>(out depthOfField)) 
             Debug.LogWarning("DOF MISSING ON CAM HANDLER");
+
+
+        } catch { Debug.LogWarning("DOF PROBLEMS"); }
+
                 
              
     }
