@@ -25,7 +25,9 @@ public abstract class Objective : MonoBehaviour
     }
 
     protected IEnumerator OnObjectiveIncrement() { //this should be called if an objective is completed
-        yield return StartCoroutine(objectiveHandler.objectives[objectiveHandler.CurrObjectiveIndex].OnObjectiveCompletion());
+        
+
+        StartCoroutine(objectiveHandler.objectives[objectiveHandler.CurrObjectiveIndex].OnObjectiveCompletion());
         objectiveHandler.CurrObjectiveIndex++;
 
 

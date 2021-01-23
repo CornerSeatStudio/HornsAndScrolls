@@ -22,7 +22,6 @@ public class Door : MonoBehaviour
         oldCamRot = Camera.main.transform.rotation;
         Camera.main.GetComponent<CameraHandler>().enabled = false;
 
-
         //camera at em
         Camera.main.transform.position = new Vector3(170, 71, -245);
         Camera.main.transform.rotation = Quaternion.Euler(new Vector3(40, 0.67f, 0.43f));
