@@ -32,17 +32,18 @@ public class ObjectiveItem : Objective
 
     public void OnPickup() {
 
+
         //remove from listener
         player.OnInteract -= OnPickup;
 
         //grab item placeholder thing (if exists)
         if(onPlayerPrefab != null) onPlayerPrefab.SetActive(true);
 
+        StartCoroutine(OnObjectiveIncrement());
+        
         //remove it from the scene
         GetComponent<Collider>().enabled = false;
         
-        StartCoroutine(OnObjectiveIncrement());
-
         this.gameObject.SetActive(false);
 
     }
