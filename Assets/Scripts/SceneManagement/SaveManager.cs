@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
 public class SaveManager : MonoBehaviour
 {
+    public GameObject levelselectcomponent;
     #region callbacks
     public void Update(){
         //debug
@@ -48,6 +50,11 @@ public class SaveManager : MonoBehaviour
     public void OnLevelSelectLoad(){
         ChooseAndLoadLevel(3);
     }
+    public void clickedlevel(){
+        levelselectcomponent.SetActive(false);
+
+
+    }
     public void OnCleanStart() => SceneManager.LoadScene(1); 
 
     //for manual selection (aka level selection) (mosly use this)
@@ -60,13 +67,9 @@ public class SaveManager : MonoBehaviour
 
     #region other
     public void Quit() => Application.Quit();
-
-    //goes to next/prev scene(used sparingly, most will be manual)
-    private void IncrementScene() => SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-    private void DecrementScene() => SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
+    
 
     #endregion
-
      
 }
     
