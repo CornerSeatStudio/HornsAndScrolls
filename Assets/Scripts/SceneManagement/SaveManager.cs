@@ -51,7 +51,7 @@ public class SaveManager : MonoBehaviour
         ChooseAndLoadLevel(3);
     }
     public void clickedlevel(){
-        levelselectcomponent.SetActive(false);
+       // levelselectcomponent.SetActive(false);
 
 
     }
