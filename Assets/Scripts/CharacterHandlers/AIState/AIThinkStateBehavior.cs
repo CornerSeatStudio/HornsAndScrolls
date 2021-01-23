@@ -423,7 +423,7 @@ public class CirclingState : AIThinkState {
     }
 
 
-     private Vector3 CirclingPositionHelper() {
+    private Vector3 CirclingPositionHelper() {
         //Basically where all the acutal math happense, as much as Math.random or whatever the fuck can be called math
         //inital thoughts, during the meeting, we had said that we intended towards writing code that will
         //basically hive mind the enemies into evenly distributi9ng themselves around the player circle
