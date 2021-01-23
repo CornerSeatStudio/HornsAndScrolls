@@ -7,8 +7,6 @@ using UnityEngine.Events;
 public class ObjectiveItem : Objective
 {
     private PlayerHandler player;
-    public Animator animator;
-    public Animator otherdoor;
     public GameObject onPlayerPrefab;
     
     public void OnDrawGizmos() {
@@ -42,15 +40,11 @@ public class ObjectiveItem : Objective
 
         //remove it from the scene
         GetComponent<Collider>().enabled = false;
+        
+        StartCoroutine(OnObjectiveIncrement());
+
         this.gameObject.SetActive(false);
 
-
-        //KEVIN STUFF
-        animator.SetBool("IsOpen",true);
-        otherdoor.SetBool("IsOpens",true);
-
-
-        StartCoroutine(OnObjectiveIncrement());
     }
 
     
