@@ -438,13 +438,27 @@ public class CirclingState : AIThinkState {
         //I have thought of another approach, but am uncertain if it is possible, as such, will be implementing the one above
         float minRadius = 10;
         float maxRadius = 12;
+        float circleTolerance = 2;
 
+        //Basically loop until we get a position within tolerance, max from player to AI + tolerance
         var randomDirection = (UnityEngine.Random.insideUnitCircle * character.TargetPlayer.transform.position).normalized;
         var randomDistance = UnityEngine.Random.Range(minRadius, maxRadius);
         Vector3 changed = randomDirection * randomDistance;
         Vector3 targetLocation = (character.TargetPlayer.transform.position + changed);
-        // Debug.Log("Currently Circling Towards Pos: " + targetLocation); 
 
+        Vector3 compareLocation = character.TargetPlayer.transform.position + character.transform.position;
+
+        int loopcount = 0;
+        //either exceed max loop count or less than distance
+        while ((loopcount <= 13) && ((character.transform.position + targetLocation).magnitude - circleTolerance > compareLocation.magnitude)) {
+            randomDirection = (UnityEngine.Random.insideUnitCircle * character.TargetPlayer.transform.position).normalized;
+            randomDistance = UnityEngine.Random.Range(minRadius, maxRadius);
+            changed = randomDirection * randomDistance;
+            targetLocation = (character.TargetPlayer.transform.position + changed);
+            loopcount += 1;
+        }
+
+        Debug.Log("Currently Circling Towards Pos: " + targetLocation); 
         return targetLocation;
     }    
 
