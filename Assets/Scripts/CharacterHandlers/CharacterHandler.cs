@@ -72,12 +72,15 @@ public class CharacterHandler : MonoBehaviour {
     }
 
     protected virtual void Update(){
-        if(genericState != null) debugState.SetText(genericState.ToString());
+        // if(genericState != null) debugState.SetText(genericState.ToString());
         // if(Input.GetKeyDown(KeyCode.P)){
         //     foreach(InventorySlot i in inventory.items){
         //         Debug.Log($"{i.item.name} : {i.quanity}");
         //     }
         // }
+
+        //debug
+        // if(Input.GetKeyDown(KeyCode.P)) { Health -= 5; }
     }
 
     //disables ragdoll on character on game start
