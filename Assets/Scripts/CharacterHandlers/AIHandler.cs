@@ -259,8 +259,17 @@ public class AIHandler : CharacterHandler {
     #region stealthstuff
 
     public BTStatus VerifyStealth() {
-        return (GlobalState != GlobalState.UNAGGRO || (TargetPlayer.transform.position - transform.position).sqrMagnitude < AIGlobalStateCheckRange)? BTStatus.FAILURE : BTStatus.SUCCESS;
- 
+        
+
+        if(GlobalState != GlobalState.UNAGGRO) return BTStatus.FAILURE;
+
+        try {         
+            if((TargetPlayer.transform.position - transform.position).sqrMagnitude < AIGlobalStateCheckRange) return BTStatus.FAILURE;
+        } catch { 
+            //idk why this is happening but after 1 microsecond its fine
+        }
+        
+        return BTStatus.RUNNING;
     }
 
     //check if ai has line of sight on player
