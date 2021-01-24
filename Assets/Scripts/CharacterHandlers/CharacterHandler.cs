@@ -60,9 +60,6 @@ public class CharacterHandler : MonoBehaviour {
         foliageMask = LayerMask.GetMask("Foliage");
         StartCoroutine(GrassHandle()); 
         
-        //weapon trail, only enable when neccesary
-        WeaponTrail = GetComponentInChildren<TrailRenderer>();
-        WeaponTrail.enabled = false;
 
         //feet sounds
         feetRoutine = null;
