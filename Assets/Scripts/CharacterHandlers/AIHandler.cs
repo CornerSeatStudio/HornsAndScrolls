@@ -63,8 +63,7 @@ public class AIHandler : CharacterHandler {
         if(gameObject.layer != LayerMask.NameToLayer("Enemy")) Debug.LogWarning ("layer should be set to Enemy, not " + LayerMask.LayerToName(gameObject.layer));
 
         //AI should always be in default combat state - read more in generic state folder
-        genericState = new DefaultCombatState(this, animator); //todo temp probably
-
+        genericState = new DefaultCombatState(this, animator); 
         //event stuff - the player changing stances triggers an event that effects the AI detection time
         CurrSpotTimerThreshold = (TargetPlayer.characterdata as PlayerData).detectionTime;
         TargetPlayer.OnStanceChangeTimer += SpotTimerChange;
