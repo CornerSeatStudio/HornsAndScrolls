@@ -180,7 +180,7 @@ public class AttackState : CombatState {
         //begin animation
         animator.applyRootMotion = true; //cleaner maybe
         animator.SetTrigger(Animator.StringToHash(chosenMove.name));
-        character.WeaponTrail.enabled = true;
+        if(character is PlayerHandler) character.WeaponTrail.enabled = true;
         //sound
         
         //time it takes before weapon trigger is allowed to do damage
@@ -200,7 +200,7 @@ public class AttackState : CombatState {
 
     }
     public override IEnumerator OnStateExit() {
-        character.WeaponTrail.enabled = false;
+        if(character is PlayerHandler) character.WeaponTrail.enabled = false;
 
         if(timerRoutine != null) character.StopCoroutine(timerRoutine);
         if(currAttackCoroutine != null) character.StopCoroutine(currAttackCoroutine); 

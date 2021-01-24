@@ -72,6 +72,7 @@ public class AIHandler : CharacterHandler {
         if(CombatAI == null){
             CombatAI = new List<AIHandler>();
         }
+        
         StartingCondition();
         
         

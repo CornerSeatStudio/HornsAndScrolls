@@ -29,7 +29,10 @@ public class PlayerHandler : CharacterHandler {
     public Transform sheatheTransform; 
     public Transform unsheatheTransform;
 
-    [Header("Inventory UI stuff")]
+    [Header("UI stuff")]
+    public Image staminaBar;
+    public List<GameObject> normalHealthInOrder;
+    public List<GameObject> glassHealthUIInOrder;
     public TextMeshProUGUI healthPotCount;
     public TextMeshProUGUI staminaPotCount;
 
@@ -38,8 +41,7 @@ public class PlayerHandler : CharacterHandler {
     public event PickupHandler OnInteract; //invoke an event everytime i interact with something applicable
     public event Action<float> OnStanceChangeTimer;  
     public event Action<float> OnStanceSoundRing;
-
-
+    
 
     #region callbacks
     protected override void Start(){
@@ -55,12 +57,22 @@ public class PlayerHandler : CharacterHandler {
 
         //stealth ring stuff
         StealthRing = GameObject.FindGameObjectWithTag("StealthRing");
-        StealthRing.SetActive(false);
+        try{ StealthRing.SetActive(false); } catch {}
         
+        //health pot stuff on start
+        foreach(GameObject go in glassHealthUIInOrder){
+            go.SetActive(false);
+        }
+
+        currHealthOrbPercentile = .8f;
+        currOrbIndex = 0;
+
     }
 
     protected override void Update() {
         base.Update(); 
+
+        
 
         try{ 
             OnInventoryUpdate(); //idk how performant - maybe shouldnt be looped
@@ -103,9 +115,28 @@ public class PlayerHandler : CharacterHandler {
 
     }
 
+    float currHealthOrbPercentile = .8f;
+    int currOrbIndex = 0;
+
     void LateUpdate() {
         CalculateVelocity(); //for the purpose of blending animations
         //TiltOnDelta();
+
+        //UI
+        staminaBar.fillAmount = Stamina / characterdata.maxStamina;
+
+        //are we in the wrong percentile?
+        if(currHealthOrbPercentile > Health / characterdata.maxHealth){
+            
+            //update percentile 
+            currHealthOrbPercentile -= .2f;
+
+            //disable one of the orbs, updating index
+            normalHealthInOrder[currOrbIndex].SetActive(false);
+            glassHealthUIInOrder[currOrbIndex].SetActive(true);
+            currOrbIndex++;
+
+        }
         
     }
 
@@ -339,8 +370,12 @@ public class PlayerHandler : CharacterHandler {
     //for attacking and blocking
     private void HandleCombatInteractions() {
         if(genericState is DefaultCombatState || genericState is FollowUpState) {
-            if(Input.GetButtonDown("Fire1") == true) {
+            if(Input.GetButtonDown("Fire1") == true && Stamina > 0 ) {
                 SetStateDriver(new AttackState(this, animator));
+
+                //DRAIN STAMINA ON ATTACK LMAO HARD CODE
+                DealStamina(5f);
+
             } else if(Stamina > 0 && Input.GetButtonDown("Fire2") == true) {
                 //Debug.Log("Fire2'd/counter trigger");
                 SetStateDriver(new CounterState(this, animator));

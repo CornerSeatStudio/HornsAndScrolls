@@ -60,22 +60,21 @@ public class CharacterHandler : MonoBehaviour {
         foliageMask = LayerMask.GetMask("Foliage");
         StartCoroutine(GrassHandle()); 
         
-        //weapon trail, only enable when neccesary
-        WeaponTrail = GetComponentInChildren<TrailRenderer>();
-        WeaponTrail.enabled = false;
-
         //feet sounds
         feetRoutine = null;
 
     }
 
     protected virtual void Update(){
-        if(genericState != null) debugState.SetText(genericState.ToString());
+        // if(genericState != null) debugState.SetText(genericState.ToString());
         // if(Input.GetKeyDown(KeyCode.P)){
         //     foreach(InventorySlot i in inventory.items){
         //         Debug.Log($"{i.item.name} : {i.quanity}");
         //     }
         // }
+
+        //debug
+        // if(Input.GetKeyDown(KeyCode.P)) { Health -= 5; }
     }
 
     //disables ragdoll on character on game start
