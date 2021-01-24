@@ -72,7 +72,7 @@ public class AIHandler : CharacterHandler {
         if(CombatAI == null){
             CombatAI = new List<AIHandler>();
         }
-        
+
         StartingCondition();
         
         
@@ -259,18 +259,8 @@ public class AIHandler : CharacterHandler {
     #region stealthstuff
 
     public BTStatus VerifyStealth() {
-        if(GlobalState != GlobalState.UNAGGRO) return BTStatus.FAILURE; 
-
-        //cast a sphere of AIGlobalStateCheckRange size, if any AI in that sphere is Aggro, turn into aggro as well
-        Collider[] aiInRange = Physics.OverlapSphere(transform.position, AIGlobalStateCheckRange, AIMask);
-            foreach(Collider col in aiInRange) {
-            if(col.GetComponent<AIHandler>().GlobalState == GlobalState.AGGRO){ //note: getcomponent in loops are bad cause slow
-                PivotToAggro();
-                return BTStatus.FAILURE;
-            }
-        }
-
-        return BTStatus.SUCCESS;
+        return (GlobalState != GlobalState.UNAGGRO || (TargetPlayer.transform.position - transform.position).sqrMagnitude < AIGlobalStateCheckRange)? BTStatus.FAILURE : BTStatus.SUCCESS;
+ 
     }
 
     //check if ai has line of sight on player
