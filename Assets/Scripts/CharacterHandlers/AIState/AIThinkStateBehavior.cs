@@ -458,7 +458,7 @@ public class CirclingState : AIThinkState {
             loopcount += 1;
         }
 
-        Debug.Log("Currently Circling Towards Pos: " + targetLocation); 
+        // Debug.Log("Currently Circling Towards Pos: " + targetLocation); 
         return targetLocation;
     }    
 
@@ -502,7 +502,7 @@ public class OffenseState : AIThinkState {
         subRoutine = character.ChasePlayer(chosenAttack.range);
         yield return character.StartCoroutine(subRoutine);
 
-        //Debug.Log("AI attempting an attack...");
+        Debug.Log("AI attempting an attack...");
         character.SetStateDriver(new AttackState(character, animator, chosenAttack));
         
         //once attack is finished, cooldown a touch maybe
@@ -540,7 +540,7 @@ public class ChargeState : OffenseState {
     }
 
     public override IEnumerator OnStateEnter(){
-        Debug.Log("charge incoming");
+        // Debug.Log("charge incoming");
         //brief moment of pause- indicating to the player "he comin"
         yield return new WaitForSeconds(1f); 
 

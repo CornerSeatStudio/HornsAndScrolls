@@ -41,6 +41,9 @@ public class PlayerHandler : CharacterHandler {
     public event PickupHandler OnInteract; //invoke an event everytime i interact with something applicable
     public event Action<float> OnStanceChangeTimer;  
     public event Action<float> OnStanceSoundRing;
+
+    [Header("music")]
+    public AudioSource musicSource;
     
 
     #region callbacks
@@ -123,7 +126,7 @@ public class PlayerHandler : CharacterHandler {
         //TiltOnDelta();
 
         //UI
-        staminaBar.fillAmount = Stamina / characterdata.maxStamina;
+        try{ staminaBar.fillAmount = Stamina / characterdata.maxStamina; } catch {}
 
         //are we in the wrong percentile?
         if(currHealthOrbPercentile > Health / characterdata.maxHealth){

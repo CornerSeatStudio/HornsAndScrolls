@@ -315,6 +315,31 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 210.29153, z: 0.7401459}
   m_Center: {x: 0, y: -81.316666, z: -1.3277048}
+--- !u!1 &365335547 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: eec8ff6b36528564ab479b002a6cc956,
+    type: 3}
+  m_PrefabInstance: {fileID: 836666933}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &365335549
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 365335547}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: bb0fc6a3782257840afddd1dab54e7a8, type: 3}
+  m_Controller: {fileID: 9100000, guid: 8cda3416b078d674188c853cb2349d3c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1001 &441089606
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -720,17 +745,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: eec8ff6b36528564ab479b002a6cc956,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 79.00552
+      value: 75.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: eec8ff6b36528564ab479b002a6cc956,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.76
+      value: 4.12
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: eec8ff6b36528564ab479b002a6cc956,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 93.90686
+      value: 2.8
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: eec8ff6b36528564ab479b002a6cc956,
         type: 3}
@@ -2029,6 +2054,11 @@ PrefabInstance:
       propertyPath: animator
       value: 
       objectReference: {fileID: 1209551771}
+    - target: {fileID: 3439164977990612715, guid: 7f4bc8527cd74e340b3a496b7ded260f,
+        type: 3}
+      propertyPath: priestStuff
+      value: 
+      objectReference: {fileID: 365335549}
     - target: {fileID: 3439164977990612715, guid: 7f4bc8527cd74e340b3a496b7ded260f,
         type: 3}
       propertyPath: dialogueText

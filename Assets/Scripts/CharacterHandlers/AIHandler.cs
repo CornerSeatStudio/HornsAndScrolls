@@ -45,7 +45,7 @@ public class AIHandler : CharacterHandler {
 
     //static
     public static List<AIHandler> CombatAI {get; set;}
-
+    private static bool queueMusic = false;
 
     #region callbacks
     protected override void Start() {
@@ -157,6 +157,12 @@ public class AIHandler : CharacterHandler {
         //add to static list of all combat AI
         CombatAI.Add(this);
 
+        //queue music
+        if(!queueMusic){
+            TargetPlayer.musicSource.Play();
+            queueMusic = true;
+        }
+
         StartCoroutine(OffenseScheduler());
         StartCoroutine(CirclingAssistant());
         StartCoroutine(DefenseRefreshing());
@@ -216,7 +222,7 @@ public class AIHandler : CharacterHandler {
     private IEnumerator CirclingAssistant() {
         while (GlobalState != GlobalState.DEAD) {
             CirclingIndicator = false;
-            yield return new WaitForSeconds(Random.Range(6-1f, 6+1f));
+            yield return new WaitForSeconds(Random.Range(4f, 6f));
             int currentCircling = 0;
             foreach(AIHandler ai in CombatAI){
                 if(ai.thinkState is CirclingState) currentCircling++;
@@ -235,6 +241,7 @@ public class AIHandler : CharacterHandler {
            yield return new WaitUntil(() => thinkState is CirclingState);
            yield return new WaitWhile(() => thinkState is CirclingState);
         }
+
         yield break;
     }
 
@@ -258,15 +265,14 @@ public class AIHandler : CharacterHandler {
     #region stealthstuff
 
     public BTStatus VerifyStealth() {
-        
+        // Debug.Log("yewot");
 
         if(GlobalState != GlobalState.UNAGGRO) return BTStatus.FAILURE;
 
-        try {         
-            if((TargetPlayer.transform.position - transform.position).sqrMagnitude < AIGlobalStateCheckRange) return BTStatus.FAILURE;
-        } catch { 
-            //idk why this is happening but after 1 microsecond its fine
-        }
+        Debug.Log(Vector3.Distance(TargetPlayer.transform.position, transform.position));
+        // if(TargetPlayer != null){
+        //     if((TargetPlayer.transform.position - transform.position).sqrMagnitude < AIGlobalStateCheckRange * AIGlobalStateCheckRange) return BTStatus.FAILURE;
+        // }
         
         return BTStatus.RUNNING;
     }
@@ -408,7 +414,7 @@ public class AIHandler : CharacterHandler {
     }
 
     private MeleeMove RandomMoveSelection(){
-        return weapon.Attacks[Random.Range(0, weapon.Attacks.Count)];
+        return weapon.Attacks[Random.Range(0, weapon.Attacks.Count-1)]; // ASSUME CHARGE IS LAST LOL
     }
 
     public BTStatus BackAwayTask() {// Debug.Log("back away");\

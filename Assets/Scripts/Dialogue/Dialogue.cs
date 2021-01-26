@@ -7,8 +7,9 @@ public class Dialogue : MonoBehaviour
     private PlayerHandler player;
     private Queue<string> sentences;
     public Text dialogueText;
-    public Text nameText;
     public Animator animator;
+    public Animator priestStuff; 
+    
     void Start()
     {
         sentences = new Queue<string>();
@@ -24,8 +25,10 @@ public class Dialogue : MonoBehaviour
 
     public void StartDialogue (Dialoguedictionary dialogue){
         //nameText.text = dialogue.name;
-        sentences.Clear();
+        try{ sentences.Clear(); } catch {}
         animator.SetBool("IsOpen",true);
+
+
         foreach(string sentence in dialogue.sentences){
             sentences.Enqueue(sentence);
         }
@@ -36,6 +39,9 @@ public class Dialogue : MonoBehaviour
             EndDialogue();
             return;
         }
+
+        if(priestStuff != null) { priestStuff.SetTrigger(Animator.StringToHash("Speak")); }
+
         string sentence = sentences.Dequeue();
         dialogueText.text = sentence;
     }

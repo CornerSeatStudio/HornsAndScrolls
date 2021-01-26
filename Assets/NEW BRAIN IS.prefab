@@ -143,10 +143,10 @@ MonoBehaviour:
   staminabar: {fileID: 5645395180898940197}
   debugState: {fileID: 4068547277862800058}
   materials: []
-  startAsAggro: 1
+  startAsAggro: 0
   patrolWaypoints: []
   idleTimeAtWaypoint: 10
-  AIGlobalStateCheckRange: 50
+  AIGlobalStateCheckRange: 30
   tooFarFromPlayerDistance: 40
   backAwayDistance: 25
   shoveDistance: 5
