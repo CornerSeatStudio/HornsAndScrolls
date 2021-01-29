@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class SaveManager : MonoBehaviour
 {
     public GameObject levelselectcomponent;
+    public GameObject buttons;
     #region callbacks
     public void Update(){
         //debug
@@ -52,11 +53,12 @@ public class SaveManager : MonoBehaviour
     }
     public void clickedlevel(){
        levelselectcomponent.SetActive(true);
-
+        buttons.SetActive(false);
 
     }
     public void back(){
          levelselectcomponent.SetActive(false);
+         buttons.SetActive(true);
     }
     public void OnCleanStart() => SceneManager.LoadScene(1); 
 
