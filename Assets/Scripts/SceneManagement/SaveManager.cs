@@ -55,6 +55,9 @@ public class SaveManager : MonoBehaviour
 
 
     }
+    public void back(){
+         levelselectcomponent.SetActive(false);
+    }
     public void OnCleanStart() => SceneManager.LoadScene(1); 
 
     //for manual selection (aka level selection) (mosly use this)
