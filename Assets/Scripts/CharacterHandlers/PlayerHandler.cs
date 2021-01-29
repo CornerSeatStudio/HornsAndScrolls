@@ -41,9 +41,21 @@ public class PlayerHandler : CharacterHandler {
     public event PickupHandler OnInteract; //invoke an event everytime i interact with something applicable
     public event Action<float> OnStanceChangeTimer;  
     public event Action<float> OnStanceSoundRing;
+
+    [Header("music")]
+    public AudioSource musicSource;
+    public bool isPassiveLevel = false;
     
 
     #region callbacks
+
+    public IEnumerator musicHandler(){
+        if(!isPassiveLevel){
+            yield return new WaitForSeconds(10f);
+            musicSource.Play();
+        }
+    }
+
     protected override void Start(){
         base.Start();
         controller = this.GetComponent<CharacterController>();
@@ -66,6 +78,8 @@ public class PlayerHandler : CharacterHandler {
 
         currHealthOrbPercentile = .8f;
         currOrbIndex = 0;
+
+        StartCoroutine(musicHandler());
 
     }
 
@@ -123,7 +137,7 @@ public class PlayerHandler : CharacterHandler {
         //TiltOnDelta();
 
         //UI
-        staminaBar.fillAmount = Stamina / characterdata.maxStamina;
+        try{ staminaBar.fillAmount = Stamina / characterdata.maxStamina; } catch {}
 
         //are we in the wrong percentile?
         if(currHealthOrbPercentile > Health / characterdata.maxHealth){

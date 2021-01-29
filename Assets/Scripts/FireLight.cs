@@ -26,7 +26,7 @@ public class FireLight : MonoBehaviour
 
     void Update()
     {  
-
+        try{
         float noise = noiseAmp * ((Mathf.PerlinNoise(Time.time * noiseScale, 0f)) -.5f);
         float noise2 = noiseAmp * ((Mathf.PerlinNoise(0f, Time.time * noiseScale)) -.5f);
         float noise3 = noiseAmp * ((Mathf.PerlinNoise(Time.time * noiseScale, Time.time * noiseScale)) -.5f);
@@ -47,6 +47,7 @@ public class FireLight : MonoBehaviour
             
         
         }
+        } catch { Debug.LogWarning("campfire lights may be missing");}
         
         //transform.position += new Vector3(noise, noise, noise);
     }

@@ -152,7 +152,7 @@ public class AttackState : CombatState {
     public MeleeMove chosenMove {get; private set;}
     private bool finishedAttack;
     public AttackState(CharacterHandler character, Animator animator) : base(character, animator) {
-        try {chosenMove = character.MeleeAttacks["default"]; } catch { Debug.LogWarning("some cunt don't have default attack"); }
+        try {chosenMove = character.MeleeAttacks["default"]; } catch { Debug.LogWarning("some bloke don't have default attack"); }
     }
 
     public AttackState(CharacterHandler character, Animator animator, MeleeMove chosenMove) : base(character, animator) {
@@ -178,7 +178,8 @@ public class AttackState : CombatState {
                 // Debug.Log(chosenMove.name);
 
         //begin animation
-        animator.applyRootMotion = true; //cleaner maybe
+        animator.applyRootMotion = true; //cleaner maybe 
+        // Debug.Log("anim now");
         animator.SetTrigger(Animator.StringToHash(chosenMove.name));
         if(character is PlayerHandler) character.WeaponTrail.enabled = true;
         //sound
