@@ -5871,7 +5871,7 @@ PrefabInstance:
     - target: {fileID: 9075442561346592637, guid: be058e469e10e854e87801b004f8319b,
         type: 3}
       propertyPath: startAsAggro
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9075442561346592637, guid: be058e469e10e854e87801b004f8319b,
         type: 3}
@@ -5897,6 +5897,11 @@ PrefabInstance:
         type: 3}
       propertyPath: minWaitBetweenAttacks
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 9075442561346592637, guid: be058e469e10e854e87801b004f8319b,
+        type: 3}
+      propertyPath: AIGlobalStateCheckRange
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 9075442561346592637, guid: be058e469e10e854e87801b004f8319b,
         type: 3}

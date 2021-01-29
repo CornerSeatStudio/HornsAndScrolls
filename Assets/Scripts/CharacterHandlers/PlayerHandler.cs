@@ -44,9 +44,18 @@ public class PlayerHandler : CharacterHandler {
 
     [Header("music")]
     public AudioSource musicSource;
+    public bool isPassiveLevel = false;
     
 
     #region callbacks
+
+    public IEnumerator musicHandler(){
+        if(!isPassiveLevel){
+            yield return new WaitForSeconds(10f);
+            musicSource.Play();
+        }
+    }
+
     protected override void Start(){
         base.Start();
         controller = this.GetComponent<CharacterController>();
@@ -69,6 +78,8 @@ public class PlayerHandler : CharacterHandler {
 
         currHealthOrbPercentile = .8f;
         currOrbIndex = 0;
+
+        StartCoroutine(musicHandler());
 
     }
 

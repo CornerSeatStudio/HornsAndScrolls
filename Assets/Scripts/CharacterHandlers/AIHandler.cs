@@ -45,9 +45,13 @@ public class AIHandler : CharacterHandler {
 
     //static
     public static List<AIHandler> CombatAI {get; set;}
-    private static bool queueMusic = false;
+    // private static bool queueMusic = false;
 
     #region callbacks
+    void Awake(){
+        try { TargetPlayer = FindObjectOfType<PlayerHandler>(); } catch { Debug.LogWarning("WHERE THE PLAYER AT FOOL"); }
+    }
+
     protected override void Start() {
         base.Start(); //all characterhandler stuff
         
@@ -158,10 +162,10 @@ public class AIHandler : CharacterHandler {
         CombatAI.Add(this);
 
         //queue music
-        if(!queueMusic){
-            TargetPlayer.musicSource.Play();
-            queueMusic = true;
-        }
+        // if(!queueMusic){
+        //     TargetPlayer.musicSource.Play();
+        //     queueMusic = true;
+        // }
 
         StartCoroutine(OffenseScheduler());
         StartCoroutine(CirclingAssistant());
@@ -267,16 +271,23 @@ public class AIHandler : CharacterHandler {
     public BTStatus VerifyStealth() {
         // Debug.Log("yewot");
 
-        if(GlobalState != GlobalState.UNAGGRO) return BTStatus.FAILURE;
+        if(GlobalState != GlobalState.UNAGGRO) {  return BTStatus.FAILURE;}
 
-        Debug.Log(Vector3.Distance(TargetPlayer.transform.position, transform.position));
-        // if(TargetPlayer != null){
-        //     if((TargetPlayer.transform.position - transform.position).sqrMagnitude < AIGlobalStateCheckRange * AIGlobalStateCheckRange) return BTStatus.FAILURE;
-        // }
+        if(TargetPlayer != null){
+            if((TargetPlayer.transform.position - transform.position).sqrMagnitude < AIGlobalStateCheckRange * AIGlobalStateCheckRange) {
+                 return BTStatus.FAILURE;
+            }
+        }
         
         return BTStatus.RUNNING;
     }
 
+    public bool PivotConditional() => GlobalState == GlobalState.UNAGGRO;
+
+    public BTStatus PivotTask(){
+        PivotToAggro();
+        return BTStatus.SUCCESS;
+    }
     //check if ai has line of sight on player
     public bool LOSOnPlayer() => Detection.VisibleTargets.Count != 0;
     

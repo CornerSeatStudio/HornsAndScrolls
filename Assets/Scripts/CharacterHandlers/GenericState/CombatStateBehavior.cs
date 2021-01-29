@@ -150,7 +150,7 @@ public class AttackState : CombatState {
     protected IEnumerator currAttackCoroutine;
     private IEnumerator timerRoutine;
     public MeleeMove chosenMove {get; private set;}
-    private bool finishedAttack = false;
+    private bool finishedAttack;
     public AttackState(CharacterHandler character, Animator animator) : base(character, animator) {
         try {chosenMove = character.MeleeAttacks["default"]; } catch { Debug.LogWarning("some bloke don't have default attack"); }
     }

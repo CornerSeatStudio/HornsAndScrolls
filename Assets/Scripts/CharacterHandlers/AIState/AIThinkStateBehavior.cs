@@ -273,6 +273,7 @@ public class DefaultAIAggroState : AIThinkState {
     public DefaultAIAggroState(AIHandler character, Animator animator, NavMeshAgent agent) : base(character, animator, agent) {}
     
     public override IEnumerator OnStateEnter() {
+        yield return new WaitForSeconds(1f);
         animator.SetLayerWeight(1, 1);
 
         facePlayerRoutine = character.FacePlayer();
