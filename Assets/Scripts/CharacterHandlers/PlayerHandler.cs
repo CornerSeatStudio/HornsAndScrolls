@@ -58,6 +58,9 @@ public class PlayerHandler : CharacterHandler {
 
     protected override void Start(){
         base.Start();
+
+        Physics.gravity = -Vector3.up * 40;
+
         controller = this.GetComponent<CharacterController>();
         
         SetStateDriver(new IdleMoveState(this, animator)); //player starts unaggro idle move state
@@ -85,12 +88,12 @@ public class PlayerHandler : CharacterHandler {
 
     protected override void Update() {
         base.Update(); 
-
+        
         
 
-        try{ 
-            OnInventoryUpdate(); //idk how performant - maybe shouldnt be looped
-        } catch {} //temporarily ignore if no hud - this is terrible practice
+        // try{ 
+        //     OnInventoryUpdate(); //idk how performant - maybe shouldnt be looped
+        // } catch {} //temporarily ignore if no hud - this is terrible practice
 
         if(!InDialogue){ //lock out any controlls if in dialogue
             inputVector = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical")); //get actual input
@@ -99,6 +102,7 @@ public class PlayerHandler : CharacterHandler {
             DetermineInputOutcome(); 
         } 
 
+        
 
     }
 
@@ -126,6 +130,8 @@ public class PlayerHandler : CharacterHandler {
                 controller.SimpleMove(inputVector * CurrMovementSpeed);  
             }
         } 
+
+      
 
     }
 

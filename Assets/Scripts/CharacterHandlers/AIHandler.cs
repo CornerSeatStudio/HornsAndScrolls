@@ -295,9 +295,11 @@ public class AIHandler : CharacterHandler {
     //move to next patrol point
     private int currPatrolIndex;
     public void SetNextPatrolDestination() { 
+        try{
         currPatrolIndex = (currPatrolIndex + 1) % patrolWaypoints.Count;
         NextWaypointLocation = patrolWaypoints[currPatrolIndex].transform.position;
         NextWaypointRotation = patrolWaypoints[currPatrolIndex].transform.rotation;
+        } catch{}
     }
     #endregion
     
