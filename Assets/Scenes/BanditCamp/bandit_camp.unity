@@ -23959,6 +23959,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 656dc07e7b8187d4caa3d6ec47d740de, type: 3}
+--- !u!114 &1134402647 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2763492804439219514, guid: 656dc07e7b8187d4caa3d6ec47d740de,
+    type: 3}
+  m_PrefabInstance: {fileID: 1134402646}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2145654835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a08236e2bbe6c584188fdf83647e1d59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1139245888 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -7336876508974777710, guid: 775d155c036cf504895b7a5064e5ad13,
@@ -29374,6 +29386,36 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 204791883}
     m_Modifications:
+    - target: {fileID: 6911336143338049680, guid: 2eeef80d784a9a04cbcadaa27da969ee,
+        type: 3}
+      propertyPath: onObjectiveCompletion.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6911336143338049680, guid: 2eeef80d784a9a04cbcadaa27da969ee,
+        type: 3}
+      propertyPath: onObjectiveCompletion.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6911336143338049680, guid: 2eeef80d784a9a04cbcadaa27da969ee,
+        type: 3}
+      propertyPath: onObjectiveCompletion.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1134402647}
+    - target: {fileID: 6911336143338049680, guid: 2eeef80d784a9a04cbcadaa27da969ee,
+        type: 3}
+      propertyPath: onObjectiveCompletion.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6911336143338049680, guid: 2eeef80d784a9a04cbcadaa27da969ee,
+        type: 3}
+      propertyPath: onObjectiveCompletion.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: getnextlevel
+      objectReference: {fileID: 0}
+    - target: {fileID: 6911336143338049680, guid: 2eeef80d784a9a04cbcadaa27da969ee,
+        type: 3}
+      propertyPath: onObjectiveCompletion.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 6911336143338049682, guid: 2eeef80d784a9a04cbcadaa27da969ee,
         type: 3}
       propertyPath: m_RootOrder
