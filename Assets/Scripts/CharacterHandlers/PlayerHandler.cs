@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 
@@ -46,6 +47,9 @@ public class PlayerHandler : CharacterHandler {
     public AudioSource musicSource;
     public bool isPassiveLevel = false;
     
+    [Header("onDeath")]
+    public GameObject deathScreen;
+
 
     #region callbacks
 
@@ -89,7 +93,9 @@ public class PlayerHandler : CharacterHandler {
     protected override void Update() {
         base.Update(); 
         
-        
+        if(Input.GetKeyDown(KeyCode.P)){
+            TakeDamageAndCheckDeath(10, false, this);
+        }
 
         // try{ 
         //     OnInventoryUpdate(); //idk how performant - maybe shouldnt be looped
@@ -256,13 +262,31 @@ public class PlayerHandler : CharacterHandler {
         //store cause this method changes Health - probably terrible practice
 
         if(Health <= 0) { //UPON DEATH - destroy the player (temporary)
-            this.gameObject.SetActive(false);
+            // this.gameObject.SetActive(false);
+
+            StartCoroutine(PlayerDeathProtocol());
+
         }
 
         
         return f;
     }
 
+    IEnumerator PlayerDeathProtocol(){
+
+        //play death sound
+        Array.Find(audioData, AudioData => AudioData.name == "stagger").Play(AudioSource); 
+
+        //black screen
+        try{ deathScreen.SetActive(true); } catch { Debug.LogWarning("player death screen where it at boy"); }
+
+        yield return new WaitForSeconds(4f);
+
+        //restart scene
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
+
+    }
 
     #region big fish
     private void HandleNormalInteractions(){
