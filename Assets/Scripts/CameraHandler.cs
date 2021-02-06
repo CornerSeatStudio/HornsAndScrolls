@@ -119,8 +119,8 @@ public class CameraHandler : MonoBehaviour {
 
         //q/e input for angle
         tempAddAng = angle;
-        if (Input.GetKey(KeyCode.Q)) tempAddAng -= Time.deltaTime * camRotateSpeed;
-        if (Input.GetKey(KeyCode.E)) tempAddAng += Time.deltaTime * camRotateSpeed;
+        // if (Input.GetKey(KeyCode.Q)) tempAddAng -= Time.deltaTime * camRotateSpeed;
+        // if (Input.GetKey(KeyCode.E)) tempAddAng += Time.deltaTime * camRotateSpeed;
 
         //get offset and camera rotation right
         offset = DirectionGivenAngle(angle);

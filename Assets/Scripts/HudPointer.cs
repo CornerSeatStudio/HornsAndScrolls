@@ -39,7 +39,7 @@ public class HudPointer : MonoBehaviour
                 sprite.enabled = true;
 
                 // Debug.Log(dir);
-                pointerRectTransform.localPosition = new Vector3(dir.x * posMod, dir.z * posMod, 0f);
+                pointerRectTransform.localPosition = new Vector3(dir.x * posMod, dir.z * posMod, -5f);
 
             } else {
                 sprite.enabled = false;
