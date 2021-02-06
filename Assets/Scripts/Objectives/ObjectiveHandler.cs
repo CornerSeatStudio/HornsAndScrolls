@@ -14,6 +14,8 @@ public class ObjectiveHandler : MonoBehaviour
     public AudioSource AudioSource {get; private set;}
     private SaveManager saveManager;
 
+    private GameObject hudcam;
+
 
     void Start(){
         saveManager = FindObjectOfType<SaveManager>();
@@ -23,6 +25,17 @@ public class ObjectiveHandler : MonoBehaviour
         CurrObjective = objectives[CurrObjectiveIndex];
 
        // Debug.Log($"current level SHOULD BE: {SaveManager.CurrentLevelIndex}");
+
+        //MANUALLY FORCE HUD CAM
+        try {
+            hudcam = GameObject.Find("HUD CAM");
+            hudcam.SetActive(false);
+            hudcam.SetActive(true);
+
+        } catch {
+
+        }
+
     }
 
     public void OnLevelFinish() {
