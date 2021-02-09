@@ -4,7 +4,7 @@
 - Ultimately, this was a learning experience!
 
 ## **About Us**
-- We are Corner Seat Studios! A couple of high school friends with a passion for game design
+- We are Corner Seat Studio! A couple of high school friends with a passion for game design
 
 ## **Screenshots**
 ![](images/DDOOqA.png)
